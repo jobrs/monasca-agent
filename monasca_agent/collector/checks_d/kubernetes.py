@@ -118,6 +118,7 @@ class Kubernetes(services_checks.ServicesCheck):
 
     def _check(self, instance):
         kube_settings = get_kube_settings()
+        self.log.info("kube_settings: %s" % kube_settings)
         if not kube_settings.get("host"):
             raise Exception('Unable to get default router and host parameter is not set')
 
@@ -135,10 +136,6 @@ class Kubernetes(services_checks.ServicesCheck):
         self._update_metrics(instance, kube_settings)
 
     def _publish_raw_metrics(self, metric, dat, dimensions, depth=0):
-        """
-
-
-        """
         if depth >= self.max_depth:
             self.log.warning('Reached max depth on metric=%s' % metric)
             return
@@ -164,7 +161,9 @@ class Kubernetes(services_checks.ServicesCheck):
 
     def _update_container_metrics(self, instance, subcontainer, kube_labels):
         tags = instance.get('dimensions', [])  # add support for custom tags
-
+        self.log.info("_update_container_metrics: instance: %s" % instance)
+        self.log.info("_update_container_metrics: kube_labels: %s" % kube_labels)
+        self.log.info("_update_container_metrics: subcontainer: %s" % subcontainer)
         if len(subcontainer.get('aliases', [])) >= 1:
             # The first alias seems to always match the docker container name
             container_name = subcontainer['aliases'][0]
@@ -228,7 +227,9 @@ class Kubernetes(services_checks.ServicesCheck):
 
     def _update_metrics(self, instance, kube_settings):
         metrics = self._retrieve_metrics(kube_settings["metrics_url"])
+        self.log.info('metrics: %s' % metrics)
         kube_labels = self._retrieve_kube_labels
+        self.log.info('kube_labels: %s' % kube_labels)
         if not metrics:
             raise Exception('No metrics retrieved cmd=%s' % self.metrics_cmd)
 
