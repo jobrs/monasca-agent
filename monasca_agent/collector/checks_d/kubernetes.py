@@ -32,11 +32,11 @@ NAMESPACE = "kubernetes"
 DEFAULT_MAX_DEPTH = 10
 
 # DEFAULT_USE_HISTOGRAM = False
-DEFAULT_PUBLISH_ALIASES = False
-DEFAULT_ENABLED_RATES = [
-    'diskio.io_service_bytes.stats.total',
-    'network.??_bytes',
-    'cpu.*.total']
+# DEFAULT_PUBLISH_ALIASES = False
+# DEFAULT_ENABLED_RATES = [
+#    'diskio.io_service_bytes.stats.total',
+#    'network.??_bytes',
+#    'cpu.*.total']
 
 NET_ERRORS = ['rx_errors', 'tx_errors', 'rx_dropped', 'tx_dropped']
 
@@ -135,17 +135,21 @@ class Kubernetes(services_checks.ServicesCheck):
         self._update_metrics(instance, kube_settings)
 
     def _publish_raw_metrics(self, metric, dat, dimensions, depth=0):
+        """
+
+
+        """
         if depth >= self.max_depth:
             self.log.warning('Reached max depth on metric=%s' % metric)
             return
 
         if isinstance(dat, numbers.Number):
-            if self.enabled_rates and any([fnmatch(metric, pat) for pat in self.enabled_rates]):
-                self.rate(metric, float(dat), dimensions=dimensions)
-            elif self.enabled_gauges and any([fnmatch(metric, pat) for pat in self.enabled_gauges]):
-                self.gauge(metric, float(dat), dimensions=dimensions)
+#            if self.enabled_rates and any([fnmatch(metric, pat) for pat in self.enabled_rates]):
+            self.rate(metric, float(dat), dimensions=dimensions)
+       # if self.enabled_gauges and any([fnmatch(metric, pat) for pat in self.enabled_gauges]):
+            self.gauge(metric, float(dat), dimensions=dimensions)
 
-        elif isinstance(dat, dict):
+        if isinstance(dat, dict):
             for k, v in dat.iteritems():
                 self._publish_raw_metrics(metric + '.%s' % k.lower(), v, dimensions, depth + 1)
 
@@ -157,8 +161,9 @@ class Kubernetes(services_checks.ServicesCheck):
         # shorten docker image id
         return re.sub('([0-9a-fA-F]{64,})', lambda x: x.group(1)[0:12], name)
 
+
     def _update_container_metrics(self, instance, subcontainer, kube_labels):
-        tags = instance.get('tags', [])  # add support for custom tags
+        tags = instance.get('dimensions', [])  # add support for custom tags
 
         if len(subcontainer.get('aliases', [])) >= 1:
             # The first alias seems to always match the docker container name
@@ -188,30 +193,30 @@ class Kubernetes(services_checks.ServicesCheck):
 
                         tags.append("kube_replication_controller:%s" % replication_controller)
                 tags.append('%s:%s' % (label_name, label))
-        except KeyError:
-            pass
+        except KeyError as e:
+           self.log.exception(e)
 
         if not pod_name_set:
             tags.append("pod_name:no_pod")
 
-        if self.publish_aliases and subcontainer.get("aliases"):
-            for alias in subcontainer['aliases'][1:]:
-                # we don't add the first alias as it will be the container_name
-                tags.append('container_alias:%s' % (self._shorten_name(alias)))
+        #if self.publish_aliases and subcontainer.get("aliases"):
+        #     for alias in subcontainer['aliases'][1:]:
+        #        we don't add the first alias as it will be the container_name
+        #        tags.append('container_alias:%s' % (self._shorten_name(alias)))
 
         stats = subcontainer['stats'][-1]  # take the latest
         self._publish_raw_metrics(NAMESPACE, stats, tags)
 
         if subcontainer.get("spec", {}).get("has_filesystem"):
-            fs = stats['filesystem'][-1]
-            fs_utilization = float(fs['usage']) / float(fs['capacity'])
-            self.publish_gauge(self, NAMESPACE + '.filesystem.usage_pct', fs_utilization, tags)
+             fs = stats['filesystem'][-1]
+             fs_utilization = float(fs['usage']) / float(fs['capacity'])
+             self.publish_gauge(self, NAMESPACE + '.filesystem.usage_pct', fs_utilization, tags)
 
         if subcontainer.get("spec", {}).get("has_network"):
-            net = stats['network']
-            self.publish_rate(self, NAMESPACE + '.network_errors',
-                              sum(float(net[x]) for x in NET_ERRORS),
-                              tags)
+             net = stats['network']
+             self.publish_rate(self, NAMESPACE + '.network_errors',
+                               sum(float(net[x]) for x in NET_ERRORS),
+                               tags)
 
     @staticmethod
     def _retrieve_metrics(url):
