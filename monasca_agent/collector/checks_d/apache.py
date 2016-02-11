@@ -35,6 +35,7 @@ class Apache(checks.AgentCheck):
 
     def check(self, instance):
         self.url = instance.get('apache_status_url', None)
+        log.debug('Execute check')
         if not self.url:
             raise Exception("Missing 'apache_status_url' in Apache config")
 

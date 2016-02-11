@@ -5,6 +5,7 @@ Collects metrics from cAdvisor instance
 import numbers
 from fnmatch import fnmatch
 import re
+import traceback
 
 # 3rd party
 import requests
@@ -33,10 +34,10 @@ DEFAULT_MAX_DEPTH = 10
 
 # DEFAULT_USE_HISTOGRAM = False
 # DEFAULT_PUBLISH_ALIASES = False
-# DEFAULT_ENABLED_RATES = [
-#    'diskio.io_service_bytes.stats.total',
-#    'network.??_bytes',
-#    'cpu.*.total']
+DEFAULT_ENABLED_RATES = [
+    'diskio.io_service_bytes.stats.total',
+    'network.??_bytes',
+    'cpu.*.total']
 
 NET_ERRORS = ['rx_errors', 'tx_errors', 'rx_dropped', 'tx_dropped']
 
@@ -96,62 +97,68 @@ class Kubernetes(services_checks.ServicesCheck):
         #     else:
         #         self.service_check(service_check_base, AgentCheck.CRITICAL)
    #
-   # def _perform_master_checks(self, url):
-   #     try:
-   #         r = requests.get(url)
-   #         r.raise_for_status()
-   #         for nodeinfo in r.json()['items']:
-   #              nodename = nodeinfo['name']
-   #              service_check_name = "{0}.master.{1}.check".format(NAMESPACE, nodename)
-   #              cond = nodeinfo['status'][-1]['type']
-   #              minion_name = nodeinfo['metadata']['name']
-   #              tags = ["minion_name:{0}".format(minion_name)]
+    def _perform_master_checks(self, url):
+    #    try:
+            r = requests.get(url)
+            r.raise_for_status()
+            for nodeinfo in r.json()['items']:
+                 nodename = nodeinfo['name']
+                 service_check_name = "{0}.master.{1}.check".format(NAMESPACE, nodename)
+                 cond = nodeinfo['status'][-1]['type']
+                 minion_name = nodeinfo['metadata']['name']
+                 tags = ["minion_name:{0}".format(minion_name)]
    #              if cond != 'Ready':
    #                  self.service_check(service_check_name, AgentCheck.CRITICAL,
    #                                     tags=tags, message=cond)
    #             else:
-   #                 self.service_check(service_check_name, AgentCheck.OK, tags=tags)
- #       except Exception, e:
- #           self.service_check(service_check_name, AgentCheck.CRITICAL, message=str(e))
- #           self.log.warning('master checks url=%s exception=%s' % (url, str(e)))
- #           raise
+   #         self.service_check(service_check_name, AgentCheck.OK, tags=tags)
+   #     except Exception, e:
+   #         self.service_check(service_check_name, AgentCheck.CRITICAL, message=str(e))
+   #         self.log.warning('master checks url=%s exception=%s' % (url, str(e)))
+   #         raise
 
     def _check(self, instance):
         kube_settings = get_kube_settings()
-        self.log.info("kube_settings: %s" % kube_settings)
+        # self.log.info("kube_settings: %s" % kube_settings)
         if not kube_settings.get("host"):
             raise Exception('Unable to get default router and host parameter is not set')
 
+        enabled_gauges = instance.get('enabled_gauges', DEFAULT_ENABLED_GAUGES)
+        self.enabled_gauges = ["{0}.{1}".format(NAMESPACE, x) for x in enabled_gauges]
+        enabled_rates = instance.get('enabled_rates', DEFAULT_ENABLED_RATES)
+        self.enabled_rates = ["{0}.{1}".format(NAMESPACE, x) for x in enabled_rates]
+
         # master health checks
-#        if instance.get('enable_master_checks', False):
-#            master_url = kube_settings["master_url_nodes"]
-#            self._perform_master_checks(master_url)
+        if instance.get('enable_master_checks', False):
+            master_url = kube_settings["master_url_nodes"]
+            self._perform_master_checks(master_url)
 
         # kubelet health checks
-#        if instance.get('enable_kubelet_checks', True):
-#            kube_health_url = kube_settings["kube_health_url"]
-#            self._perform_kubelet_checks(kube_health_url)
+        # if instance.get('enable_kubelet_checks', True):
+        #     kube_health_url = kube_settings["kube_health_url"]
+        #     self._perform_kubelet_checks(kube_health_url)
 
         # kubelet metrics
         self._update_metrics(instance, kube_settings)
 
     def _publish_raw_metrics(self, metric, dat, dimensions, depth=0):
+        # self.log.info("execute def _publish_raw_metrics")
         if depth >= self.max_depth:
             self.log.warning('Reached max depth on metric=%s' % metric)
             return
 
         if isinstance(dat, numbers.Number):
-#            if self.enabled_rates and any([fnmatch(metric, pat) for pat in self.enabled_rates]):
-            self.rate(metric, float(dat), dimensions=dimensions)
-       # if self.enabled_gauges and any([fnmatch(metric, pat) for pat in self.enabled_gauges]):
-            self.gauge(metric, float(dat), dimensions=dimensions)
+            if self.enabled_rates and any([fnmatch(metric, pat) for pat in self.enabled_rates]):
+                self.rate(metric, float(dat), dimensions={})
+            if self.enabled_gauges and any([fnmatch(metric, pat) for pat in self.enabled_gauges]):
+                self.gauge(metric, float(dat), dimensions={})
 
-        if isinstance(dat, dict):
-            for k, v in dat.iteritems():
-                self._publish_raw_metrics(metric + '.%s' % k.lower(), v, dimensions, depth + 1)
+        elif isinstance(dat, dict):
+            for k,v in dat.iteritems():
+                self._publish_raw_metrics(metric + '.%s' % k.lower(), v, dimensions={})
 
         elif isinstance(dat, list):
-            self._publish_raw_metrics(metric, dat[-1], dimensions, depth + 1)
+            self._publish_raw_metrics(metric, dat[-1], dimensions={})
 
     @staticmethod
     def _shorten_name(name):
@@ -160,10 +167,7 @@ class Kubernetes(services_checks.ServicesCheck):
 
 
     def _update_container_metrics(self, instance, subcontainer, kube_labels):
-        tags = instance.get('dimensions', [])  # add support for custom tags
-        self.log.info("_update_container_metrics: instance: %s" % instance)
-        self.log.info("_update_container_metrics: kube_labels: %s" % kube_labels)
-        self.log.info("_update_container_metrics: subcontainer: %s" % subcontainer)
+        tags = instance.get('dimensions', {})  # add support for custom tags
         if len(subcontainer.get('aliases', [])) >= 1:
             # The first alias seems to always match the docker container name
             container_name = subcontainer['aliases'][0]
@@ -171,32 +175,31 @@ class Kubernetes(services_checks.ServicesCheck):
             # We default to the container id
             container_name = subcontainer['name']
 
-        tags.append('container_name:%s' % container_name)
+        tags['container_name'] = container_name
 
         pod_name_set = False
         try:
-            for label_name, label in subcontainer['spec']['labels'].iteritems():
+            for label_name, label in subcontainer['spec']['labels'].items():
+                self.log.info("subcontainer.spec.labels: %s", type(subcontainer["spec"]["labels"]))
                 label_name = label_name.replace('io.kubernetes.pod.name', 'pod_name')
                 if label_name == "pod_name":
                     pod_name_set = True
                     pod_labels = kube_labels.get(label)
                     if pod_labels:
-                        tags.extend(list(pod_labels))
-
-                    if "-" in label:
-                        replication_controller = "-".join(
-                                label.split("-")[:-1])
+                        pod_labels.update(tags)
+                        if "-" in label:
+                            replication_controller = "-".join(
+                            label.split("-")[:-1])
                         if "/" in replication_controller:
                             namespace, replication_controller = replication_controller.split("/", 1)
-                            tags.append("kube_namespace:%s" % namespace)
-
-                        tags.append("kube_replication_controller:%s" % replication_controller)
-                tags.append('%s:%s' % (label_name, label))
-        except KeyError as e:
-           self.log.exception(e)
+                            tags["kube_namespace"] = namespace
+                            tags["kube_replication_controller"] = replication_controller
+                tags["label_name"] = label
+        except KeyError:
+           pass
 
         if not pod_name_set:
-            tags.append("pod_name:no_pod")
+            tags['pod_name'] = "no_pod"
 
         #if self.publish_aliases and subcontainer.get("aliases"):
         #     for alias in subcontainer['aliases'][1:]:
@@ -205,17 +208,18 @@ class Kubernetes(services_checks.ServicesCheck):
 
         stats = subcontainer['stats'][-1]  # take the latest
         self._publish_raw_metrics(NAMESPACE, stats, tags)
+ #       self.log.debug('publish %s %s %s', NAMESPACE, stats, tags)
 
-        if subcontainer.get("spec", {}).get("has_filesystem"):
-             fs = stats['filesystem'][-1]
-             fs_utilization = float(fs['usage']) / float(fs['capacity'])
-             self.publish_gauge(self, NAMESPACE + '.filesystem.usage_pct', fs_utilization, tags)
-
-        if subcontainer.get("spec", {}).get("has_network"):
-             net = stats['network']
-             self.publish_rate(self, NAMESPACE + '.network_errors',
-                               sum(float(net[x]) for x in NET_ERRORS),
-                               tags)
+        # if subcontainer.get("spec", {}).get("has_filesystem"):
+        #      fs = stats['filesystem'][-1]
+        #      fs_utilization = float(fs['usage']) / float(fs['capacity'])
+        #      self.publish_gauge(self, NAMESPACE + '.filesystem.usage_pct', fs_utilization, tags)
+        #
+        # if subcontainer.get("spec", {}).get("has_network"):
+        #      net = stats['network']
+        #      self.publish_rate(self, NAMESPACE + '.network_errors',
+        #                        sum(float(net[x]) for x in NET_ERRORS),
+        #                        tags)
 
     @staticmethod
     def _retrieve_metrics(url):
@@ -226,16 +230,18 @@ class Kubernetes(services_checks.ServicesCheck):
         return get_kube_labels()
 
     def _update_metrics(self, instance, kube_settings):
+        # self.log.info("execute def _update_metrics")
         metrics = self._retrieve_metrics(kube_settings["metrics_url"])
-        self.log.info('metrics: %s' % metrics)
+        # self.log.info('metrics: %s' % metrics)
         kube_labels = self._retrieve_kube_labels
-        self.log.info('kube_labels: %s' % kube_labels)
+        # self.log.info('kube_labels: %s' % kube_labels)
         if not metrics:
             raise Exception('No metrics retrieved cmd=%s' % self.metrics_cmd)
 
         for subcontainer in metrics:
-            try:
-                self._update_container_metrics(instance, subcontainer, kube_labels)
-            except Exception, e:
-                self.log.error("Unable to collect metrics for container: {0} ({1}".format(
-                        subcontainer.get('name'), e))
+             try:
+                 self._update_container_metrics(instance, subcontainer, kube_labels)
+             except Exception, e:
+                 self.log.error("Unable to collect metrics for container: {0} ({1}".format(
+                         subcontainer.get('name'), e))
+             traceback.print_exc()
