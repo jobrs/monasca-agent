@@ -65,30 +65,32 @@ class Kubernetes(services_checks.ServicesCheck):
         self.enabled_gauges = ["{0}.{1}".format(NAMESPACE, x) for x in enabled_gauges]
         enabled_rates = instance.get('enabled_rates', DEFAULT_ENABLED_RATES)
         self.enabled_rates = ["{0}.{1}".format(NAMESPACE, x) for x in enabled_rates]
+        self.publish_aliases = _is_affirmative(instance.get('publish_aliases', DEFAULT_PUBLISH_ALIASES))
 
         # kubelet metrics
         self._update_metrics(instance, kube_settings)
 
     def _publish_raw_metrics(self, metric, dat, dims, depth=0):
-        # self.log.info("execute def _publish_raw_metrics")
         if depth >= self.max_depth:
             self.log.warning('Reached max depth on metric=%s' % metric)
             return
 
         if isinstance(dat, numbers.Number):
             if self.enabled_rates and any([fnmatch(metric, pat) for pat in self.enabled_rates]):
-                self.log.info("_publish_raw_metrics numbers float: {0}, {1}, {2}".format(metric, dat, dims))
-            if self.enabled_gauges and any([fnmatch(metric, pat) for pat in self.enabled_gauges]):
+                self.log.info("rate: numbers float: {0}, {1}, {2}".format(metric, dat, dims))
+                self.rate(metric, float(dat), dimensions=dims)
+            elif self.enabled_gauges and any([fnmatch(metric, pat) for pat in self.enabled_gauges]):
+                self.log.info("gauge: numbers gauge: {0}, {1}, {2}".format(metric, dat, dims))
                 self.gauge(metric, float(dat), dimensions=dims)
-                self.log.info("_publish_raw_metrics numbers gauge: {0}, {1}, {2}".format(metric, dat, dims))
 
-        elif isinstance(dat, dict):
+        if isinstance(dat, dict):
             for k,v in dat.iteritems():
+                # self.log.info("_publish_raw_metrics dat dict: {0}, {1}, {2}".format(metric, (k.lower(), v), dims))
                 self._publish_raw_metrics(metric + '.%s' % k.lower(), v, dims)
-                self.log.info("_publish_raw_metrics dat dict: {0}, {1}, {2}".format(metric, (k.lower(), v), dims))
+
         elif isinstance(dat, list):
+            # self.log.info("_publish_raw_metrics dat list: {0}, {1}, {2}".format(metric, dat[-1], dims))
             self._publish_raw_metrics(metric, dat[-1], dims)
-            self.log.info("_publish_raw_metrics dat list: {0}, {1}, {2}".format(metric, dat[-1], dims))
 
     @staticmethod
     def _shorten_name(name):
@@ -98,7 +100,9 @@ class Kubernetes(services_checks.ServicesCheck):
     @staticmethod
     def _normalize_name(name):
         # remove invalid characters
-        return re.sub('><=\{\}\(\),\'"\;& ', '_', name)
+        #return re.sub('[^\x00-\x7f]','', re.sub('><=\{\}\(\),\'\\"\;& "\\x02"', '_', name))
+        return re.sub(r'[^\w]', '.',name)
+        #return re.sub(r'[\x20-\x7e]', '', re.sub('[^\x00-\x7f]','', re.sub('><=\{\}\(\),\'\\"\;& "\\x02"', '_', name)))
 
     def _update_container_metrics(self, instance, subcontainer, kube_labels):
         dims = instance.get('dimensions', {})  # add support for custom dims
@@ -132,27 +136,27 @@ class Kubernetes(services_checks.ServicesCheck):
         except KeyError:
            pass
 
-        if not pod_name_set:
-            dims['pod_name'] = "no_pod"
+        if not pod_name_set and len(subcontainer.get('label_name', [])) >= 1:
+            dims['pod_name'] = self._normalize_name(label_name)
 
         if self.publish_aliases and subcontainer.get("aliases"):
              for alias in subcontainer['aliases'][1:]:
                # we don't add the first alias as it will be the container_name
-                dims.append('container_alias:%s' % (self._shorten_name(alias)))
+                dims['container_alias'] = self._normalize_name(self._shorten_name(alias))
 
         stats = subcontainer['stats'][-1]  # take the latest
         self._publish_raw_metrics(NAMESPACE, stats, dims)
 
-        if subcontainer.get("spec", {}).get("has_filesystem"):
+        if subcontainer.get("spec", {}).get("has_filesystem") and len(subcontainer.get('aliases', [])) >= 1:
              fs = stats['filesystem'][-1]
              fs_utilization = float(fs['usage']) / float(fs['capacity'])
              self.log.info("filesystem for subcontainer get: {0}, {1}.filesystem.usage_pct, {2}".format(NAMESPACE, fs_utilization, dims))
-             self.gauge(self, NAMESPACE + '.filesystem.usage_pct', fs_utilization, dims)
+             self.gauge(NAMESPACE + '.filesystem.usage_pct', fs_utilization, dims)
 
-        if subcontainer.get("spec", {}).get("has_network"):
+        if subcontainer.get("spec", {}).get("has_network") and len(subcontainer.get('aliases', [])) >= 1:
              net = stats['network']
              self.log.info("network for subcontainer get: {0}, {1}".format(stats['network'], dims))
-             self.rate(self, NAMESPACE + '.network_errors', sum(float(net[x]) for x in NET_ERRORS), dims)
+             self.rate(NAMESPACE + '.network_errors', sum(float(net[x]) for x in NET_ERRORS), dims)
 
     @staticmethod
     def _retrieve_metrics(url):
