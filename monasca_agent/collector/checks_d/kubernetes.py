@@ -77,19 +77,19 @@ class Kubernetes(services_checks.ServicesCheck):
 
         if isinstance(dat, numbers.Number):
             if self.enabled_rates and any([fnmatch(metric, pat) for pat in self.enabled_rates]):
-                self.log.info("rate: numbers float: {0}, {1}, {2}".format(metric, dat, dims))
+              #  self.log.debug("rate: numbers float: {0}, {1}, {2}".format(metric, dat, dims))
                 self.rate(metric, float(dat), dimensions=dims)
             elif self.enabled_gauges and any([fnmatch(metric, pat) for pat in self.enabled_gauges]):
-                self.log.info("gauge: numbers gauge: {0}, {1}, {2}".format(metric, dat, dims))
+              #  self.log.debug("gauge: numbers gauge: {0}, {1}, {2}".format(metric, dat, dims))
                 self.gauge(metric, float(dat), dimensions=dims)
 
         if isinstance(dat, dict):
             for k,v in dat.iteritems():
-                # self.log.info("_publish_raw_metrics dat dict: {0}, {1}, {2}".format(metric, (k.lower(), v), dims))
+                # self.log.debug("_publish_raw_metrics dat dict: {0}, {1}, {2}".format(metric, (k.lower(), v), dims))
                 self._publish_raw_metrics(metric + '.%s' % k.lower(), v, dims)
 
         elif isinstance(dat, list):
-            # self.log.info("_publish_raw_metrics dat list: {0}, {1}, {2}".format(metric, dat[-1], dims))
+            # self.log.debug("_publish_raw_metrics dat list: {0}, {1}, {2}".format(metric, dat[-1], dims))
             self._publish_raw_metrics(metric, dat[-1], dims)
 
     @staticmethod
@@ -100,8 +100,7 @@ class Kubernetes(services_checks.ServicesCheck):
     @staticmethod
     def _normalize_name(name):
         # remove invalid characters
-        #return re.sub('[^\x00-\x7f]','', re.sub('><=\{\}\(\),\'\\"\;& "\\x02"', '_', name))
-        return re.sub(r'[^\w]', '.',name)
+        return re.sub('^\.','/', re.sub(r'[^\w]', '.',name))
         #return re.sub(r'[\x20-\x7e]', '', re.sub('[^\x00-\x7f]','', re.sub('><=\{\}\(\),\'\\"\;& "\\x02"', '_', name)))
 
     def _update_container_metrics(self, instance, subcontainer, kube_labels):
@@ -118,7 +117,7 @@ class Kubernetes(services_checks.ServicesCheck):
         pod_name_set = False
         try:
             for label_name, label in subcontainer['spec']['labels'].items():
-                self.log.info("subcontainer.spec.labels: %s", type(subcontainer["spec"]["labels"]))
+               # self.log.debug("subcontainer.spec.labels: %s", type(kube_labels))
                 label_name = label_name.replace('io.kubernetes.pod.name', 'pod_name')
                 if label_name == "pod_name":
                     pod_name_set = True
@@ -147,15 +146,15 @@ class Kubernetes(services_checks.ServicesCheck):
         stats = subcontainer['stats'][-1]  # take the latest
         self._publish_raw_metrics(NAMESPACE, stats, dims)
 
-        if subcontainer.get("spec", {}).get("has_filesystem") and len(subcontainer.get('aliases', [])) >= 1:
+        if subcontainer.get("spec", {}).get("has_filesystem") and len(subcontainer.get('namespace', [])) >= 1:
              fs = stats['filesystem'][-1]
              fs_utilization = float(fs['usage']) / float(fs['capacity'])
-             self.log.info("filesystem for subcontainer get: {0}, {1}.filesystem.usage_pct, {2}".format(NAMESPACE, fs_utilization, dims))
+           #  self.log.debug("filesystem for subcontainer get: {0}, {1}.filesystem.usage_pct, {2}".format(NAMESPACE, fs_utilization, dims))
              self.gauge(NAMESPACE + '.filesystem.usage_pct', fs_utilization, dims)
 
-        if subcontainer.get("spec", {}).get("has_network") and len(subcontainer.get('aliases', [])) >= 1:
+        if subcontainer.get("spec", {}).get("has_network") and len(subcontainer.get('namespace', [])) >= 1:
              net = stats['network']
-             self.log.info("network for subcontainer get: {0}, {1}".format(stats['network'], dims))
+            # self.log.debug("network for subcontainer get: {0}, {1}".format(stats['network'], dims))
              self.rate(NAMESPACE + '.network_errors', sum(float(net[x]) for x in NET_ERRORS), dims)
 
     @staticmethod
@@ -167,7 +166,7 @@ class Kubernetes(services_checks.ServicesCheck):
         return get_kube_labels()
 
     def _update_metrics(self, instance, kube_settings):
-        metrics = self._retrieve_metrics(kube_settings["metrics_url"])
+        metrics = self._retrieve_metrics(kube_settings["subcontainer_url"])
         kube_labels = self._retrieve_kube_labels
         if not metrics:
             raise Exception('No metrics retrieved cmd=%s' % self.metrics_cmd)
@@ -178,4 +177,4 @@ class Kubernetes(services_checks.ServicesCheck):
              except Exception, e:
                  self.log.error("Unable to collect metrics for container: {0} ({1}".format(
                          subcontainer.get('name'), e))
-             traceback.print_exc()
+           #  traceback.print_exc()

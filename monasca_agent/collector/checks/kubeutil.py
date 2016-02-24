@@ -11,9 +11,10 @@ def retrieve_json(url):
     return r.json()
 
 # project
-
 DEFAULT_METHOD = 'http'
-METRICS_PATH = '/api/v1.3/subcontainers/'
+SUBCONTAINER_PATH = '/api/v1.3/subcontainers/'
+CONTAINERS_PATH = '/api/v1.3/containers/'
+METRICS_PATH = '/metrics'
 DEFAULT_CADVISOR_PORT = 4194
 DEFAULT_KUBELET_PORT = 10255
 DEFAULT_MASTER_PORT = 8080
@@ -31,20 +32,24 @@ def set_kube_settings(instance):
 
     host = instance.get("host") or _get_default_router()
     cadvisor_port = instance.get('port', DEFAULT_CADVISOR_PORT)
-    method = instance.get('method', DEFAULT_METHOD)
-    metrics_url = urljoin('%s://%s:%d' % (method, host, cadvisor_port), METRICS_PATH)
     kubelet_port = instance.get('kubelet_port', DEFAULT_KUBELET_PORT)
     master_port = instance.get('master_port', DEFAULT_MASTER_PORT)
-    master_host = instance.get('master_host', host)
+    method = instance.get('method', DEFAULT_METHOD)
+    metrics_url = urljoin('%s://%s:%d' % (method, host, kubelet_port), METRICS_PATH)
+    subcontainer_url = urljoin('%s://%s:%d' % (method, host, cadvisor_port), SUBCONTAINER_PATH)
+    containers_url = urljoin('%s://%s:%d' % (method, host, cadvisor_port), CONTAINERS_PATH)
 
     _kube_settings = {
         "host": host,
         "method": method,
         "metrics_url": metrics_url,
+        "subcontainer_url": subcontainer_url,
+        "containers_url": containers_url,
         "cadvisor_port": cadvisor_port,
         "labels_url": '%s://%s:%d/pods' % (method, host, kubelet_port),
-        "master_url_nodes": '%s://%s:%d/api/v1/nodes' % (method, master_host, master_port),
-        "kube_health_url": '%s://%s:%d/healthz' % (method, host, kubelet_port)
+        "master_url_nodes": '%s://%s:%d/api/v1/nodes' % (method, host, master_port),
+        "kube_health_url": '%s://%s:%d/healthz' % (method, host, kubelet_port),
+        "kubelet_url": '%s://%s:%d/%s' % (method, host, master_port, METRICS_PATH)
     }
 
     return _kube_settings
