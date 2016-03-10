@@ -1,6 +1,7 @@
 # (C) Copyright 2015-2016 Hewlett Packard Enterprise Development Company LP
 
 import logging
+import os
 import urllib2
 
 import monasca_setup.agent_config
@@ -40,7 +41,7 @@ class RabbitMQ(monasca_setup.detection.Plugin):
         """Run detection, set self.available True if the service is detected.
         """
         if monasca_setup.detection.find_process_cmdline('rabbitmq-server') is not None:
-            self.available = True
+            self.available = (self.args is not None) or os.path.isfile(rabbit_conf)
 
     def _get_config(self):
         """Set the configuration to be used for connecting to rabbitmq
