@@ -1,5 +1,6 @@
 # (C) Copyright 2015 Hewlett Packard Enterprise Development Company LP
 
+from collections import defaultdict
 import json
 import socket
 import subprocess
@@ -104,6 +105,9 @@ class ElasticSearch(AgentCheck):
         "elasticsearch.fs.total.total_in_bytes": ("gauge", "fs.total.total_in_bytes"),
         "elasticsearch.fs.total.free_in_bytes": ("gauge", "fs.total.free_in_bytes"),
         "elasticsearch.fs.total.available_in_bytes": ("gauge", "fs.total.available_in_bytes"),
+        "elasticsearch.pending_tasks_total": ("gauge", "pending_task_total"),
+        "elasticsearch.pending_tasks_priority_high": ("gauge", "pending_tasks_priority_high"),
+        "elasticsearch.pending_tasks_priority_urgent": ("gauge", "pending_tasks_priority_urgent"),        
    }
     PRIMARY_SHARD_METRICS = {
         "elasticsearch.primaries.docs.count": ("gauge", "_all.primaries.docs.count"),
@@ -127,7 +131,15 @@ class ElasticSearch(AgentCheck):
         "elasticsearch.primaries.search.query.current": ("gauge", "_all.primaries.search.query_current"),
         "elasticsearch.primaries.search.fetch.total": ("gauge", "_all.primaries.search.fetch_total"),
         "elasticsearch.primaries.search.fetch.time": ("gauge", "_all.primaries.search.fetch_time_in_millis", lambda v: float(v)/1000),
-        "elasticsearch.primaries.search.fetch.current": ("gauge", "_all.primaries.search.fetch_current")
+        "elasticsearch.primaries.search.fetch.current": ("gauge", "_all.primaries.search.fetch_current"),
+        "elasticsearch.number_of_nodes": ("gauge", "number_of_nodes"),
+        "elasticsearch.number_of_data_nodes": ("gauge", "number_of_data_nodes"),
+        "elasticsearch.active_primary_shards": ("gauge", "active_primary_shards"),
+        "elasticsearch.active_shards": ("gauge", "active_shards"),
+        "elasticsearch.relocating_shards": ("gauge", "relocating_shards"),
+        "elasticsearch.initializing_shards": ("gauge", "initializing_shards"),
+        "elasticsearch.unassigned_shards": ("gauge", "unassigned_shards"),
+        "elasticsearch.cluster_status": ("gauge", "status", lambda v: {"red": 0, "yellow": 1, "green": 2}.get(v, -1)),
     }
 
     PRIMARY_SHARD_METRICS_POST_1_0 = {
@@ -141,14 +153,14 @@ class ElasticSearch(AgentCheck):
         "elasticsearch.primaries.refresh.total": ("gauge", "_all.primaries.refresh.total"),
         "elasticsearch.primaries.refresh.total.time": ("gauge", "_all.primaries.refresh.total_time_in_millis", lambda v: float(v)/1000),
         "elasticsearch.primaries.flush.total": ("gauge", "_all.primaries.flush.total"),
-        "elasticsearch.primaries.flush.total.time": ("gauge", "_all.primaries.flush.total_time_in_millis", lambda v: float(v)/1000)
+        "elasticsearch.primaries.flush.total.time": ("gauge", "_all.primaries.flush.total_time_in_millis", lambda v: float(v)/1000),
     }
 
     JVM_METRICS_POST_0_90_10 = {
         "jvm.gc.collectors.young.count": ("gauge", "jvm.gc.collectors.young.collection_count"),
         "jvm.gc.collectors.young.collection_time": ("gauge", "jvm.gc.collectors.young.collection_time_in_millis", lambda v: float(v)/1000),
         "jvm.gc.collectors.old.count": ("gauge", "jvm.gc.collectors.old.collection_count"),
-        "jvm.gc.collectors.old.collection_time": ("gauge", "jvm.gc.collectors.old.collection_time_in_millis", lambda v: float(v)/1000)
+        "jvm.gc.collectors.old.collection_time": ("gauge", "jvm.gc.collectors.old.collection_time_in_millis", lambda v: float(v)/1000),
     }
 
     JVM_METRICS_PRE_0_90_10 = {
@@ -210,17 +222,6 @@ class ElasticSearch(AgentCheck):
         "elasticsearch.thread_pool.merge.queue": ("gauge", "thread_pool.merge.queue"),
     }
 
-    CLUSTER_HEALTH_METRICS = {
-        "elasticsearch.number_of_nodes": ("gauge", "number_of_nodes"),
-        "elasticsearch.number_of_data_nodes": ("gauge", "number_of_data_nodes"),
-        "elasticsearch.active_primary_shards": ("gauge", "active_primary_shards"),
-        "elasticsearch.active_shards": ("gauge", "active_shards"),
-        "elasticsearch.relocating_shards": ("gauge", "relocating_shards"),
-        "elasticsearch.initializing_shards": ("gauge", "initializing_shards"),
-        "elasticsearch.unassigned_shards": ("gauge", "unassigned_shards"),
-        "elasticsearch.cluster_status": ("gauge", "status", lambda v: {"red": 0, "yellow": 1, "green": 2}.get(v, -1)),
-    }
-
     CLUSTER_PENDING_TASKS = {
         "elasticsearch.pending_tasks_total": ("gauge", "pending_task_total"),
         "elasticsearch.pending_tasks_priority_high": ("gauge", "pending_tasks_priority_high"),
@@ -270,6 +271,12 @@ class ElasticSearch(AgentCheck):
 #        self.log.debug("health_data: %s" % health_data)
         self._process_health_data(config_url, health_data, dimensions=dimensions)
 
+        # Load the task data.
+        url = urlparse.urljoin(config_url, self.TASK_URL)
+        task_data = self._get_data(url, auth)
+#        self.log.debug("task_data: %s" % task_data)
+        self._process_task_data(task_data, dimensions=dimensions)
+
     def _get_es_version(self, config_url, auth=None):
         """Get the running version of Elastic Search.
 
@@ -297,6 +304,7 @@ class ElasticSearch(AgentCheck):
             self.HEALTH_URL = "/_cluster/health?pretty=true"
             self.STATS_URL = "/_nodes/stats?all=true"
             self.NODES_URL = "/_nodes?network=true"
+            self.TASK_URL = "/_cluster/pending_tasks?pretty=true"
 
             additional_metrics = self.JVM_METRICS_POST_0_90_10
 
@@ -337,14 +345,14 @@ class ElasticSearch(AgentCheck):
             self.METRICS.update(additional_metrics)
 
         # Version specific stats metrics about the primary shards
-            self.METRICS.update(additional_metrics)
+        additional_metrics = self.PRIMARY_SHARD_METRICS
+        self.METRICS.update(additional_metrics)
 
         if version >= [1, 0, 0]:
             additional_metrics = self.PRIMARY_SHARD_METRICS_POST_1_0
+            self.METRICS.update(additional_metrics)
 
-
-        self.METRICS.update(additional_metrics)
-        self.log.debug("additional_metrics: %s" % additional_metrics)
+#        self.log.debug("METRICS: %s" % self.METRICS)
 
     def _get_data(self, url, auth=None):
         """Hit a given URL and return the parsed json
@@ -377,7 +385,7 @@ class ElasticSearch(AgentCheck):
                     self.hostname.decode('utf-8'),
                     socket.gethostname().decode('utf-8'),
                     socket.getfqdn().decode('utf-8'),
-                    socket.gethostbyname(socket.gethostname))
+                    socket.gethostbyname(socket.gethostname())
                 )
                 self.log.debug("hostnames converted: %s", hostnames)
 #                if node_hostname.decode('utf-8') in hostnames:
@@ -508,6 +516,29 @@ class ElasticSearch(AgentCheck):
 
     def _metric_not_found(self, metric, path):
         self.log.debug("Metric not found: %s -> %s", path, metric)
+
+    def _process_task_data(self, data, dimensions=None):
+        p_tasks = defaultdict(int)
+
+        for task in data.get('tasks', []):
+            p_tasks[task.get('priority')] += 1
+
+        node_data = {
+            'pending_task_total':               sum(p_tasks.values()),
+            'pending_tasks_priority_high':      p_tasks['high'],
+            'pending_tasks_priority_urgent':    p_tasks['urgent'],
+        }
+
+        def process_metric(metric, xtype, path, xform=None):
+            # closure over data
+            self._process_metric(node_data, metric, path, dimensions=dimensions)
+
+        for metric in self.CLUSTER_PENDING_TASKS:
+            # metric description
+            desc = self.CLUSTER_PENDING_TASKS[metric]
+            process_metric(metric, *desc)
+
+#--------------------------------
 
     def _create_event(self, status):
         hostname = self.hostname.decode('utf-8')
