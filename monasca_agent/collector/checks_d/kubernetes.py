@@ -67,7 +67,7 @@ DEFAULT_MAPPING = {
             'dimensions': {
                 'interface_name': 'name'
             },
-            'rates': ['.*_bytes', '.*_errors', '.*_dropped']
+            'rates': ['.*_bytes', '.*_errors', '.*_dropped', '.*_packets']
         },
         'task_stats': {
             'gauges': ['nr_.*']

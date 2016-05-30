@@ -67,7 +67,7 @@ class InfluxDB(monasca_setup.detection.ArgsPlugin):
     @staticmethod
     def _compare_versions(v1, v2):
         def normalize(v):
-            return [int(x) for x in re.sub(r'(\.0+)*$', '', v).split(".")]
+            return [int(x) for x in re.sub(r'(\.0+-)*$', '', v).split(".")]
 
         return cmp(normalize(v1), normalize(v2))
 

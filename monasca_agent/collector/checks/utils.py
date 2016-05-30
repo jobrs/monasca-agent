@@ -438,6 +438,7 @@ class DynamicCheckHelper:
                     metric_cache[metric] = metric_entry
                     return metric_entry['type'], metric_entry['name']
             all_rates_re = metric_map.get('rates', [])
+            groups = None
             for rx in all_rates_re:
                 groups = re.match(rx, metric)
                 if groups:
