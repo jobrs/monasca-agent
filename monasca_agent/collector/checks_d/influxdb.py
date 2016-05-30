@@ -17,9 +17,10 @@ DIMENSIONS_KEY = '_dimensions'
 HTTP_STATUS_MNAME = "http_status"
 
 # ['queriesRx', 'queriesExecuted', 'http_status', 'response_time']
-DEFAULT_METRICS_DEF_0_9_5 = {
+DEFAULT_METRICS_DEF_0_10_3 = {
     'httpd': {
         DIMENSIONS_KEY: {'binding': 'bind'},
+        'auth_fail': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'authFail'},
         'ping_req': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'pingReq'},
         'points_write_ok': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'pointsWrittenOK'},
         'query_req': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'queryReq'},
@@ -27,30 +28,12 @@ DEFAULT_METRICS_DEF_0_9_5 = {
         'req': {TYPE_KEY: RATE},
         'write_req': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'writeReq'},
         'write_req_bytes': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'writeReqBytes'}},
-    'engine': {
-        DIMENSIONS_KEY: {'path': 'path'},
-        'blks_write': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'blksWrite'},
-        'blks_write_bytes': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'blksWriteBytes'},
-        'blks_write_bytes_c': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'blksWriteBytesC'},
-        'points_write': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'pointsWrite'},
-        'points_write_dedupe': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'pointsWriteDedupe'}},
     'shard': {
         DIMENSIONS_KEY: {'influxdb_engine': 'engine', 'influxdb_shard': 'id'},
         'fields_create': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'fieldsCreate'},
         'series_create': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'seriesCreate'},
         'write_points_ok': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'writePointsOk'},
         'write_req': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'writeReq'}},
-    'wal': {
-        DIMENSIONS_KEY: {'path': 'path'},
-        'auto_flush': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'autoFlush'},
-        'flush_duration': {TYPE_KEY: GAUGE, INFLUXDB_NAME_KEY: 'flushDuration'},
-        'idle_flush': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'idleFlush'},
-        'mem_size': {TYPE_KEY: GAUGE, INFLUXDB_NAME_KEY: 'memSize'},
-        'meta_flush': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'metaFlush'},
-        'points_flush': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'pointsFlush'},
-        'points_write': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'pointsWrite'},
-        'points_write_req': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'pointsWriteReq'},
-        'series_flush': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'seriesFlush'}},
     'write': {
         DIMENSIONS_KEY: {'path': 'path'},
         'point_req': {TYPE_KEY: RATE, INFLUXDB_NAME_KEY: 'pointReq'},
@@ -91,7 +74,7 @@ class InfluxDB(services_checks.ServicesCheck):
         timeout = float(instance.get('timeout', '1'))
         headers = instance.get('headers', {})
         whitelist = instance.get('whitelist', None)
-        metricdef = instance.get('metricdef', DEFAULT_METRICS_DEF_0_9_5)
+        metricdef = instance.get('metricdef', DEFAULT_METRICS_DEF_0_10_3)
         collect_response_time = instance.get('collect_response_time', False)
         disable_ssl_validation = instance.get('disable_ssl_validation', True)
 
@@ -150,6 +133,7 @@ class InfluxDB(services_checks.ServicesCheck):
                         value = trans[mod][met_iname]
                         self._push_metric(met_type, fqmet, value, dims)
                     else:
+                        # failure metrics are only reported in case, so this is not worth a warning
                         self.log.debug('InfluxDB did not report metric %s.%s', mod, met_iname)
 
     def _push_metric(self, metric_type, metric_name, metric_value, dimensions):
