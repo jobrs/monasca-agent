@@ -76,16 +76,19 @@ class InfluxDB(monasca_setup.detection.ArgsPlugin):
         uri = url + "/ping"
         try:
             resp = requests.get(url=uri, timeout=self.timeout)
-            self.version = resp.headers.get('x-influxdb-version', '0')
-            log.info('Discovered InfluxDB version %s', self.version)
+            self.version = resp.headers.get('x-influxdb-version')
+            if self.version:
+                log.info('Discovered InfluxDB version %s', self.version)
+            else:
+                return False
 
             supported = self._compare_versions(self.version, '0.9.5') >= 0
             if not supported:
-                log.error('Unsupported InfluxDB version: %s', self.version)
+                log.debug('Unsupported InfluxDB version: %s', self.version)
             return supported
 
         except Exception as e:
-            log.error('Unable to access the InfluxDB query URL %s: %s', uri, repr(e))
+            log.debug('Unable to access the InfluxDB query URL %s: %s', uri, repr(e))
 
         return False
 
@@ -97,6 +100,8 @@ class InfluxDB(monasca_setup.detection.ArgsPlugin):
                 if self._connection_test(u):
                     self.url = u
                     return True
+
+        log.error('Unable to discover InfluxDB port using process %s', self.influxd.name)
         return False
 
     def _get_config(self):
