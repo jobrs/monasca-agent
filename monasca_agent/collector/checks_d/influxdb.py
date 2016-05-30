@@ -195,6 +195,7 @@ class InfluxDB(services_checks.ServicesCheck):
                 error_string = "InfluxDB check {0} causes HTTP errors when accessing {1}, error code: {2}".format(
                     instance.get('name'), endpoint, resp.status_code)
                 self.warning(error_string)
+                self.log.error(error_string)
                 return services_checks.Status.DOWN, error_string
 
             self._rate_or_gauge_statuses(content, merged_dimensions, whitelist, metricdef)
