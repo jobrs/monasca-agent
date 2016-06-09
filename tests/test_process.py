@@ -58,6 +58,8 @@ class TestDetailedProcess(unittest.TestCase):
                           'process.pid_count',
                           'process.thread_count']
 
+        if 'process.cpu_perc' in measurement_names:
+            measurement_names.remove('process.cpu_perc')
         self.assertEquals(measurement_names, expected_names)
 
         # run again to get cpu_perc
