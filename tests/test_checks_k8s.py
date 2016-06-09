@@ -95,4 +95,4 @@ class TestDynamicCheckHelper(unittest.TestCase):
                            'user': 'you', 'hostname': metric4[0].dimensions.get('hostname')})
         self.assertEquals(metric4[1].dimensions,
                           {'simple_dimension': 'simple_label_test', 'complex_dimension': 'monasca-api-a8109321', 'complex_dimension_rest': 'monasca-api-a8109321_postfix',
-                           'user': 'me', 'hostname': metric4[0].dimensions.get('hostname')})
+                           'user': 'me', 'hostname': metric4[1].dimensions.get('hostname')})
