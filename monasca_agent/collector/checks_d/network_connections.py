@@ -4,11 +4,13 @@
 # BSD License (Copyright Datadog, Inc. 2010-2016), source at
 # https://github.com/DataDog/dd-agent/blob/74e6fe99e9bed9ef063662ff0246c7a73249b1c5/checks.d/network.py
 
-import logging, subprocess
+import logging
+import subprocess
 
 import monasca_agent.collector.checks as checks
 
 log = logging.getLogger(__name__)
+
 
 class NetworkConnections(checks.AgentCheck):
 
@@ -72,7 +74,7 @@ class NetworkConnections(checks.AgentCheck):
                 metric = "net.tcp{0}.{1}".format(ip_version, self.TCP_STATES[words[1]])
                 metrics[metric] += 1
             else:
-                pass # ignore header line
+                pass  # ignore header line
 
         for key, value in metrics.iteritems():
             log.debug("Reporting {}={}".format(key, value))
