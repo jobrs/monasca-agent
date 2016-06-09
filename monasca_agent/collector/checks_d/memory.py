@@ -1,11 +1,10 @@
 # (C) Copyright 2015 Hewlett Packard Enterprise Development Company LP
 
 import logging
+import monasca_agent.collector.checks as checks
 import psutil
 
 log = logging.getLogger(__name__)
-
-import monasca_agent.collector.checks as checks
 
 
 class Memory(checks.AgentCheck):

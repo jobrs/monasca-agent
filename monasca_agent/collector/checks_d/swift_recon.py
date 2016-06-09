@@ -1,4 +1,9 @@
-import logging, re, subprocess, json, time, types
+import json
+import logging
+import re
+import subprocess
+import time
+import types
 
 import monasca_agent.collector.checks as checks
 
@@ -113,7 +118,7 @@ class SwiftRecon(checks.AgentCheck):
     def get_updater_sweeps(self, server_type):
         data = self.swift_recon_json(server_type, "--updater")
         key = server_type + "_updater_sweep"
-        return { hostname: data[hostname][key] for hostname in data }
+        return {hostname: data[hostname][key] for hostname in data}
 
     def get_replication(self, server_type):
         if server_type in self.replication_times:
@@ -127,7 +132,7 @@ class SwiftRecon(checks.AgentCheck):
 
         current_timestamp = time.time()
         data = self.swift_recon_json(server_type, "--replication")
-        result = { "duration": {}, "age": {} }
+        result = {"duration": {}, "age": {}}
         for hostname in data:
             result["duration"][hostname] = data[hostname][duration_key]
             # convert timestamp of last completion into an age
@@ -138,11 +143,11 @@ class SwiftRecon(checks.AgentCheck):
 
     def get_unmounted_drives(self):
         data = self.swift_recon_json("--unmounted")
-        return { hostname: len(data[hostname]) for hostname in data }
+        return {hostname: len(data[hostname]) for hostname in data}
 
     def get_drive_audit_errors(self):
         data = self.swift_recon_json("--driveaudit")
-        return { hostname: data[hostname]['drive_audit_errors'] for hostname in data }
+        return {hostname: data[hostname]['drive_audit_errors'] for hostname in data}
 
     def get_quarantined(self):
         if not self.quarantined_things:

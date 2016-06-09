@@ -2,7 +2,6 @@
 Collects metrics from cAdvisor instance
 """
 # stdlib
-import traceback
 from datetime import datetime
 import calendar
 import monasca_agent.collector.checks.utils as utils
@@ -57,11 +56,11 @@ DEFAULT_MAPPING = {
             'dimensions': {
                 'device': 'device'
             },
-            'gauges': [ 'capacity', 'available', 'usage', '.*_time', '.*_in_progress' ],
-            'rates': [ '.*' ]
+            'gauges': ['capacity', 'available', 'usage', '.*_time', '.*_in_progress'],
+            'rates': ['.*']
         },
         'memory': {
-            'gauges': ['usage', 'working_set' ]
+            'gauges': ['usage', 'working_set']
         },
         'network': {
             'dimensions': {
@@ -121,11 +120,12 @@ class Kubernetes(services_checks.ServicesCheck):
     @staticmethod
     def _convert_timestamp(timestamp):
         # convert from string '2016-03-16T16:48:59.900524303Z' to a float monasca can handle 164859.900524
-        # conversion using strptime() works only for 6 digits in microseconds so the timestamp is limited to 26 characters
+        # conversion using strptime() works only for 6 digits in microseconds so the timestamp is limited
+        # to 26 characters
         ts = datetime.strptime(timestamp[:25] + timestamp[-1], "%Y-%m-%dT%H:%M:%S.%fZ")
         return calendar.timegm(datetime.timetuple(ts))
 
-    def _update_container_metrics(self, instance, subcontainer, kube_labels, fixed_dimensions):
+    def _update_container_metrics(self, instance, subcontainer, fixed_dimensions):
         klabels = {'io.kubernetes.subcontainer.name': subcontainer['name']}
         for i, alias in enumerate(subcontainer.get('aliases', [])):
             klabels['alias#' + str(i)] = alias
@@ -159,7 +159,6 @@ class Kubernetes(services_checks.ServicesCheck):
         return get_kube_labels()
 
     def _update_metrics(self, instance, kube_settings):
-        kube_labels = self._retrieve_kube_labels
         dims = instance.get('dimensions', {})  # add support for custom dims
         dims['hostname'] = get_kube_settings()['host']
 
@@ -169,7 +168,7 @@ class Kubernetes(services_checks.ServicesCheck):
 
         for subcontainer in subcontainers:
             try:
-                self._update_container_metrics(instance, subcontainer, kube_labels, dims)
+                self._update_container_metrics(instance, subcontainer, dims)
             except Exception as e:
                 self.log.exception("Unable to collect metrics for container: %s - %s", subcontainer.get('name'),
                                    repr(e))
@@ -206,14 +205,14 @@ class Kubernetes(services_checks.ServicesCheck):
             aggr = {}
             for e in events:
                 key = e['event_type'] + e['container_name']
-                if not key in aggr:
+                if key not in aggr:
                     aggr[key] = []
                 aggr[key].append(e)
             for key, aggr_events in aggr.iteritems():
                 count = len(aggr_events)
                 # take event_type as metric name (form element 0)
                 self._publisher.push_metric(instance, 'created', float(count), aggr_events[0], group='events',
-                                                 fixed_dimensions=dims)
+                                            fixed_dimensions=dims)
         except Exception as e:
             self.log.exception("Unable to collect metrics from cAdvisor events endpoint - %s", repr(e))
 

@@ -15,6 +15,7 @@ GAUGE = 1
 RATE = 2
 SKIP = 0
 
+
 def add_basic_auth(request, username, password):
     """A helper to add basic authentication to a urllib2 request.
 
@@ -311,21 +312,27 @@ class DynamicCheckHelper:
 
         for element, child in metric_dict.iteritems():
             if isinstance(child, dict) and curr_depth < max_depth:
-                self.push_metric_dict(instance, child, ext_labels, group, timestamp, fixed_dimensions, default_dimensions, max_depth, curr_depth+1, prefix+element+'_')
+                self.push_metric_dict(instance, child, ext_labels, group, timestamp, fixed_dimensions,
+                                      default_dimensions, max_depth, curr_depth + 1, prefix + element + '_')
             elif isinstance(child, Number):
-                self.push_metric(instance, prefix+element, float(child), ext_labels, group, timestamp, fixed_dimensions, default_dimensions)
+                self.push_metric(instance, prefix + element, float(child), ext_labels, group, timestamp, fixed_dimensions,
+                                 default_dimensions)
             elif isinstance(child, list):
                 for i, child_element in enumerate(child):
                     if isinstance(child_element, dict):
                         if curr_depth < max_depth:
-                            self.push_metric_dict(instance, child_element, ext_labels, group, timestamp, fixed_dimensions, default_dimensions, max_depth, curr_depth+1, prefix+element+'_', index=i)
+                            self.push_metric_dict(instance, child_element, ext_labels, group, timestamp,
+                                                  fixed_dimensions, default_dimensions, max_depth, curr_depth + 1,
+                                                  prefix + element + '_', index=i)
                     elif isinstance(child_element, Number):
                         if len(self._get_mappings(instance['name'], group, 'index')) > 0:
-                            idx_labels=ext_labels.copy()
+                            idx_labels = ext_labels.copy()
                             idx_labels['index'] = str(i)
-                            self.push_metric(instance, prefix+element, float(child_element), idx_labels, group, timestamp, fixed_dimensions, default_dimensions)
+                            self.push_metric(instance, prefix + element, float(child_element), idx_labels, group,
+                                             timestamp, fixed_dimensions, default_dimensions)
                         else:
-                           log.debug("skipping array due to lack of mapped 'index' dimensions for group %s", group if group else '<root>')
+                            log.debug("skipping array due to lack of mapped 'index' dimensions for group %s",
+                                      group if group else '<root>')
                     else:
                         log.debug('nested arrays are not supported for configurable extraction of element %s', element)
 
@@ -401,7 +408,7 @@ class DynamicCheckHelper:
                     # map the dimension name
                     target_dim = map_spec.get('dimension')
                     # apply the mapping function to the value
-                    if not target_dim in dims:      # do not overwrite
+                    if target_dim not in dims:      # do not overwrite
                         cregex = map_spec.get('cregex')
                         if cregex:
                             dims[target_dim] = DynamicCheckHelper._normalize_dim_value(cregex.match(labelvalue).group(1))
@@ -434,7 +441,7 @@ class DynamicCheckHelper:
             for rx in all_gauges_re:
                 groups = re.match(rx, metric)
                 if groups:
-                    metric_entry = { 'type': GAUGE, 'name': DynamicCheckHelper._normalize_metricname(metric, groups)}
+                    metric_entry = {'type': GAUGE, 'name': DynamicCheckHelper._normalize_metricname(metric, groups)}
                     metric_cache[metric] = metric_entry
                     return metric_entry['type'], metric_entry['name']
             all_rates_re = metric_map.get('rates', [])
@@ -442,10 +449,10 @@ class DynamicCheckHelper:
             for rx in all_rates_re:
                 groups = re.match(rx, metric)
                 if groups:
-                    metric_entry = { 'type': RATE, 'name': DynamicCheckHelper._normalize_metricname(metric, groups)}
+                    metric_entry = {'type': RATE, 'name': DynamicCheckHelper._normalize_metricname(metric, groups)}
                     metric_cache[metric] = metric_entry
                     return metric_entry['type'], metric_entry['name']
-            metric_entry = { 'type': SKIP, 'name': DynamicCheckHelper._normalize_metricname(metric, groups)}
+            metric_entry = {'type': SKIP, 'name': DynamicCheckHelper._normalize_metricname(metric, groups)}
             metric_cache[metric] = metric_entry
             return SKIP, metric
         else:

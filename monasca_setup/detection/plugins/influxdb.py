@@ -17,6 +17,7 @@ DEFAULT_METRICS_WHITELIST = {'httpd': ['points_write_ok', 'query_req', 'write_re
                              'engine': ['points_write', 'points_write_dedupe'],
                              'shard': ['series_create', 'fields_create', 'write_req', 'points_write_ok']}
 
+
 class InfluxDB(monasca_setup.detection.ArgsPlugin):
     """Setup an InfluxDB according to the passed in args.
     """
