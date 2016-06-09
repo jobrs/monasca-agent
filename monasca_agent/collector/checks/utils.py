@@ -387,7 +387,7 @@ class DynamicCheckHelper:
         dims = self._map_dimensions(default_dimensions, group, instance['name'], labels)
         dims.update(fixed_dimensions)
 
-        log.debug('push %s %s = %s {%s}', metric_type, metric_name, dims)
+        log.debug('push %s %s = %s {%s}', metric_type, metric_name, value, dims)
 
         if metric_type == RATE:
             self._check.rate(metric_name, float(value), dimensions=dims)
