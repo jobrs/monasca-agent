@@ -66,7 +66,11 @@ class SwiftRecon(checks.AgentCheck):
         for line in output.splitlines():
             m = re.match(r'^-> https?://([a-zA-Z0-9-.]+)\S*\s(.*)', line)
             if m:
-                hostname, json_str = m.group(1), m.group(2).replace("'", '"')
+                hostname, json_str = m.group(1), m.group(2)
+                # json_str is not actually JSON, but Python stringification of
+                # dict; beat it into submission
+                json_str = re.sub(r"u'(.+?)'", r'"\1"', json_str)
+                json_str = json_str.replace("'", '"')
                 json_str = json_str.replace(": False", ": false")
                 json_str = json_str.replace(": True", ": true")
                 result[hostname] = json.loads(json_str)

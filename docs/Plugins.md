@@ -21,6 +21,7 @@
   - [Process Checks](#process-checks)
   - [File Size Checks](#file-size-checks)
   - [Directory Checks](#directory-checks)
+  - [Network Connection Checks](#network-connection-checks)
   - [Http Endpoint Checks](#http-endpoint-checks)
   - [Http Metrics](#http-metrics)
   - [InfluxDB Checks](#influxdb-checks)
@@ -184,6 +185,7 @@ The following plugins are delivered via setup as part of the standard plugin che
 | vertica | /root/.vertica.cnf | |
 | nagios_wrapper | | |
 | network | | |
+| network_connections | | |
 | neutron | | OpenStack component |
 | nginx | | Ngix proxy web server |
 | nova | | OpenStack component |
@@ -629,6 +631,29 @@ The directory checks return the following metrics:
 | directory.size_bytes  | path, hostname, service |
 | directory.files_count  | path, hostname, service |
 
+## Network Connection Checks
+
+The system checks include network metrics, but these only measure throughput and count packets. The `network_connections` plugin can be used to track connection counts.
+
+Sample config:
+
+```
+init_config: null
+
+instances:
+- name: network_connections
+```
+
+Reported metrics: (shown for IPv4, metrics for IPv6 are identical except for `s/4/6/`)
+
+| Metric Name | Dimensions | Semantics |
+| ----------- | ---------- | --------- |
+| net.udp4.connections | | UDP connections |
+| net.tcp4.established | | TCP connections in state "ESTAB" |
+| net.tcp4.opening     | | TCP connections in state "SYN-SENT" or "SYN-RECV" in `ss` |
+| net.tcp4.closing     | | TCP connections in state "CLOSE-WAIT", "CLOSING", "FIN-WAIT-1", "FIN-WAIT-2", "LAST-ACK" or "UNCONN" |
+| net.tcp4.listening   | | TCP connections in state "LISTENING" |
+| net.tcp4.time_wait   | | TCP connections in state "TIME-WAIT" |
 
 ## Http Endpoint Checks
 This section describes the http endpoint check that can be performed by the Agent. Http endpoint checks are checks that perform simple up/down checks on services, such as HTTP/REST APIs. An agent, given a list of URLs, can dispatch an http request and report to the API success/failure as a metric.
