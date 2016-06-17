@@ -385,7 +385,8 @@ class DynamicCheckHelper:
             metric_prefix += group + '.'
         metric_name = metric_prefix + metric_name
         dims = self._map_dimensions(default_dimensions, group, instance['name'], labels)
-        dims.update(fixed_dimensions)
+        if fixed_dimensions is not None:
+            dims.update(fixed_dimensions)
 
         log.debug('push %s %s = %s {%s}', metric_type, metric_name, value, dims)
 
