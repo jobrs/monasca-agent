@@ -1,5 +1,8 @@
 init_config:
   swift_url: https://object.store.tld
+
+instances:
+- name: swift-healthcheck
   connection_options:
     # These options are passed to the swiftclient.service.SwiftService() constructor,
     # see documentation over there for details:
@@ -12,6 +15,6 @@ init_config:
     os_project_name:        my_project
     os_project_domain_name: my_domain
     os_region_name:         my_region
-
-instances:
-- name: swift-healthcheck
+  # The following two are optional. Their default values are shown.
+  container_name: healthcheck
+  object_name: healthcheck.txt

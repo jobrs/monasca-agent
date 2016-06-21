@@ -28,11 +28,10 @@ class SwiftHealthcheck(checks.AgentCheck):
         .format(str(datetime.datetime.now()))
 
     def check(self, instance):
-        cfg = self.init_config
-        self.connection     = swift.SwiftService(cfg['connection_options'])
-        self.swift_url      = cfg['swift_url']
-        self.container_name = cfg.get("container_name", "healthcheck")
-        self.object_name    = cfg.get("object_name", "healthcheck.txt")
+        self.connection     = swift.SwiftService(instance['connection_options'])
+        self.swift_url      = self.init_config['swift_url']
+        self.container_name = instance.get("container_name", "healthcheck")
+        self.object_name    = instance.get("object_name", "healthcheck.txt")
 
         dimensions = self._set_dimensions(None, instance)
         for check_name in self.CHECKS:
