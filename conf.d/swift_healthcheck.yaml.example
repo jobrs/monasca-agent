@@ -1,0 +1,20 @@
+init_config:
+  swift_url: https://object.store.tld
+
+instances:
+- name: swift-healthcheck
+  connection_options:
+    # These options are passed to the swiftclient.service.SwiftService() constructor,
+    # see documentation over there for details:
+    # <http://docs.openstack.org/developer/python-swiftclient/service-api.html#authentication>
+    auth_version:           3
+    os_auth_url:            https://keystone.tld:5000/v3
+    os_username:            my_user
+    os_password:            1a2b3c
+    os_user_domain_name:    my_domain
+    os_project_name:        my_project
+    os_project_domain_name: my_domain
+    os_region_name:         my_region
+  # The following two are optional. Their default values are shown.
+  container_name: healthcheck
+  object_name: healthcheck.txt
