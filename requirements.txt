@@ -18,7 +18,7 @@ psutil>=2.2.1,<3.1.0
 pymongo
 python-memcached
 python-monascaclient>=1.0.22,<1.1
-python-swiftclient>=2.4.0
+python-swiftclient>=3.0.0
 redis
 simplejson
 supervisor>=3.1.3,<3.2
