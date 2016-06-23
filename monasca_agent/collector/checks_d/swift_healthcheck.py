@@ -28,7 +28,13 @@ class SwiftHealthcheck(checks.AgentCheck):
         .format(str(datetime.datetime.now()))
 
     def check(self, instance):
-        self.connection     = swift.SwiftService(instance['connection_options'])
+        options = instance['connection_options']
+        # swiftclient gets confused if the auth_version is an int, not a string
+        # (which is bound to happen since YAML parses "3" as an int)
+        if 'auth_version' in options:
+            options['auth_version'] = str(options['auth_version'])
+
+        self.connection     = swift.SwiftService(options)
         self.swift_url      = self.init_config['swift_url']
         self.container_name = instance.get("container_name", "healthcheck")
         self.object_name    = instance.get("object_name", "healthcheck.txt")
