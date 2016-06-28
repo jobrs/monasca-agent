@@ -17,7 +17,8 @@ class SwiftHealthcheck(checks.AgentCheck):
         This check should run outside of the cluster.
     """
 
-    METRIC = "swift.available"
+    METRIC_SINGLE = "swift.available"
+    METRIC_TOTAL  = "swift.available_sum"
     CHECKS = [
         "health", "info",
         "container_post", "container_stat",
@@ -40,6 +41,8 @@ class SwiftHealthcheck(checks.AgentCheck):
         self.object_name    = instance.get("object_name", "healthcheck.txt")
 
         dimensions = self._set_dimensions(None, instance)
+        successful_count = 0
+
         for check_name in self.CHECKS:
             check = getattr(self, "check_" + check_name)
             try:
@@ -50,11 +53,18 @@ class SwiftHealthcheck(checks.AgentCheck):
                          .format(check_name, type(e), str(e)))
 
             log.debug("Reporting {}={} for test '{}'"
-                      .format(self.METRIC, success, check_name))
+                      .format(self.METRIC_SINGLE, success, check_name))
 
-            dimensions["check"] = check_name
+            dim = dimensions.copy()
+            dim["check"] = check_name
             value = 1 if success else 0
-            self.gauge(self.METRIC, value, dimensions=dimensions)
+            self.gauge(self.METRIC_SINGLE, value, dimensions=dim)
+
+            if success:
+                successful_count += 1
+
+        log.debug("Reporting {}={}".format(self.METRIC_TOTAL, successful_count))
+        self.gauge(self.METRIC_TOTAL, successful_count, dimensions=dimensions)
 
     ############################################################################
     # individual checks -- Each of these is submitted as a metric (0 or 1).
