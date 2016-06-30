@@ -19,8 +19,6 @@ logging.basicConfig()
 log = logging.getLogger(__name__)
 
 PROMETHEUS_PREFIX = "prometheus"
-DEFAULT_MAX_DEPTH = 10
-DEFAULT_PUBLISH_ALIASES = False
 
 
 class Prometheus(services_checks.ServicesCheck):
