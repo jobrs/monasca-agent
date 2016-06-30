@@ -1,0 +1,20 @@
+# HELP container_cpu_system_seconds_total Cumulative system cpu time consumed in seconds.
+# TYPE container_cpu_system_seconds_total counter
+container_cpu_system_seconds_total{id="/",name="k8s_foo"} 1.4378426e+06
+container_cpu_system_seconds_total{id="/docker",name="k8s_bar"} 893.18
+# HELP container_cpu_usage_seconds_total Cumulative cpu time consumed per cpu in seconds.
+# TYPE container_cpu_usage_seconds_total counter
+container_cpu_usage_seconds_total{cpu="cpu00",id="/",name="/"} 174344.684214037
+container_cpu_usage_seconds_total{cpu="cpu00",id="/docker",name="/docker"} 29.574431006
+# HELP container_fs_io_time_seconds_total Cumulative count of seconds spent doing I/Os
+# TYPE container_fs_io_time_seconds_total counter
+container_fs_io_time_seconds_total{device="/dev/sda3",id="/",name="/"} 7.5761e-05
+container_fs_io_time_seconds_total{device="/dev/sdf",id="/",name="/"} 0.006919394
+# HELP container_fs_write_seconds_total Cumulative count of seconds spent writing
+# TYPE container_fs_write_seconds_total counter
+container_fs_write_seconds_total{device="/dev/sda6",id="/",name="/"} 5.15e-07
+container_fs_write_seconds_total{device="/dev/sda9",id="/",name="/"} 0.044638588
+# HELP container_last_seen Last time a container was seen by the exporter
+# TYPE container_last_seen gauge
+container_last_seen{id="/",name="k8s_foo"} 1.467191065e+09
+container_last_seen{id="/docker",name="k8s_bar"} 1.467191065e+09
