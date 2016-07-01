@@ -30,6 +30,14 @@ class SwiftDispersion(checks.AgentCheck):
         pipe = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
                                 universal_newlines=True)
         out = "".join(pipe.stdout.readlines())
+
+        # swift-dispersion-report on Liberty prints an initial line "Using
+        # storage policy: default", so look for the first line that contains
+        # the actual JSON
+        while "\n" in out and not out.lstrip().startswith('{'):
+            # remove first line
+            out = out.split("\n", 1).pop()
+
         return out
 
     def check(self, instance):
