@@ -32,11 +32,11 @@ class VCenter(Plugin):
             except IOError:
                 # Process has already terminated, ignore
                 continue
-        # for cases where this plugin and nova-compute service runs separately
-        # we will configure the plugin with given args.
-        # so, we have to set these below variables
-        self.nova_conf = nova_conf
-        self.available = True
+        
+        # Do not configure vcenter plugin in any cases
+        if nova_conf is not None:
+            self.nova_conf = nova_conf
+            self.available = True
 
     def build_config(self):
         """Build the config as a Plugins object and return back.
