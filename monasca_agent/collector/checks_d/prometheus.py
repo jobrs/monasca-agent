@@ -1,6 +1,10 @@
 """
-Plugin to scrape prometheus data
+Plugin to scrape prometheus endpoint
 """
+try:
+    import prometheus_client.parser as prometheus_client_parser
+except Exception:
+    prometheus_client_parser = None
 
 # stdlib
 import logging
@@ -9,7 +13,6 @@ import calendar
 
 # 3rd party
 import urllib2
-from prometheus_client.parser import text_string_to_metric_families
 
 # project
 import monasca_agent.collector.checks.utils as utils
@@ -44,10 +47,13 @@ class Prometheus(services_checks.ServicesCheck):
         ts = datetime.strptime(timestamp[:25] + timestamp[-1], "%Y-%m-%dT%H:%M:%S.%fZ")
         return calendar.timegm(datetime.timetuple(ts))
 
-    def _update_container_metrics(self, instance, metric_name, metric_type, container, fixed_dimensions=None):
+    def _update_container_metrics(self, instance, metric_name, container, metric_type=None, timestamp=None, fixed_dimensions=None):
 
-        # other metrics are just mapped
-        self._publisher.push_metric(instance, metric=metric_name, value=container[2], labels=container[1], fixed_dimensions=fixed_dimensions)
+        if metric_type == 'untyped':
+            metric_type = None
+
+        self._publisher.push_metric(instance, metric=metric_name, value=container[2], labels=container[1],
+                                    timestamp=timestamp, fixed_dimensions=fixed_dimensions)
 
     def _retrieve_and_parse_metrics(self, url):
         """
@@ -71,7 +77,7 @@ class Prometheus(services_checks.ServicesCheck):
         :return: metric_families generator
         """
         str = urllib2.urlopen(url).read()
-        metric_families = text_string_to_metric_families(str)
+        metric_families = prometheus_client_parser.text_string_to_metric_families(str)
         return metric_families
 
     def _update_metrics(self, instance):
@@ -85,7 +91,7 @@ class Prometheus(services_checks.ServicesCheck):
         for metric_family in metric_families_generator:
             try:
                 for container in metric_family.samples:
-                    self._update_container_metrics(instance, metric_family.name, metric_family.type, container)
+                    self._update_container_metrics(instance, metric_family.name, container, metric_family.type)
             except Exception, e:
                 self.log.error("Unable to collect metric: {0} for container: {1} . - {2} ".format(
                     metric_family.name, container[1].get('name'), repr(e)))

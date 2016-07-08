@@ -16,14 +16,15 @@ prometheus_metrics_t0 = "file://" + os.path.join(dir, 'prometheus_metrics_t0')
 CONFIG = {'init_config': {}, 'instances': [{'name': 'prometheus-federate',
                                             'url': prometheus_metrics_t0,  # pass in sample prometheus metrics via file
                                             'mapping': {
-                                                'gauges': ['container_last_seen'],
-                                                'rates': ['container_cpu_system_seconds_total'],
+                                                'gauges': ['apiserver_request_count',
+                                                           'apiserver_request_latencies_summary_sum',
+                                                           'apiserver_request_latencies_bucket'],
                                                 'dimensions': {
-                                                    'index': 'index',
-                                                    'container_id': {
-                                                        'source_key': 'name',
-                                                        'regex': 'k8s_([._\-a-zA-Z0-9]*)'
-                                                    }
+                                                    'resource': 'resource',
+                                                    'verb': 'verb',
+                                                    'instance': 'instance',
+                                                    'component': 'kubernetes_role',
+                                                    'service': 'job'
                                                 }
                                             }}]
           }
@@ -46,27 +47,25 @@ class TestPrometheusClientScraping(unittest.TestCase):
         time.sleep(2)
         self.check.run()
 
-        # manually pushing another, because a rate needs at least 2 samples
-        self.check._publisher.push_metric(CONFIG['instances'][0],
-                                          metric='container_cpu_system_seconds_total',
-                                          value=950,
-                                          labels={u'id': u'/docker', u'name': u'k8s_bar'},
-                                          fixed_dimensions=None)
-
+        time.sleep(2)
         metrics = self.check.get_metrics()
 
         metric_family_names = [m.name for m in metrics]
 
-        # check parsed rates
+        # check parsed metrics
         self.assertTrue(metrics)
-        self.assertTrue('prometheus.container_cpu_system_seconds_total' in metric_family_names)
-        self.assertEqual([i.value for i in metrics if i.name == 'prometheus.container_cpu_system_seconds_total'][0] , 28.410000000000025)
-        self.assertEqual([i.dimensions['container_id'] for i in metrics if i.name == 'prometheus.container_cpu_system_seconds_total'][0] ,'bar')
+        self.assertTrue('prometheus.apiserver_request_count' in metric_family_names)
+        self.assertEqual([i.value for i in metrics if i.name == 'prometheus.apiserver_request_count'][0], 403)
+        self.assertEqual(
+            [i.dimensions['instance'] for i in metrics if i.name == 'prometheus.apiserver_request_count'][0],
+            u'kubernetes.default:443')
 
-        # check parsed gauge
-        self.assertTrue('prometheus.container_last_seen' in metric_family_names)
-        self.assertEqual([i.value for i in metrics if i.name == 'prometheus.container_last_seen'][0] ,1467191065.0)
-        self.assertEqual([i.dimensions['container_id'] for i in metrics if i.name == 'prometheus.container_last_seen'][0] ,'bar')
+        self.assertTrue('prometheus.apiserver_request_latencies_bucket' in metric_family_names)
+        self.assertEqual([i.value for i in metrics if i.name == 'prometheus.apiserver_request_latencies_bucket'][0],
+                         443394)
+        self.assertEqual([i.dimensions['component'] for i in metrics if i.name == 'prometheus.apiserver_request_latencies_bucket'][0],
+                         'apiserver')
+
 
 if __name__ == '__main__':
     t = TestPrometheusClientScraping()
