@@ -28,16 +28,15 @@ class Prometheus(services_checks.ServicesCheck):
     """
     Collect metrics and events
     """
-
-    pod_names_by_container = {}
-
     def __init__(self, name, init_config, agent_config, instances=None):
         super(Prometheus, self).__init__(name, init_config, agent_config, instances)
         # last time of polling
         self._last_ts = {}
 
     def _check(self, instance):
-        # kubelet metrics
+        if prometheus_client_parser is None:
+            self.log.warning("Skipping prometheus plugin check due to missing 'prometheus_client' module.")
+            return
         self._update_metrics(instance)
 
     @staticmethod
@@ -47,13 +46,22 @@ class Prometheus(services_checks.ServicesCheck):
         ts = datetime.strptime(timestamp[:25] + timestamp[-1], "%Y-%m-%dT%H:%M:%S.%fZ")
         return calendar.timegm(datetime.timetuple(ts))
 
-    def _update_container_metrics(self, instance, metric_name, container, metric_type=None, timestamp=None, fixed_dimensions=None):
+    def _update_container_metrics(self, instance, metric_name, container, metric_type=None, timestamp=None,
+                                  fixed_dimensions=None):
+
+        if not self._publisher:
+            self._publisher = utils.DynamicCheckHelper(self, 'prometheus', instance['mapping'])
 
         if metric_type == 'untyped':
             metric_type = None
 
-        self._publisher.push_metric(instance, metric=metric_name, value=container[2], labels=container[1],
-                                    timestamp=timestamp, fixed_dimensions=fixed_dimensions)
+            self._publisher.push_metric(instance,
+                                        metric=metric_name,
+                                        value=container[2],
+                                        labels=container[1],
+                                        timestamp=timestamp,
+                                        fixed_dimensions=fixed_dimensions)
+
 
     def _retrieve_and_parse_metrics(self, url):
         """
@@ -80,8 +88,8 @@ class Prometheus(services_checks.ServicesCheck):
         metric_families = prometheus_client_parser.text_string_to_metric_families(str)
         return metric_families
 
-    def _update_metrics(self, instance):
 
+    def _update_metrics(self, instance):
         self._publisher = utils.DynamicCheckHelper(self, 'prometheus', instance['mapping'])
         metric_families_generator = self._retrieve_and_parse_metrics(instance['url'])
 
@@ -93,8 +101,9 @@ class Prometheus(services_checks.ServicesCheck):
                 for container in metric_family.samples:
                     self._update_container_metrics(instance, metric_family.name, container, metric_family.type)
             except Exception, e:
-                self.log.error("Unable to collect metric: {0} for container: {1} . - {2} ".format(
+                self.log.warning("Unable to collect metric: {0} for container: {1} . - {2} ".format(
                     metric_family.name, container[1].get('name'), repr(e)))
+
 
     def _update_last_ts(self, instance_name):
         utc_now = datetime.utcnow()

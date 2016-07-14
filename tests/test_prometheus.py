@@ -1,8 +1,9 @@
+# stdlib
 import os
-
 import unittest
 import time
 
+# project
 from monasca_agent.collector.checks_d.prometheus import Prometheus
 
 METRICS_FAMILIES = ["container_cpu_system_seconds_total",
@@ -19,6 +20,7 @@ CONFIG = {'init_config': {}, 'instances': [{'name': 'prometheus-federate',
                                                 'gauges': ['apiserver_request_count',
                                                            'apiserver_request_latencies_summary_sum',
                                                            'apiserver_request_latencies_bucket'],
+                                                'rates': ['apiserver_sample_rate'],
                                                 'dimensions': {
                                                     'resource': 'resource',
                                                     'verb': 'verb',
@@ -39,7 +41,6 @@ class TestPrometheusClientScraping(unittest.TestCase):
 
     def run_check(self):
         self.setUp()
-        self.testEndpointScraping()
 
     def testEndpointScraping(self):
         # check parsing and pushing metrics works
@@ -63,8 +64,36 @@ class TestPrometheusClientScraping(unittest.TestCase):
         self.assertTrue('prometheus.apiserver_request_latencies_bucket' in metric_family_names)
         self.assertEqual([i.value for i in metrics if i.name == 'prometheus.apiserver_request_latencies_bucket'][0],
                          443394)
-        self.assertEqual([i.dimensions['component'] for i in metrics if i.name == 'prometheus.apiserver_request_latencies_bucket'][0],
-                         'apiserver')
+        self.assertEqual(
+            [i.dimensions['component'] for i in metrics if i.name == 'prometheus.apiserver_request_latencies_bucket'][
+                0],
+            'apiserver')
+
+    # def testInfinityErrorHandling(self):
+    #     # force infinity exception to check if prometheus plugin can handle it properly
+    #     self.check._update_container_metrics(instance=CONFIG['instances'][0],
+    #                                          metric_name='apiserver_sample_rate',
+    #                                          container=['apiserver_sample_rate',
+    #                                                     {u'instance': u'kubernetes.default:443',
+    #                                                      u'job': u'kubernetes-cluster',
+    #                                                      u'resource': u'configmaps', u'verb': u'GET',
+    #                                                      u'le': u'250000',
+    #                                                      u'kubernetes_role': u'apiserver'},
+    #                                                     500],
+    #                                          timestamp=1468486907)
+    #
+    #     self.check._update_container_metrics(instance=CONFIG['instances'][0],
+    #                                          metric_name='apiserver_sample_rate',
+    #                                          container=['apiserver_sample_rate',
+    #                                                     {u'instance': u'kubernetes.default:443',
+    #                                                      u'job': u'kubernetes-cluster',
+    #                                                      u'resource': u'configmaps', u'verb': u'GET',
+    #                                                      u'le': u'250000',
+    #                                                      u'kubernetes_role': u'apiserver'},
+    #                                                     500],
+    #                                          timestamp=1468486907)
+    #
+    #     metrics = self.check.get_metrics()
 
 
 if __name__ == '__main__':
