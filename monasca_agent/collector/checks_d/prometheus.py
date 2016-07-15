@@ -1,6 +1,11 @@
 """
 Plugin to scrape prometheus endpoint
 """
+
+# This file uses 'print' as a function rather than a statement, a la Python3
+from __future__ import print_function
+
+# Check if dependency is available
 try:
     import prometheus_client.parser as prometheus_client_parser
 except Exception:
@@ -17,6 +22,7 @@ import urllib2
 # project
 import monasca_agent.collector.checks.utils as utils
 import monasca_agent.collector.checks.services_checks as services_checks
+import monasca_agent.common.exceptions as exceptions
 
 logging.basicConfig()
 log = logging.getLogger(__name__)
@@ -39,6 +45,43 @@ class Prometheus(services_checks.ServicesCheck):
             return
         self._update_metrics(instance)
 
+    def get_metrics(self, prettyprint=False):
+        try:
+            metrics = self.aggregator.flush()
+        except ImportError:  # exceptions.Infinity:
+            # self._disabledMetrics.append(metric_name)
+            self.log.warning("Caught infinity exception in prometheus plugin.")
+
+        if prettyprint:
+            for metric in metrics:
+                print(" Timestamp:  {0}".format(metric.timestamp))
+                print(" Name:       {0}".format(metric.name))
+                print(" Value:      {0}".format(metric.value))
+                if (metric.delegated_tenant):
+                    print(" Delegate ID: {0}".format(metric.delegated_tenant))
+
+                print(" Dimensions: ", end='')
+                line = 0
+                for name in metric.dimensions:
+                    if line != 0:
+                        print(" " * 13, end='')
+                    print("{0}={1}".format(name, metric.dimensions[name]))
+                    line += 1
+
+                print(" Value Meta: ", end='')
+                if metric.value_meta:
+                    line = 0
+                    for name in metric.value_meta:
+                        if line != 0:
+                            print(" " * 13, end='')
+                        print("{0}={1}".format(name, metric.value_meta[name]))
+                        line += 1
+                else:
+                    print('None')
+                print("-" * 24)
+
+        return metrics
+
     @staticmethod
     def _convert_timestamp(timestamp):
         # convert from string '2016-03-16T16:48:59.900524303Z' to a float monasca can handle 164859.900524
@@ -49,8 +92,7 @@ class Prometheus(services_checks.ServicesCheck):
     def _update_container_metrics(self, instance, metric_name, container, metric_type=None, timestamp=None,
                                   fixed_dimensions=None):
 
-        if not self._publisher:
-            self._publisher = utils.DynamicCheckHelper(self, 'prometheus', instance['mapping'])
+        self._publisher = utils.DynamicCheckHelper(self, 'prometheus', instance['mapping'])
 
         if metric_type == 'untyped':
             metric_type = None
@@ -61,7 +103,6 @@ class Prometheus(services_checks.ServicesCheck):
                                         labels=container[1],
                                         timestamp=timestamp,
                                         fixed_dimensions=fixed_dimensions)
-
 
     def _retrieve_and_parse_metrics(self, url):
         """
@@ -88,7 +129,6 @@ class Prometheus(services_checks.ServicesCheck):
         metric_families = prometheus_client_parser.text_string_to_metric_families(str)
         return metric_families
 
-
     def _update_metrics(self, instance):
         self._publisher = utils.DynamicCheckHelper(self, 'prometheus', instance['mapping'])
         metric_families_generator = self._retrieve_and_parse_metrics(instance['url'])
@@ -100,10 +140,9 @@ class Prometheus(services_checks.ServicesCheck):
             try:
                 for container in metric_family.samples:
                     self._update_container_metrics(instance, metric_family.name, container, metric_family.type)
-            except Exception, e:
+            except Exception as e:
                 self.log.warning("Unable to collect metric: {0} for container: {1} . - {2} ".format(
                     metric_family.name, container[1].get('name'), repr(e)))
-
 
     def _update_last_ts(self, instance_name):
         utc_now = datetime.utcnow()
