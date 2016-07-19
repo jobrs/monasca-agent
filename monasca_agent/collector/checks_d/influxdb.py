@@ -114,7 +114,7 @@ class InfluxDB(services_checks.ServicesCheck):
 
         # extract required metrics per whitelisted module
         for mod, met_list in metricdef.iteritems():
-            if whitelist is None and mod not in whitelist:
+            if whitelist is not None and mod not in whitelist:
                 continue
 
             dims = dimensions.copy()
