@@ -8,7 +8,10 @@ from monasca_setup.detection.utils import find_process_name
 
 log = logging.getLogger(__name__)
 
+# default location of MySQL client
 mysql_conf = '/root/.my.cnf'
+# default socket to connect
+mysql_socket = '/var/run/mysqld/mysqld.sock'
 
 
 class MySQL(monasca_setup.detection.Plugin):
@@ -38,12 +41,23 @@ class MySQL(monasca_setup.detection.Plugin):
         config.merge(monasca_setup.detection.watch_process(['mysqld'], component='mysql'))
         log.info("\tWatching the mysqld process.")
 
-        configured_mysql = False
         # Attempt login, requires either an empty root password from localhost
         # or relying on a configured /root/.my.cnf
         if self.dependencies_installed():  # ensures MySQLdb is available
             import _mysql_exceptions
             import MySQLdb
+            # first try to connect using socket-authentication
+            # this will work if the DB has a 'mon-agent' with socket auth
+            try:
+                MySQLdb.connect(unix_socket=mysql_socket)
+                config['mysql'] = {'init_config': None, 'instances':
+                    [{'name': 'localhost', 'sock': mysql_socket}]}
+                return config
+            except _mysql_exceptions.MySQLError:
+                log.warn("\tCould not connect to mysql using credentials from {:s}".format(mysql_conf))
+                pass
+
+            # then look for a MySQL client config at the default place
             try:
                 MySQLdb.connect(read_default_file=mysql_conf)
                 log.info(
@@ -81,30 +95,26 @@ class MySQL(monasca_setup.detection.Plugin):
                 pass
 
             # Try logging in as 'root' with an empty password
-            if not configured_mysql:
-                try:
-                    MySQLdb.connect(host='localhost', port=3306, user='root')
-                    log.info("\tConfiguring plugin to connect with user root.")
-                    config['mysql'] = {'init_config': None, 'instances':
-                                       [{'name': 'localhost', 'server': 'localhost', 'user': 'root',
-                                         'port': 3306}]}
-                    configured_mysql = True
-                except _mysql_exceptions.MySQLError:
-                    log.warn("\tCould not connect to mysql using root user")
-                    pass
+            try:
+                MySQLdb.connect(host='localhost', port=3306, user='root')
+                log.info("\tConfiguring plugin to connect with user root.")
+                config['mysql'] = {'init_config': None, 'instances':
+                                   [{'name': 'localhost', 'server': 'localhost', 'user': 'root',
+                                     'port': 3306}]}
+                return config
+            except _mysql_exceptions.MySQLError:
+                log.warn("\tCould not connect to mysql using root user")
+                pass
         else:
             exception_msg = 'The mysql dependency MySQLdb is not installed;' \
                             ' the mysql plugin is not configured'
             log.error(exception_msg)
             raise Exception(exception_msg)
 
-        if not configured_mysql:
-            exception_msg = 'Unable to log into the mysql database;' \
-                            ' the mysql plugin is not configured.'
-            log.error(exception_msg)
-            raise Exception(exception_msg)
-
-        return config
+        exception_msg = 'Unable to log into the mysql database;' \
+                        ' the mysql plugin is not configured.'
+        log.error(exception_msg)
+        raise Exception(exception_msg)
 
     def dependencies_installed(self):
         try:
