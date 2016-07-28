@@ -121,13 +121,16 @@ class MonascaAPI(object):
         """
         token = self.keystone.get_token()
         if token:
+            self._failed_auth_cnt = 0
             # Create the client.
             kwargs = self.keystone.get_credential_args()
             kwargs['token'] = token
             if not self.url:
                 self.url = self.keystone.get_monasca_url()
-
             return monascaclient.client.Client(self.api_version, self.url, write_timeout=self.write_timeout, **kwargs)
+        else:
+            self._failed_auth_cnt += 0
+            self._handle_auth_fail()
 
         return None
 
@@ -142,11 +145,7 @@ class MonascaAPI(object):
                     self._failed_auth_cnt = 0
                 else:
                     self._failed_auth_cnt += 1
-                    self._failure_reason = 'The Monasca agent user {0} cannot be authenticated. '.format(self.config.get('username'))
-                    log.error(self._failure_reason)
-                    wait_time = random.randint(MonascaAPI.MIN_AUTH_BACKOFF, min(2 ** self._failed_auth_cnt * MonascaAPI.MIN_AUTH_BACKOFF, MonascaAPI.MAX_AUTH_BACKOFF))
-                    self._resume_time = time.time() + wait_time
-                    log.error("Invalid token detected. Waiting %d seconds before getting new token.", wait_time)
+                    self._handle_auth_fail()
                     return False
             else:
                 # Return without posting so the monasca client doesn't keep requesting new tokens
@@ -171,6 +170,16 @@ class MonascaAPI(object):
             self._failure_reason = 'The Monasca API is DOWN or unreachable'
 
         return False
+
+    def _handle_auth_fail(self):
+        self._failure_reason = 'The Monasca agent user {0} cannot be authenticated. '.format(
+            self.config.get('username'))
+        log.error(self._failure_reason)
+        wait_time = random.randint(MonascaAPI.MIN_AUTH_BACKOFF,
+                                   min(2 ** self._failed_auth_cnt * MonascaAPI.MIN_AUTH_BACKOFF,
+                                       MonascaAPI.MAX_AUTH_BACKOFF))
+        self._resume_time = time.time() + wait_time
+        log.error("%s: Waiting %d seconds before getting new token.", self._failure_reason, wait_time)
 
     def _queue_message(self, msg, reason):
         self.message_queue.append(msg)
