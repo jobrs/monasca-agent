@@ -58,8 +58,6 @@ DEFAULT_METRICS_DEF_0_10_3 = {
         'total_alloc': {TYPE_KEY: GAUGE, INFLUXDB_NAME_KEY: 'TotalAlloc'}}}
 DEFAULT_QUERY = 'SHOW STATS'
 DEFAULT_URL = 'http://localhost:8086'
-PARAMS = {'q': DEFAULT_QUERY}
-
 
 class InfluxDB(services_checks.ServicesCheck):
     def __init__(self, name, init_config, agent_config, instances=None):
@@ -69,8 +67,6 @@ class InfluxDB(services_checks.ServicesCheck):
     def _load_conf(self, instance):
         # Fetches the conf
         base_url = instance.get('url', DEFAULT_URL).rstrip('/')
-        username = instance.get('username', None)
-        password = instance.get('password', None)
         timeout = float(instance.get('timeout', '1'))
         headers = instance.get('headers', {})
         whitelist = instance.get('whitelist', None)
@@ -82,9 +78,9 @@ class InfluxDB(services_checks.ServicesCheck):
             self.log.info('Skipping SSL certificate validation for %s based '
                           'on configuration', base_url)
 
-        endpoint = base_url + '/query'
+        endpoint = base_url + '/debug/vars'
 
-        return endpoint, username, password, timeout, headers, whitelist, metricdef, \
+        return endpoint, timeout, headers, whitelist, metricdef, \
             collect_response_time, disable_ssl_validation
 
     def _create_status_event(self, status, msg, instance):
@@ -144,8 +140,9 @@ class InfluxDB(services_checks.ServicesCheck):
         elif metric_type == GAUGE:
             self.gauge(metric_name, float(metric_value), dimensions=dimensions)
 
+
     def _check(self, instance):
-        endpoint, username, password, timeout, headers, whitelist, metricdef, \
+        endpoint, timeout, headers, whitelist, metricdef, \
             collect_response_time, disable_ssl_validation = self._load_conf(instance)
 
         timer = util.Timer()
@@ -154,12 +151,10 @@ class InfluxDB(services_checks.ServicesCheck):
         try:
             merged_headers = headers.copy()
             merged_headers.update(util.headers(self.agent_config))
-            if username is not None and password is not None:
-                auth = (username, password)
-            else:
-                auth = None
+            auth = None
+
             self.log.debug('Query InfluxDB using GET to %s', endpoint)
-            resp = requests.get(endpoint, params=PARAMS, headers=merged_headers, auth=auth, timeout=self.timeout,
+            resp = requests.get(endpoint, headers=merged_headers, timeout=self.timeout,
                                 verify=not disable_ssl_validation)
             content = resp.json()
 
