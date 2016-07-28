@@ -34,10 +34,21 @@ class Prometheus(services_checks.ServicesCheck):
     """
     Collect metrics and events
     """
+
     def __init__(self, name, init_config, agent_config, instances=None):
         super(Prometheus, self).__init__(name, init_config, agent_config, instances)
         # last time of polling
         self._last_ts = {}
+        self._publisher = utils.DynamicCheckHelper(self)
+        self._urls = {}
+        for inst in instances:
+            url = inst['url']
+            # for Prometheus federation URLs, set the name match filter according to the mapping
+            if url.endswith('/federate'):
+                mapped_metrics = self._publisher.get_mapped_metrics(inst)
+                url += '?match[]={__name__=~"'+"|".join(mapped_metrics)+'"}'
+                log.info("Fetching from Prometheus federation URL: %s", url)
+            self._urls[inst['name']] = url
 
     def _check(self, instance):
         if prometheus_client_parser is None:
@@ -45,42 +56,23 @@ class Prometheus(services_checks.ServicesCheck):
             return
         self._update_metrics(instance)
 
+    # overriding method to catch Infinity exception
     def get_metrics(self, prettyprint=False):
+        """Get all metrics, including the ones that are tagged.
+
+        @return the list of samples
+        @rtype list of Measurement objects from monasca_agent.common.metrics
+        """
         try:
-            metrics = self.aggregator.flush()
-        except ImportError:  # exceptions.Infinity:
+            return super(Prometheus, self).get_metrics(prettyprint)
+        except exceptions.Infinity:
             # self._disabledMetrics.append(metric_name)
-            self.log.warning("Caught infinity exception in prometheus plugin.")
-
-        if prettyprint:
-            for metric in metrics:
-                print(" Timestamp:  {0}".format(metric.timestamp))
-                print(" Name:       {0}".format(metric.name))
-                print(" Value:      {0}".format(metric.value))
-                if (metric.delegated_tenant):
-                    print(" Delegate ID: {0}".format(metric.delegated_tenant))
-
-                print(" Dimensions: ", end='')
-                line = 0
-                for name in metric.dimensions:
-                    if line != 0:
-                        print(" " * 13, end='')
-                    print("{0}={1}".format(name, metric.dimensions[name]))
-                    line += 1
-
-                print(" Value Meta: ", end='')
-                if metric.value_meta:
-                    line = 0
-                    for name in metric.value_meta:
-                        if line != 0:
-                            print(" " * 13, end='')
-                        print("{0}={1}".format(name, metric.value_meta[name]))
-                        line += 1
-                else:
-                    print('None')
-                print("-" * 24)
-
-        return metrics
+            self.log.exception("Caught infinity exception in prometheus plugin.")
+            if not prettyprint:
+                self.log.error("More dimensions needs to be mapped in order to resolve clashing measurements")
+                return self.get_metrics(True)
+            else:
+                return []
 
     @staticmethod
     def _convert_timestamp(timestamp):
@@ -91,8 +83,6 @@ class Prometheus(services_checks.ServicesCheck):
 
     def _update_container_metrics(self, instance, metric_name, container, metric_type=None, timestamp=None,
                                   fixed_dimensions=None):
-
-        self._publisher = utils.DynamicCheckHelper(self, 'prometheus', instance['mapping'])
 
         if metric_type == 'untyped':
             metric_type = None
@@ -130,7 +120,6 @@ class Prometheus(services_checks.ServicesCheck):
         return metric_families
 
     def _update_metrics(self, instance):
-        self._publisher = utils.DynamicCheckHelper(self, 'prometheus', instance['mapping'])
         metric_families_generator = self._retrieve_and_parse_metrics(instance['url'])
 
         if not metric_families_generator:

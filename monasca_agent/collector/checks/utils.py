@@ -72,7 +72,7 @@ class DynamicCheckHelper:
 
         return result
 
-    def __init__(self, check, prefix, default_mapping=None):
+    def __init__(self, check, prefix=None, default_mapping=None):
         """
         :param check: Target check instance to filter and map metrics from a separate data source. The mapping
         procedure involves a filtering, renaming and classification of metrics and filtering and mapping of
@@ -380,7 +380,10 @@ class DynamicCheckHelper:
         if metric_type == SKIP:
             return False
 
-        metric_prefix = self._prefix + '.'
+        if self._prefix:
+            metric_prefix = self._prefix + '.'
+        else:
+            metric_prefix = ''
         if group:
             metric_prefix += group + '.'
         metric_name = metric_prefix + metric_name
@@ -396,6 +399,26 @@ class DynamicCheckHelper:
             self._check.gauge(metric_name, float(value), timestamp=timestamp, dimensions=dims)
 
         return True
+
+    def get_mapped_metrics(self, instance):
+        """
+        Return input metric names or regex for which a mapping has been defined
+        :param instance: instance to consider
+        :return: array of metrics
+        """
+        list = []
+        iname=instance['name']
+        # collect level-0 metrics
+        metric_map = self._metric_map[iname]
+        list.append(metric_map.get('gauges', []))
+        list.append(metric_map.get('rates', []))
+        # collect group specific metrics
+        grp_metric_map = self._grp_metric_map[iname]
+        for gname, gmmap in grp_metric_map.iteritems():
+            list.append(gmmap.get('gauges', []))
+            list.append(gmmap.get('rates', []))
+
+        return list
 
     def _map_dimensions(self, default_dimensions, group, instance_name, labels):
         dims = default_dimensions.copy()
