@@ -139,9 +139,9 @@ class MonascaAPI(object):
                 # Get a new keystone client and token
                 if self.keystone.refresh_token():
                     self.mon_client.replace_token(self.keystone.get_token())
-                    self._failed_auth_cnt=0
+                    self._failed_auth_cnt = 0
                 else:
-                    self._failed_auth_cnt++
+                    self._failed_auth_cnt += 1
                     self._failure_reason = 'The Monasca agent user {0} cannot be authenticated. '.format(self.config.get('username'))
                     log.error(self._failure_reason)
                     wait_time = random.randint(MonascaAPI.MIN_AUTH_BACKOFF, min(2 ** self._failed_auth_cnt * MonascaAPI.MIN_AUTH_BACKOFF, MonascaAPI.MAX_AUTH_BACKOFF))
