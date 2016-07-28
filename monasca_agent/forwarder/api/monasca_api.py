@@ -22,6 +22,8 @@ class MonascaAPI(object):
     LOG_INTERVAL = 10  # messages
     MIN_BACKOFF = 10   # seconds
     MAX_BACKOFF = 60   # seconds
+    MIN_AUTH_BACKOFF = 60   # seconds to wait after failed authentications (wrong password, locked user, no role)
+    MAX_AUTH_BACKOFF = 60*15   # max. time to wait (limit for exponential backoff)
 
     def __init__(self, config):
         """Initialize Mon api client connection."""
@@ -32,6 +34,7 @@ class MonascaAPI(object):
         self.mon_client = None
         self._failure_reason = None
         self._resume_time = None
+        self._failed_auth_cnt = 0
         self.max_buffer_size = int(config['max_buffer_size'])
         self.backlog_send_rate = int(config['backlog_send_rate'])
         self.message_queue = collections.deque(maxlen=self.max_buffer_size)
@@ -136,6 +139,15 @@ class MonascaAPI(object):
                 # Get a new keystone client and token
                 if self.keystone.refresh_token():
                     self.mon_client.replace_token(self.keystone.get_token())
+                    self._failed_auth_cnt=0
+                else:
+                    self._failed_auth_cnt++
+                    self._failure_reason = 'The Monasca agent user {0} cannot be authenticated. '.format(self.config.get('username'))
+                    log.error(self._failure_reason)
+                    wait_time = random.randint(MonascaAPI.MIN_AUTH_BACKOFF, min(2 ** self._failed_auth_cnt * MonascaAPI.MIN_AUTH_BACKOFF, MonascaAPI.MAX_AUTH_BACKOFF))
+                    self._resume_time = time.time() + wait_time
+                    log.error("Invalid token detected. Waiting %d seconds before getting new token.", wait_time)
+                    return False
             else:
                 # Return without posting so the monasca client doesn't keep requesting new tokens
                 return False
