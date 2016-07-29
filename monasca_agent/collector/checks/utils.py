@@ -9,6 +9,8 @@ from monasca_agent.collector.checks import AgentCheck
 from monasca_agent.collector.checks.check import Check
 from monasca_agent.common.exceptions import CheckException
 
+NOT_FOUND = "__NOT_FOUND__"
+
 log = logging.getLogger(__name__)
 normalizer_re = re.sub
 GAUGE = 1
@@ -137,12 +139,14 @@ class DynamicCheckHelper:
         """
         self._check = check
         self._prefix = prefix
+        self._groups = {}
         self._metric_map = {}
         self._dimension_map = {}
         self._metric_cache = {}
         self._grp_metric_map = {}
         self._grp_dimension_map = {}
         self._grp_metric_cache = {}
+        self._metric_to_group = {}
         for inst in self._check.instances:
             iname = inst['name']
             mappings = inst.get('mapping', default_mapping)
@@ -154,10 +158,12 @@ class DynamicCheckHelper:
                 self._dimension_map[iname] = DynamicCheckHelper._build_dimension_map(mappings)
                 # check if groups are used
                 groups = mappings.get('groups')
+                self._groups[iname] = groups
                 if groups:
                     self._grp_metric_map[iname] = {}
                     self._grp_metric_cache[iname] = {}
                     self._grp_dimension_map[iname] = {}
+                    self._metric_to_group[iname] = {}
                     for grp, gspec in groups.iteritems():
                         self._grp_metric_map[iname][grp] = DynamicCheckHelper._build_metric_map(gspec)
                         self._grp_metric_cache[iname][grp] = {}
@@ -180,11 +186,25 @@ class DynamicCheckHelper:
         if group:
             metric_cache = self._grp_metric_cache[instance_name].get(group, {})
             metric_map = self._grp_metric_map[instance_name].get(group, {})
+            return DynamicCheckHelper._lookup_metric(metric, metric_cache, metric_map)
         else:
+            g = self._metric_to_group[instance_name].get(metric)
+            if g and g != NOT_FOUND:
+                return self._fetch_metric_spec(instance, metric, g)
+
             metric_cache = self._metric_cache[instance_name]
             metric_map = self._metric_map[instance_name]
 
-        return DynamicCheckHelper._lookup_metric(metric, metric_cache, metric_map)
+            spec = DynamicCheckHelper._lookup_metric(metric, metric_cache, metric_map)
+            if not spec:
+                for g in self._groups[instance_name]:
+                    spec = self._fetch_metric_spec(instance, metric, g)
+                    if spec:
+                        self._metric_to_group[instance_name][metric] = g
+                        break
+            self._metric_to_group[instance_name][metric] = NOT_FOUND
+            return spec
+
 
     def is_enabled_metric(self, instance, metric, group=None):
         type, _ = self._fetch_metric_spec(instance, metric, group)
@@ -374,7 +394,7 @@ class DynamicCheckHelper:
         :param metric: metric as reported from metric data source (before mapping)
         :param labels: labels/tags as reported from the metric data source (before mapping)
         :param timestamp: optional timestamp to handle rates properly
-        :param group: optional metric group, will be used as dot-separated prefix
+        :param group: specify the metric group, otherwise it will be determined from the metric name
         :param fixed_dimensions:
         :param default_dimensions:
         """
@@ -463,7 +483,6 @@ class DynamicCheckHelper:
     def _lookup_metric(metric, metric_cache, metric_map):
         metric_entry = metric_cache.get(metric)
         if metric_entry is None:
-            groups = None
             all_gauges_re = metric_map.get('gauges', [])
             for rx in all_gauges_re:
                 groups = re.match(rx, metric)
@@ -472,7 +491,7 @@ class DynamicCheckHelper:
                     metric_cache[metric] = metric_entry
                     return metric_entry['type'], metric_entry['name']
             all_rates_re = metric_map.get('rates', [])
-            groups = None
+            groups=None
             for rx in all_rates_re:
                 groups = re.match(rx, metric)
                 if groups:
