@@ -410,13 +410,13 @@ class DynamicCheckHelper:
         iname=instance['name']
         # collect level-0 metrics
         metric_map = self._metric_map[iname]
-        list.append(metric_map.get('gauges', []))
-        list.append(metric_map.get('rates', []))
+        list.extend(metric_map.get('gauges', []))
+        list.extend(metric_map.get('rates', []))
         # collect group specific metrics
         grp_metric_map = self._grp_metric_map.get(iname, {})
         for gname, gmmap in grp_metric_map.iteritems():
-            list.append(gmmap.get('gauges', []))
-            list.append(gmmap.get('rates', []))
+            list.extend(gmmap.get('gauges', []))
+            list.extend(gmmap.get('rates', []))
 
         return list
 
