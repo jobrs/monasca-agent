@@ -112,6 +112,9 @@ class DynamicCheckHelper:
                source_key: <source_key>             # key as provided by metric source
                regex: <mapping_pattern>             # regular expression with a single match-group in braces
 
+            The regex is applied to the dimension value. The match-group denotes the extracted part of the dimension
+            value. The rest is ignored
+
         Example:
 
         instances:
@@ -121,7 +124,7 @@ class DynamicCheckHelper:
                     pod_name: io.kubernetes.pod.name    # simple mapping
                     pod_basename:
                         source_key: label_name
-                        regex: k8s_.*_.*\._(.*)_[0-9a-z\-]*
+                        regex: 'k8s_.*_.*\._(.*)_[0-9a-z\-]*'
                 rates:
                 - io.*
                 gauges:

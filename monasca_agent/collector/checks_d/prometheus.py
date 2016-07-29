@@ -46,7 +46,7 @@ class Prometheus(services_checks.ServicesCheck):
             # for Prometheus federation URLs, set the name match filter according to the mapping
             if url.endswith('/federate'):
                 mapped_metrics = self._publisher.get_mapped_metrics(inst)
-                url += '?match[]={__name__=~"'+("|".join(mapped_metrics))+'"}'
+                url += '?match[]={__name__=~"' + ("|".join(mapped_metrics)) + '"}'
                 log.info("Fetching from Prometheus federation URL: %s", url)
             self._urls[inst['name']] = url
 
@@ -87,12 +87,12 @@ class Prometheus(services_checks.ServicesCheck):
         if metric_type == 'untyped':
             metric_type = None
 
-            self._publisher.push_metric(instance,
-                                        metric=metric_name,
-                                        value=container[2],
-                                        labels=container[1],
-                                        timestamp=timestamp,
-                                        fixed_dimensions=fixed_dimensions)
+        self._publisher.push_metric(instance,
+                                    metric=metric_name,
+                                    value=container[2],
+                                    labels=container[1],
+                                    timestamp=timestamp,
+                                    fixed_dimensions=fixed_dimensions)
 
     def _retrieve_and_parse_metrics(self, url):
         """
@@ -120,7 +120,7 @@ class Prometheus(services_checks.ServicesCheck):
         return metric_families
 
     def _update_metrics(self, instance):
-        metric_families_generator = self._retrieve_and_parse_metrics(instance['url'])
+        metric_families_generator = self._retrieve_and_parse_metrics(self._urls[instance['name']])
 
         if not metric_families_generator:
             raise Exception('No metrics retrieved cmd=%s' % self.metrics_cmd)
