@@ -630,6 +630,7 @@ def load_check_directory():
             except TypeError as e:
                 # Backwards compatibility for checks which don't support the
                 # instances argument in the constructor.
+                log.exception('Deprecated constructor in check %s - retrying', check_name)
                 c = check_class(check_name, init_config=init_config,
                                 agent_config=agent_config)
                 c.instances = instances
