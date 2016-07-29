@@ -56,17 +56,17 @@ class TestPrometheusClientScraping(unittest.TestCase):
 
         # check parsed metrics
         self.assertTrue(metrics)
-        self.assertTrue('prometheus.apiserver_request_count' in metric_family_names)
-        self.assertEqual([i.value for i in metrics if i.name == 'prometheus.apiserver_request_count'][0], 403)
+        self.assertTrue('apiserver_request_count' in metric_family_names)
+        self.assertEqual([i.value for i in metrics if i.name == 'apiserver_request_count'][0], 403)
         self.assertEqual(
-            [i.dimensions['instance'] for i in metrics if i.name == 'prometheus.apiserver_request_count'][0],
+            [i.dimensions['instance'] for i in metrics if i.name == 'apiserver_request_count'][0],
             u'kubernetes.default:443')
 
-        self.assertTrue('prometheus.apiserver_request_latencies_bucket' in metric_family_names)
-        self.assertEqual([i.value for i in metrics if i.name == 'prometheus.apiserver_request_latencies_bucket'][0],
+        self.assertTrue('apiserver_request_latencies_bucket' in metric_family_names)
+        self.assertEqual([i.value for i in metrics if i.name == 'apiserver_request_latencies_bucket'][0],
                          443394)
         self.assertEqual(
-            [i.dimensions['component'] for i in metrics if i.name == 'prometheus.apiserver_request_latencies_bucket'][
+            [i.dimensions['component'] for i in metrics if i.name == 'apiserver_request_latencies_bucket'][
                 0],
             'apiserver')
 
