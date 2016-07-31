@@ -6,32 +6,59 @@ import time
 # project
 from monasca_agent.collector.checks_d.prometheus import Prometheus
 
+dir = os.getcwd()
+prometheus_metrics_t0 = "file://" + os.path.join(dir, 'prometheus_metrics_t0')
+prometheus_metrics_t1 = "https://prometheus.staging.cloud.sap/federate"
+
+LOCAL_CONFIG = {'name': 'prometheus-federate',
+                'url': prometheus_metrics_t0,  # pass in sample prometheus metrics via file
+                'mapping': {
+                    'gauges': ['apiserver_request_count',
+                               'apiserver_request_latencies_summary_sum',
+                               'apiserver_request_latencies_bucket',
+                               'apiserver_sample_rate'],
+                    'rates': ['apiserver_sample_rate'],
+                    'dimensions': {
+                        'resource': 'resource',
+                        'verb': 'verb',
+                        'instance': 'instance',
+                        'component': 'kubernetes_role',
+                        'service': 'job'
+                    }
+                }}
+
+FEDERATE_CONFIG = {'name': 'Prometheus',
+                   'url': prometheus_metrics_t1,  # pass in sample prometheus metrics via file
+                   'mapping': {
+                       'dimensions': {
+                           'resource': 'resource',
+                           'kubernetes.namespace': 'kubernetes_namespace',
+                           'kubernetes.pod_name': 'kubernetes_pod_name'
+                       },
+                       'groups': {
+                           'dns.bind': {
+                               'gauges': ['bind_(up)'],
+                               'rates': ['bind_(incoming_queries)_total', 'bind_(responses)_total'],
+                               'dimensions': {
+                                   "kubernetes.container_name": "kubernetes_name"
+                               },
+                           }
+                       }
+                   }}
+
 METRICS_FAMILIES = ["container_cpu_system_seconds_total",
                     "container_cpu_usage_seconds_total",
                     "container_fs_io_time_seconds_total",
                     "container_fs_write_seconds_total"]
 
-dir = os.getcwd()
-prometheus_metrics_t0 = "file://" + os.path.join(dir, 'prometheus_metrics_t0')
+CONFIG = {'init_config': {}, 'instances': [LOCAL_CONFIG]}
 
-CONFIG = {'init_config': {}, 'instances': [{'name': 'prometheus-federate',
-                                            'url': prometheus_metrics_t0,  # pass in sample prometheus metrics via file
-                                            'mapping': {
-                                                'gauges': ['apiserver_request_count',
-                                                           'apiserver_request_latencies_summary_sum',
-                                                           'apiserver_request_latencies_bucket',
-                                                           'apiserver_sample_rate'],
-                                                'rates': ['apiserver_sample_rate'],
-                                                'dimensions': {
-                                                    'resource': 'resource',
-                                                    'verb': 'verb',
-                                                    'instance': 'instance',
-                                                    'component': 'kubernetes_role',
-                                                    'service': 'job'
-                                                }
-                                            }}]
-          }
 
+# kubernetes:
+# gauges: ['(container_start_time_sec)onds', 'container_memory_usage_bytes']
+# rates: ['(container_cpu_usage_sec)onds_total', '(container_network_.*_packages)_total']
+# dimensions:
+# kubernetes.container_name: kubernetes_container_name
 
 class TestPrometheusClientScraping(unittest.TestCase):
     def setUp(self):
