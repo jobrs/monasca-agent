@@ -1,0 +1,1046 @@
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",cpu="cpu32",id="/",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node"} 31296.492658532 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion1.cc.staging.cloud.sap",species="hypervisor",instance="minion1.cc.staging.cloud.sap",job="kubernetes-cluster",cpu="cpu15",id="/",zone="petting-zoo",kubernetes_role="node"} 814.382860411 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu04",id="/"} 57676.953967453 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu57",id="/",zone="farm",kubernetes_role="node"} 10036.224618879 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",cpu="cpu13",id="/",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap"} 27756.176231261 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu26",id="/",zone="farm",job="kubernetes-cluster"} 14935.074870375 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",zone="petting-zoo",instance="network0.cc.staging.cloud.sap",species="network",kubernetes_role="node",cpu="cpu71",id="/",kubernetes_io_hostname="network0.cc.staging.cloud.sap"} 806.75907179 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="network0.cc.staging.cloud.sap",zone="petting-zoo",job="kubernetes-cluster",kubernetes_io_hostname="network0.cc.staging.cloud.sap",id="/",species="network",kubernetes_role="node",cpu="cpu68"} 743.576807204 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",cpu="cpu39",id="/"} 27171.266872189 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",cpu="cpu24",id="/"} 15311.927092678 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network1.cc.staging.cloud.sap",instance="network1.cc.staging.cloud.sap",zone="petting-zoo",job="kubernetes-cluster",species="network",cpu="cpu49",kubernetes_role="node",id="/"} 854.641768357 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network1.cc.staging.cloud.sap",zone="petting-zoo",species="network",cpu="cpu56",job="kubernetes-cluster",id="/",instance="network1.cc.staging.cloud.sap",kubernetes_role="node"} 718.408080405 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",cpu="cpu26",id="/",job="kubernetes-cluster"} 31656.121063306 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",cpu="cpu67",id="/",job="kubernetes-cluster",zone="farm",kubernetes_role="node"} 12472.838995684 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",cpu="cpu47",kubernetes_io_hostname="network0.cc.staging.cloud.sap",kubernetes_role="node",species="network",id="/",instance="network0.cc.staging.cloud.sap",job="kubernetes-cluster"} 969.038646532 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",cpu="cpu21"} 38756.82444299 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu33",id="/",species="network",kubernetes_io_hostname="network0.cc.staging.cloud.sap",job="kubernetes-cluster",zone="petting-zoo",kubernetes_role="node",instance="network0.cc.staging.cloud.sap"} 900.274800618 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu74",id="/"} 9363.71139645 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="hypervisor",job="kubernetes-cluster",id="/",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",instance="minion1.cc.staging.cloud.sap",zone="petting-zoo",cpu="cpu39",kubernetes_role="node"} 792.915451945 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",zone="farm",kubernetes_role="node",cpu="cpu52",id="/",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap"} 9071.195666812 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",cpu="cpu24",id="/",job="kubernetes-cluster",zone="farm",kubernetes_role="node"} 32670.90034386 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",cpu="cpu11"} 29293.69536597 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network0.cc.staging.cloud.sap",instance="network0.cc.staging.cloud.sap",kubernetes_role="node",id="/",species="network",job="kubernetes-cluster",cpu="cpu24",zone="petting-zoo"} 1118.469766291 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu78"} 9199.157064199 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion1.cc.staging.cloud.sap",zone="petting-zoo",cpu="cpu72",id="/",species="hypervisor",job="kubernetes-cluster",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",kubernetes_role="node"} 664.291609108 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu64",id="/",job="kubernetes-cluster",instance="network1.cc.staging.cloud.sap",kubernetes_io_hostname="network1.cc.staging.cloud.sap",kubernetes_role="node",species="network",zone="petting-zoo"} 826.393778994 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu00",id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm"} 122515.958870137 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",kubernetes_role="node",job="kubernetes-cluster",cpu="cpu16",species="network",instance="network0.cc.staging.cloud.sap",zone="petting-zoo",kubernetes_io_hostname="network0.cc.staging.cloud.sap"} 930.114896118 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",id="/",kubernetes_role="node",cpu="cpu71",instance="minion1.cc.staging.cloud.sap",species="hypervisor",zone="petting-zoo"} 800.947194581 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",cpu="cpu55",id="/",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",zone="farm"} 4953.052421334 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",cpu="cpu37",id="/",zone="farm"} 29577.950757671 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",kubernetes_role="node",instance="network0.cc.staging.cloud.sap",species="network",job="kubernetes-cluster",cpu="cpu46",kubernetes_io_hostname="network0.cc.staging.cloud.sap",id="/"} 971.722885647 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node",cpu="cpu14",id="/",job="kubernetes-cluster"} 26700.310373798 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu36"} 28474.573220116 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node",cpu="cpu23",id="/"} 33326.417179079 1469979584853
+# TYPE bind_responses_total untyped
+bind_responses_total{job="kubernetes-service-endpoints",result="Nxrrset",kubernetes_namespace="dns",kubernetes_name="bind2",instance="100.66.0.12:9119",kubernetes_role="endpoint"} 0 1469979577252
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network1.cc.staging.cloud.sap",kubernetes_role="node",job="kubernetes-cluster",zone="petting-zoo",instance="network1.cc.staging.cloud.sap",species="network",cpu="cpu41",id="/"} 1102.091709317 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion1.cc.staging.cloud.sap",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",zone="petting-zoo",id="/",job="kubernetes-cluster",species="hypervisor",cpu="cpu31",kubernetes_role="node"} 980.071549241 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu60",id="/"} 12885.312527931 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",cpu="cpu03",id="/",instance="network0.cc.staging.cloud.sap",kubernetes_io_hostname="network0.cc.staging.cloud.sap",species="network",job="kubernetes-cluster",kubernetes_role="node"} 5666.732506084 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network1.cc.staging.cloud.sap",zone="petting-zoo",id="/",job="kubernetes-cluster",species="network",cpu="cpu48",instance="network1.cc.staging.cloud.sap",kubernetes_role="node"} 907.851149394 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",kubernetes_io_hostname="network0.cc.staging.cloud.sap",id="/",zone="petting-zoo",kubernetes_role="node",cpu="cpu32",instance="network0.cc.staging.cloud.sap",species="network"} 918.418699672 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network0.cc.staging.cloud.sap",species="network",cpu="cpu44",instance="network0.cc.staging.cloud.sap",zone="petting-zoo",id="/",kubernetes_role="node",job="kubernetes-cluster"} 1057.105504148 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu36"} 15464.459251056 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu54",id="/",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node"} 9163.390793483 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion1.cc.staging.cloud.sap",job="kubernetes-cluster",id="/",species="hypervisor",kubernetes_role="node",zone="petting-zoo",cpu="cpu19",instance="minion1.cc.staging.cloud.sap"} 729.242897146 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu22",id="/",zone="farm"} 32229.878460925 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion1.cc.staging.cloud.sap",species="hypervisor",job="kubernetes-cluster",zone="petting-zoo",kubernetes_role="node",id="/",instance="minion1.cc.staging.cloud.sap",cpu="cpu42"} 494.162363095 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",id="/",instance="network1.cc.staging.cloud.sap",zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap",cpu="cpu04",kubernetes_role="node",species="network"} 2703.359518283 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node",cpu="cpu19",id="/"} 26672.733412962 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion1.cc.staging.cloud.sap",species="hypervisor",id="/",job="kubernetes-cluster",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",cpu="cpu65",zone="petting-zoo",kubernetes_role="node"} 475.590709152 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",cpu="cpu43"} 21898.479362992 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu76",id="/",zone="farm"} 9609.411360247 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="network1.cc.staging.cloud.sap",id="/",job="kubernetes-cluster",species="network",cpu="cpu76",kubernetes_role="node",zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap"} 832.104740002 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion1.cc.staging.cloud.sap",zone="petting-zoo",cpu="cpu36",species="hypervisor",id="/",job="kubernetes-cluster",instance="minion1.cc.staging.cloud.sap",kubernetes_role="node"} 859.220075236 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu22"} 35371.972429254 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",kubernetes_role="node",species="hypervisor",job="kubernetes-cluster",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",cpu="cpu49",zone="petting-zoo",instance="minion1.cc.staging.cloud.sap"} 671.106316757 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",kubernetes_role="node",cpu="cpu72",id="/",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap"} 9871.468430179 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu49",id="/",zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap"} 29600.42990036 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",zone="farm",cpu="cpu43",id="/",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap"} 11465.635325626 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",cpu="cpu29"} 14339.568814652 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu56",id="/",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm"} 11208.331567326 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu09",id="/",zone="farm",job="kubernetes-cluster"} 54886.476763607 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",cpu="cpu54",id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap"} 4938.852033281 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu46",id="/",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster"} 21551.447965135 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu02"} 114826.093500053 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",instance="network1.cc.staging.cloud.sap",kubernetes_role="node",species="network",id="/",kubernetes_io_hostname="network1.cc.staging.cloud.sap",zone="petting-zoo",cpu="cpu66"} 691.063489476 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",kubernetes_role="node",cpu="cpu05",id="/",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster"} 65051.884241931 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",species="network",id="/",kubernetes_io_hostname="network0.cc.staging.cloud.sap",instance="network0.cc.staging.cloud.sap",cpu="cpu57",kubernetes_role="node",job="kubernetes-cluster"} 662.755008209 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",id="/",species="network",job="kubernetes-cluster",cpu="cpu55",instance="network0.cc.staging.cloud.sap",kubernetes_io_hostname="network0.cc.staging.cloud.sap",kubernetes_role="node"} 731.66148954 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu45",job="kubernetes-cluster",id="/",species="network",kubernetes_io_hostname="network0.cc.staging.cloud.sap",zone="petting-zoo",kubernetes_role="node",instance="network0.cc.staging.cloud.sap"} 1030.420225655 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu32",id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node"} 33517.152138882 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu67",id="/"} 4560.599483831 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu45",id="/"} 30091.755570893 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",cpu="cpu44",id="/",kubernetes_io_hostname="master1.cc.staging.cloud.sap"} 11529.91152941 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",id="/",job="kubernetes-cluster",cpu="cpu75",species="network",zone="petting-zoo",kubernetes_io_hostname="network0.cc.staging.cloud.sap",instance="network0.cc.staging.cloud.sap"} 804.30522698 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu26",id="/",zone="farm"} 29556.597448291 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",instance="network1.cc.staging.cloud.sap",species="network",kubernetes_role="node",cpu="cpu72",id="/",zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap"} 949.610113755 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu72",id="/",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",zone="farm"} 4161.257912892 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",id="/",instance="network1.cc.staging.cloud.sap",job="kubernetes-cluster",cpu="cpu07",zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap",species="network"} 2069.634202608 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu46",id="/",zone="farm",job="kubernetes-cluster"} 11517.999633258 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="hypervisor",zone="petting-zoo",job="kubernetes-cluster",kubernetes_role="node",instance="minion1.cc.staging.cloud.sap",cpu="cpu63",id="/",kubernetes_io_hostname="minion1.cc.staging.cloud.sap"} 482.651896439 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",cpu="cpu37",id="/"} 15332.762461078 1469979583329
+# TYPE container_memory_usage_bytes untyped
+container_memory_usage_bytes{id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node"} 8.6547124224e+10 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu77",id="/",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap"} 4550.750141839 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",cpu="cpu48",id="/",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm"} 29677.017183667 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",zone="farm",job="kubernetes-cluster",cpu="cpu01",id="/"} 62773.460107057 1469979583329
+# TYPE bind_responses_total untyped
+bind_responses_total{job="kubernetes-service-endpoints",kubernetes_role="endpoint",result="Nxrrset",kubernetes_namespace="dns",instance="100.68.0.12:9119",kubernetes_name="bind1"} 0 1469979598790
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu42",id="/",species="network",zone="petting-zoo",kubernetes_role="node",job="kubernetes-cluster",kubernetes_io_hostname="network0.cc.staging.cloud.sap",instance="network0.cc.staging.cloud.sap"} 2440.833910024 1469979592373
+# TYPE bind_responses_total untyped
+bind_responses_total{instance="10.45.26.137:8080",result="Referral",kubernetes_name="bind3",job="bind3-eu-de-1"} 717 1469979626961
+# TYPE bind_responses_total untyped
+bind_responses_total{kubernetes_role="endpoint",result="Success",job="kubernetes-service-endpoints",kubernetes_namespace="dns",kubernetes_name="bind2",instance="100.66.0.12:9119"} 0 1469979577252
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",zone="petting-zoo",cpu="cpu69",job="kubernetes-cluster",kubernetes_role="node",species="network",instance="network1.cc.staging.cloud.sap",kubernetes_io_hostname="network1.cc.staging.cloud.sap"} 708.522819491 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",cpu="cpu34",id="/",instance="minion1.cc.staging.cloud.sap",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",species="hypervisor",zone="petting-zoo",kubernetes_role="node"} 936.538596781 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",zone="farm",kubernetes_role="node",cpu="cpu09",id="/",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap"} 57906.903728567 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network1.cc.staging.cloud.sap",cpu="cpu42",zone="petting-zoo",species="network",kubernetes_role="node",id="/",job="kubernetes-cluster",instance="network1.cc.staging.cloud.sap"} 747.238171413 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="hypervisor",kubernetes_role="node",cpu="cpu64",job="kubernetes-cluster",instance="minion1.cc.staging.cloud.sap",zone="petting-zoo",id="/",kubernetes_io_hostname="minion1.cc.staging.cloud.sap"} 496.292131151 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="network0.cc.staging.cloud.sap",kubernetes_io_hostname="network0.cc.staging.cloud.sap",cpu="cpu50",species="network",job="kubernetes-cluster",kubernetes_role="node",zone="petting-zoo",id="/"} 725.673515352 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="network1.cc.staging.cloud.sap",id="/",zone="petting-zoo",job="kubernetes-cluster",kubernetes_io_hostname="network1.cc.staging.cloud.sap",cpu="cpu35",kubernetes_role="node",species="network"} 1787.734050394 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu30",id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node"} 21315.461304521 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu56",id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm"} 9341.215540259 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="network",kubernetes_io_hostname="network1.cc.staging.cloud.sap",cpu="cpu51",instance="network1.cc.staging.cloud.sap",kubernetes_role="node",id="/",job="kubernetes-cluster",zone="petting-zoo"} 1335.206970897 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",job="kubernetes-cluster",zone="petting-zoo",species="network",instance="network0.cc.staging.cloud.sap",cpu="cpu79",id="/",kubernetes_io_hostname="network0.cc.staging.cloud.sap"} 787.263297888 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",job="kubernetes-cluster",cpu="cpu20",id="/",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",kubernetes_role="node",instance="minion1.cc.staging.cloud.sap",species="hypervisor"} 1045.08316894 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu03",id="/",zone="farm"} 58833.205305034 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",cpu="cpu33",id="/",kubernetes_role="node",zone="farm",job="kubernetes-cluster"} 15745.420116225 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="network",kubernetes_io_hostname="network1.cc.staging.cloud.sap",instance="network1.cc.staging.cloud.sap",kubernetes_role="node",id="/",cpu="cpu60",zone="petting-zoo",job="kubernetes-cluster"} 760.304194615 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu16",id="/",instance="master2.cc.staging.cloud.sap"} 27107.293961591 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu21",id="/"} 34149.905144665 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu30",instance="network0.cc.staging.cloud.sap",kubernetes_io_hostname="network0.cc.staging.cloud.sap",kubernetes_role="node",id="/",zone="petting-zoo",species="network",job="kubernetes-cluster"} 1180.164925601 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",cpu="cpu19",id="/",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",zone="farm"} 14896.206895933 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu63",id="/"} 12839.096651464 1469979584853
+# TYPE container_start_time_seconds untyped
+container_start_time_seconds{zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster"} 1.468939642e+09 1469979584853
+# TYPE bind_responses_total untyped
+bind_responses_total{job="kubernetes-service-endpoints",kubernetes_role="endpoint",kubernetes_namespace="dns",result="NXDOMAIN",instance="100.68.0.12:9119",kubernetes_name="bind1"} 0 1469979598790
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu49",id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap"} 11437.428651312 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",cpu="cpu34",kubernetes_role="node",species="network",zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap",instance="network1.cc.staging.cloud.sap",job="kubernetes-cluster"} 1980.25181451 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",cpu="cpu23",id="/",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm"} 31206.294707477 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",cpu="cpu22",zone="petting-zoo",id="/",kubernetes_io_hostname="network1.cc.staging.cloud.sap",job="kubernetes-cluster",species="network",instance="network1.cc.staging.cloud.sap"} 1350.175023153 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu18",id="/",zone="farm"} 23903.859438418 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",id="/",cpu="cpu70",species="network",kubernetes_io_hostname="network0.cc.staging.cloud.sap",job="kubernetes-cluster",kubernetes_role="node",instance="network0.cc.staging.cloud.sap"} 870.341838441 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="network",instance="network1.cc.staging.cloud.sap",cpu="cpu16",id="/",zone="petting-zoo",job="kubernetes-cluster",kubernetes_role="node",kubernetes_io_hostname="network1.cc.staging.cloud.sap"} 1180.767380128 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",zone="farm",job="kubernetes-cluster",cpu="cpu22"} 16234.494907842 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",species="hypervisor",kubernetes_role="node",instance="minion1.cc.staging.cloud.sap",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",cpu="cpu51",id="/",zone="petting-zoo"} 760.789893127 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu33",id="/",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node"} 30130.902217508 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu79",id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap"} 9141.640412297 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu50",id="/"} 4901.635885637 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu07",id="/",instance="master2.cc.staging.cloud.sap"} 60850.073885775 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",cpu="cpu73",id="/"} 9292.3892621 1469979584853
+# TYPE bind_responses_total untyped
+bind_responses_total{instance="10.45.26.137:8080",result="FORMERR",kubernetes_name="bind3",job="bind3-eu-de-1"} 0 1469979626961
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu20",instance="network0.cc.staging.cloud.sap",zone="petting-zoo",kubernetes_role="node",kubernetes_io_hostname="network0.cc.staging.cloud.sap",species="network",id="/",job="kubernetes-cluster"} 1533.120113897 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",zone="farm",job="kubernetes-cluster",cpu="cpu42",id="/",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap"} 11597.293337995 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="network1.cc.staging.cloud.sap",zone="petting-zoo",job="kubernetes-cluster",species="network",kubernetes_role="node",kubernetes_io_hostname="network1.cc.staging.cloud.sap",cpu="cpu61",id="/"} 918.255508388 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu07",species="hypervisor",job="kubernetes-cluster",instance="minion1.cc.staging.cloud.sap",id="/",zone="petting-zoo",kubernetes_role="node",kubernetes_io_hostname="minion1.cc.staging.cloud.sap"} 1687.647463128 1469979587194
+# TYPE bind_up untyped
+bind_up{kubernetes_name="bind1",job="kubernetes-service-endpoints",kubernetes_role="endpoint",kubernetes_namespace="dns",instance="100.68.0.12:9119"} 1 1469979598790
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node",job="kubernetes-cluster",cpu="cpu64",id="/"} 11512.196654811 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu27",id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap"} 14868.720861799 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="network",kubernetes_role="node",kubernetes_io_hostname="network0.cc.staging.cloud.sap",id="/",job="kubernetes-cluster",instance="network0.cc.staging.cloud.sap",zone="petting-zoo",cpu="cpu02"} 5197.423986743 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu69"} 11254.265991759 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion1.cc.staging.cloud.sap",cpu="cpu16",species="hypervisor",kubernetes_role="node",id="/",job="kubernetes-cluster",zone="petting-zoo",instance="minion1.cc.staging.cloud.sap"} 782.461496533 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu54",instance="network0.cc.staging.cloud.sap",kubernetes_io_hostname="network0.cc.staging.cloud.sap",species="network",zone="petting-zoo",id="/",job="kubernetes-cluster",kubernetes_role="node"} 783.534280674 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",id="/",job="kubernetes-cluster",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",cpu="cpu75",instance="minion1.cc.staging.cloud.sap",zone="petting-zoo",species="hypervisor"} 581.282462081 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap",job="kubernetes-cluster",id="/",instance="network1.cc.staging.cloud.sap",kubernetes_role="node",species="network",cpu="cpu55"} 778.053022813 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",kubernetes_io_hostname="network1.cc.staging.cloud.sap",species="network",instance="network1.cc.staging.cloud.sap",job="kubernetes-cluster",zone="petting-zoo",cpu="cpu39",id="/"} 1462.165130881 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="network1.cc.staging.cloud.sap",zone="petting-zoo",species="network",cpu="cpu38",id="/",kubernetes_role="node",kubernetes_io_hostname="network1.cc.staging.cloud.sap",job="kubernetes-cluster"} 1617.844554057 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",species="hypervisor",cpu="cpu47",id="/",instance="minion1.cc.staging.cloud.sap",zone="petting-zoo",job="kubernetes-cluster",kubernetes_io_hostname="minion1.cc.staging.cloud.sap"} 695.624553911 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu61",id="/"} 4695.736362897 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="network",instance="network1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu54",zone="petting-zoo",id="/",job="kubernetes-cluster",kubernetes_io_hostname="network1.cc.staging.cloud.sap"} 884.654114751 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",cpu="cpu44",id="/",zone="farm",kubernetes_role="node"} 21985.968694243 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu63",id="/"} 11500.672849096 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu02",id="/",instance="master2.cc.staging.cloud.sap"} 77227.511039926 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node",cpu="cpu77",id="/"} 9307.268541668 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu69",id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap"} 12328.365257868 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master1.cc.staging.cloud.sap",cpu="cpu73",id="/",kubernetes_role="node",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap"} 4169.917080569 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion1.cc.staging.cloud.sap",kubernetes_role="node",job="kubernetes-cluster",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",id="/",zone="petting-zoo",cpu="cpu74",species="hypervisor"} 617.588938054 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu28",id="/",zone="farm"} 14639.718174167 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",kubernetes_io_hostname="network0.cc.staging.cloud.sap",species="network",id="/",instance="network0.cc.staging.cloud.sap",job="kubernetes-cluster",kubernetes_role="node",cpu="cpu48"} 907.206669577 1469979592373
+# TYPE bind_responses_total untyped
+bind_responses_total{instance="100.66.0.12:9119",kubernetes_role="endpoint",result="Referral",job="kubernetes-service-endpoints",kubernetes_namespace="dns",kubernetes_name="bind2"} 0 1469979577252
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="hypervisor",cpu="cpu46",kubernetes_role="node",id="/",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",zone="petting-zoo",instance="minion1.cc.staging.cloud.sap",job="kubernetes-cluster"} 677.705803142 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu53",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",instance="minion1.cc.staging.cloud.sap",kubernetes_role="node",job="kubernetes-cluster",species="hypervisor",id="/",zone="petting-zoo"} 652.481966056 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu53"} 11080.64868792 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",cpu="cpu09",kubernetes_role="node",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",instance="minion1.cc.staging.cloud.sap",zone="petting-zoo",species="hypervisor",id="/"} 1651.32269693 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="network",job="kubernetes-cluster",zone="petting-zoo",instance="network0.cc.staging.cloud.sap",id="/",kubernetes_io_hostname="network0.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu69"} 742.027895708 1469979592373
+# TYPE bind_incoming_queries_total untyped
+bind_incoming_queries_total{type="MX",job="bind3-eu-de-1",instance="10.45.26.137:8080",kubernetes_name="bind3"} 1 1469979626961
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu28"} 31183.053204833 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network0.cc.staging.cloud.sap",kubernetes_role="node",instance="network0.cc.staging.cloud.sap",cpu="cpu31",id="/",species="network",job="kubernetes-cluster",zone="petting-zoo"} 956.021916478 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu48",id="/",instance="master2.cc.staging.cloud.sap"} 21053.897591239 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",kubernetes_role="node",job="kubernetes-cluster",kubernetes_io_hostname="network0.cc.staging.cloud.sap",species="network",instance="network0.cc.staging.cloud.sap",cpu="cpu39",id="/"} 937.913294637 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu00",id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node"} 74869.458432621 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",kubernetes_role="node",zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap",species="network",cpu="cpu24",job="kubernetes-cluster",instance="network1.cc.staging.cloud.sap"} 1241.843473231 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network1.cc.staging.cloud.sap",kubernetes_role="node",job="kubernetes-cluster",instance="network1.cc.staging.cloud.sap",cpu="cpu45",id="/",zone="petting-zoo",species="network"} 872.035732707 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu57",id="/"} 9384.746705726 1469979584853
+# TYPE bind_incoming_queries_total untyped
+bind_incoming_queries_total{kubernetes_name="bind3",job="bind3-eu-de-1",instance="10.45.26.137:8080",type="ANY"} 23 1469979626961
+# TYPE bind_responses_total untyped
+bind_responses_total{kubernetes_role="endpoint",kubernetes_namespace="dns",instance="100.68.0.12:9119",result="Success",kubernetes_name="bind1",job="kubernetes-service-endpoints"} 0 1469979598790
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",zone="petting-zoo",kubernetes_role="node",instance="minion1.cc.staging.cloud.sap",job="kubernetes-cluster",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",species="hypervisor",cpu="cpu69"} 491.986479631 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node",cpu="cpu08",id="/"} 100653.067165952 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",kubernetes_role="node",species="hypervisor",cpu="cpu14",id="/",instance="minion1.cc.staging.cloud.sap",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",zone="petting-zoo"} 872.713484144 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu77",id="/",zone="farm",kubernetes_role="node",job="kubernetes-cluster"} 9637.996053186 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",cpu="cpu70",id="/"} 4168.444003315 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu34",id="/",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node"} 31056.881141374 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",cpu="cpu29",id="/"} 30886.144044836 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",cpu="cpu66",id="/",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node"} 11247.433781315 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu35",id="/"} 29319.346397708 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",job="kubernetes-cluster",species="network",id="/",zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap",cpu="cpu26",instance="network1.cc.staging.cloud.sap"} 1137.422281107 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node",job="kubernetes-cluster",cpu="cpu29",id="/"} 28673.253630214 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu43",job="kubernetes-cluster",species="network",instance="network1.cc.staging.cloud.sap",id="/"} 881.6880846 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",zone="farm",kubernetes_role="node",cpu="cpu68",id="/",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap"} 12350.42049285 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu48"} 11503.996046873 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu40",id="/",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap"} 38434.373702155 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="network1.cc.staging.cloud.sap",id="/",kubernetes_io_hostname="network1.cc.staging.cloud.sap",species="network",zone="petting-zoo",job="kubernetes-cluster",kubernetes_role="node",cpu="cpu12"} 2292.559307237 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",cpu="cpu63",id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap"} 4585.510248328 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network1.cc.staging.cloud.sap",kubernetes_role="node",instance="network1.cc.staging.cloud.sap",cpu="cpu53",job="kubernetes-cluster",species="network",zone="petting-zoo",id="/"} 1008.633289474 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",cpu="cpu73",id="/",kubernetes_role="node",job="kubernetes-cluster"} 9740.147121218 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",zone="petting-zoo",job="kubernetes-cluster",instance="network1.cc.staging.cloud.sap",kubernetes_io_hostname="network1.cc.staging.cloud.sap",species="network",cpu="cpu40",kubernetes_role="node"} 971.890890208 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",cpu="cpu27",id="/"} 29294.93378459 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network0.cc.staging.cloud.sap",kubernetes_role="node",job="kubernetes-cluster",instance="network0.cc.staging.cloud.sap",species="network",zone="petting-zoo",cpu="cpu51",id="/"} 1267.389505859 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap",job="kubernetes-cluster",instance="network1.cc.staging.cloud.sap",kubernetes_role="node",id="/",species="network",cpu="cpu79"} 798.147658758 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network0.cc.staging.cloud.sap",cpu="cpu35",job="kubernetes-cluster",id="/",instance="network0.cc.staging.cloud.sap",kubernetes_role="node",species="network",zone="petting-zoo"} 966.10123861 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",cpu="cpu55"} 9335.049782695 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu51",id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm"} 8875.062071929 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu56",id="/"} 4977.760824961 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu20",id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm"} 53576.314247782 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",cpu="cpu74"} 9843.68585344 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu70",id="/",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm"} 9434.074072479 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",cpu="cpu72",kubernetes_io_hostname="network0.cc.staging.cloud.sap",zone="petting-zoo",instance="network0.cc.staging.cloud.sap",species="network",id="/",job="kubernetes-cluster"} 799.640418139 1469979592373
+# TYPE bind_responses_total untyped
+bind_responses_total{job="bind3-eu-de-1",instance="10.45.26.137:8080",kubernetes_name="bind3",result="SERVFAIL"} 0 1469979626961
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu77",job="kubernetes-cluster",id="/",instance="network1.cc.staging.cloud.sap",kubernetes_role="node",kubernetes_io_hostname="network1.cc.staging.cloud.sap",species="network",zone="petting-zoo"} 792.457225663 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu12",zone="petting-zoo",id="/",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",species="hypervisor",job="kubernetes-cluster",instance="minion1.cc.staging.cloud.sap",kubernetes_role="node"} 864.990466695 1469979587194
+# TYPE bind_responses_total untyped
+bind_responses_total{kubernetes_role="endpoint",result="FORMERR",kubernetes_namespace="dns",instance="100.68.0.12:9119",kubernetes_name="bind1",job="kubernetes-service-endpoints"} 0 1469979598790
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu12"} 28125.387797092 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu14"} 15719.652357782 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="network1.cc.staging.cloud.sap",species="network",kubernetes_io_hostname="network1.cc.staging.cloud.sap",id="/",zone="petting-zoo",job="kubernetes-cluster",kubernetes_role="node",cpu="cpu70"} 979.553920189 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",cpu="cpu61",id="/",kubernetes_role="node"} 13265.228502788 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="network",job="kubernetes-cluster",kubernetes_io_hostname="network1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu63",zone="petting-zoo",instance="network1.cc.staging.cloud.sap",id="/"} 845.051652562 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu52",id="/",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm"} 11066.451908594 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",species="hypervisor",id="/",instance="minion1.cc.staging.cloud.sap",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu60",job="kubernetes-cluster"} 502.701898103 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",job="kubernetes-cluster",kubernetes_role="node",species="network",zone="petting-zoo",cpu="cpu52",kubernetes_io_hostname="network0.cc.staging.cloud.sap",instance="network0.cc.staging.cloud.sap"} 1013.10472705 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu45",id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm"} 21879.471098827 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu56",zone="petting-zoo",kubernetes_role="node",job="kubernetes-cluster",instance="network0.cc.staging.cloud.sap",species="network",id="/",kubernetes_io_hostname="network0.cc.staging.cloud.sap"} 689.891616237 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",zone="farm",job="kubernetes-cluster",cpu="cpu34",id="/"} 15466.20373579 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",cpu="cpu40",id="/",job="kubernetes-cluster"} 31460.061566184 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",cpu="cpu47",id="/"} 11537.24205775 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network1.cc.staging.cloud.sap",species="network",instance="network1.cc.staging.cloud.sap",cpu="cpu05",job="kubernetes-cluster",kubernetes_role="node",id="/",zone="petting-zoo"} 2462.891744597 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu12"} 16375.004469361 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",cpu="cpu38"} 29115.086555843 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="hypervisor",job="kubernetes-cluster",cpu="cpu38",instance="minion1.cc.staging.cloud.sap",kubernetes_role="node",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",zone="petting-zoo",id="/"} 862.788563695 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",cpu="cpu66",id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap"} 4493.196914157 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",cpu="cpu40",instance="minion1.cc.staging.cloud.sap",kubernetes_role="node",species="hypervisor",zone="petting-zoo",id="/"} 700.133584623 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",species="hypervisor",instance="minion1.cc.staging.cloud.sap",cpu="cpu73",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",zone="petting-zoo",kubernetes_role="node",job="kubernetes-cluster"} 596.448450534 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",kubernetes_role="node",kubernetes_io_hostname="network0.cc.staging.cloud.sap",cpu="cpu53",zone="petting-zoo",instance="network0.cc.staging.cloud.sap",species="network",id="/"} 822.155821071 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu58",id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap"} 4853.412189086 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",job="kubernetes-cluster",cpu="cpu11",id="/",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm"} 29752.388848723 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node",cpu="cpu15",id="/"} 27039.797766366 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",job="kubernetes-cluster",cpu="cpu61",zone="petting-zoo",instance="minion1.cc.staging.cloud.sap",species="hypervisor",kubernetes_role="node"} 502.083170842 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",cpu="cpu17",id="/"} 25310.257967487 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu67",id="/",zone="farm",kubernetes_role="node",job="kubernetes-cluster"} 11344.471320925 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion1.cc.staging.cloud.sap",job="kubernetes-cluster",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",species="hypervisor",kubernetes_role="node",cpu="cpu58",id="/",zone="petting-zoo"} 611.463998027 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",instance="network1.cc.staging.cloud.sap",cpu="cpu44",zone="petting-zoo",species="network",kubernetes_role="node",kubernetes_io_hostname="network1.cc.staging.cloud.sap",job="kubernetes-cluster"} 876.186916948 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap",job="kubernetes-cluster",instance="network1.cc.staging.cloud.sap",species="network",cpu="cpu46",kubernetes_role="node",id="/"} 866.71416579 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",cpu="cpu10",id="/",kubernetes_role="node",zone="farm"} 24751.579196905 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",id="/",zone="petting-zoo",job="kubernetes-cluster",cpu="cpu08",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",instance="minion1.cc.staging.cloud.sap",species="hypervisor"} 1658.68600809 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion1.cc.staging.cloud.sap",zone="petting-zoo",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",job="kubernetes-cluster",id="/",kubernetes_role="node",species="hypervisor",cpu="cpu56"} 602.062838776 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="network",job="kubernetes-cluster",zone="petting-zoo",cpu="cpu61",kubernetes_io_hostname="network0.cc.staging.cloud.sap",instance="network0.cc.staging.cloud.sap",kubernetes_role="node",id="/"} 792.506479463 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="network",kubernetes_role="node",cpu="cpu74",instance="network1.cc.staging.cloud.sap",zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap",job="kubernetes-cluster",id="/"} 854.961400227 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",cpu="cpu30",id="/",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap"} 47070.638394624 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",instance="minion1.cc.staging.cloud.sap",job="kubernetes-cluster",cpu="cpu37",zone="petting-zoo",kubernetes_role="node",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",species="hypervisor"} 878.354528983 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="master1.cc.staging.cloud.sap",cpu="cpu71",id="/",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",zone="farm",job="kubernetes-cluster"} 4200.442328476 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="network0.cc.staging.cloud.sap",cpu="cpu15",id="/",species="network",job="kubernetes-cluster",kubernetes_role="node",kubernetes_io_hostname="network0.cc.staging.cloud.sap",zone="petting-zoo"} 946.450274193 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",species="network",cpu="cpu23",id="/",kubernetes_role="node",zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap",instance="network1.cc.staging.cloud.sap"} 1310.862882867 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="network0.cc.staging.cloud.sap",cpu="cpu74",zone="petting-zoo",id="/",job="kubernetes-cluster",kubernetes_io_hostname="network0.cc.staging.cloud.sap",kubernetes_role="node",species="network"} 837.845809294 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu39",id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap"} 28828.11336996 1469979584853
+# TYPE container_memory_usage_bytes untyped
+container_memory_usage_bytes{instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node",job="kubernetes-cluster",id="/"} 9.6757379072e+10 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu31",id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster"} 36317.722703637 1469979584853
+# TYPE bind_incoming_queries_total untyped
+bind_incoming_queries_total{type="AAAA",instance="10.45.26.137:8080",kubernetes_name="bind3",job="bind3-eu-de-1"} 2839 1469979626961
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",id="/",job="kubernetes-cluster",species="network",cpu="cpu62",instance="network1.cc.staging.cloud.sap",zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap"} 849.831899831 1469979619956
+# TYPE bind_responses_total untyped
+bind_responses_total{kubernetes_namespace="dns",instance="100.68.0.12:9119",kubernetes_name="bind1",job="kubernetes-service-endpoints",kubernetes_role="endpoint",result="Referral"} 0 1469979598790
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu25",id="/",zone="farm",job="kubernetes-cluster"} 15127.751186211 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu48",id="/",species="hypervisor",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",zone="petting-zoo",job="kubernetes-cluster",kubernetes_role="node",instance="minion1.cc.staging.cloud.sap"} 733.072854411 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu00",id="/"} 147222.041234207 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu02",id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap"} 60556.303156468 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",cpu="cpu36",species="network",kubernetes_role="node",zone="petting-zoo",instance="network0.cc.staging.cloud.sap",kubernetes_io_hostname="network0.cc.staging.cloud.sap",job="kubernetes-cluster"} 962.281643847 1469979592373
+# TYPE container_memory_usage_bytes untyped
+container_memory_usage_bytes{kubernetes_io_hostname="network0.cc.staging.cloud.sap",species="network",job="kubernetes-cluster",zone="petting-zoo",kubernetes_role="node",id="/",instance="network0.cc.staging.cloud.sap"} 1.974632448e+09 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="network",zone="petting-zoo",instance="network0.cc.staging.cloud.sap",cpu="cpu40",id="/",job="kubernetes-cluster",kubernetes_role="node",kubernetes_io_hostname="network0.cc.staging.cloud.sap"} 2602.201850647 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",cpu="cpu32",id="/",instance="minion1.cc.staging.cloud.sap",job="kubernetes-cluster",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",zone="petting-zoo",species="hypervisor"} 892.805875972 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu22",instance="network0.cc.staging.cloud.sap",zone="petting-zoo",kubernetes_role="node",job="kubernetes-cluster",kubernetes_io_hostname="network0.cc.staging.cloud.sap",id="/",species="network"} 1126.203511305 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",id="/",zone="petting-zoo",species="network",kubernetes_io_hostname="network1.cc.staging.cloud.sap",job="kubernetes-cluster",cpu="cpu02",instance="network1.cc.staging.cloud.sap"} 3547.514629749 1469979619956
+# TYPE container_start_time_seconds untyped
+container_start_time_seconds{job="kubernetes-cluster",zone="petting-zoo",instance="network0.cc.staging.cloud.sap",kubernetes_io_hostname="network0.cc.staging.cloud.sap",id="/",kubernetes_role="node",species="network"} 1.46979302e+09 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu08",id="/",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",zone="farm"} 55392.187716281 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu15",id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node"} 15546.627145489 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="network0.cc.staging.cloud.sap",id="/",species="network",kubernetes_io_hostname="network0.cc.staging.cloud.sap",cpu="cpu27",job="kubernetes-cluster",zone="petting-zoo",kubernetes_role="node"} 1110.111223455 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",species="network",job="kubernetes-cluster",instance="network0.cc.staging.cloud.sap",id="/",kubernetes_io_hostname="network0.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu38"} 940.674575592 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap",cpu="cpu52",kubernetes_role="node",id="/",instance="network1.cc.staging.cloud.sap",species="network",job="kubernetes-cluster"} 1144.499624993 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",cpu="cpu50",id="/",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap"} 10896.942658151 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",kubernetes_io_hostname="network1.cc.staging.cloud.sap",cpu="cpu21",instance="network1.cc.staging.cloud.sap",kubernetes_role="node",species="network",zone="petting-zoo",id="/"} 1461.743953769 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu27",id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node"} 31463.956807883 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion1.cc.staging.cloud.sap",cpu="cpu04",id="/",zone="petting-zoo",species="hypervisor",job="kubernetes-cluster",kubernetes_role="node",kubernetes_io_hostname="minion1.cc.staging.cloud.sap"} 1843.665047482 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu79"} 9474.614425395 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",cpu="cpu71",id="/",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap"} 9871.516133987 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="network",instance="network1.cc.staging.cloud.sap",cpu="cpu09",job="kubernetes-cluster",kubernetes_role="node",kubernetes_io_hostname="network1.cc.staging.cloud.sap",zone="petting-zoo",id="/"} 1836.877784377 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap",job="kubernetes-cluster",species="network",instance="network1.cc.staging.cloud.sap",id="/",kubernetes_role="node",cpu="cpu18"} 1047.495491407 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",cpu="cpu68",id="/",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm"} 11327.018332175 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu10",job="kubernetes-cluster",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",id="/",species="hypervisor",zone="petting-zoo"} 904.071235599 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu13",id="/",zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap"} 27296.369513446 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",cpu="cpu59",id="/",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap"} 9210.93276386 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="network0.cc.staging.cloud.sap",species="network",job="kubernetes-cluster",zone="petting-zoo",kubernetes_role="node",kubernetes_io_hostname="network0.cc.staging.cloud.sap",id="/",cpu="cpu77"} 872.909932699 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu58",id="/",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap"} 10498.457917856 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="hypervisor",instance="minion1.cc.staging.cloud.sap",job="kubernetes-cluster",kubernetes_role="node",zone="petting-zoo",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",cpu="cpu35",id="/"} 876.158111272 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",kubernetes_role="node",cpu="cpu45",instance="minion1.cc.staging.cloud.sap",species="hypervisor",job="kubernetes-cluster",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",zone="petting-zoo"} 708.513765823 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",cpu="cpu76",id="/"} 4488.145655286 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",zone="petting-zoo",kubernetes_role="node",cpu="cpu27",id="/",instance="minion1.cc.staging.cloud.sap",species="hypervisor"} 892.364339034 1469979587194
+# TYPE bind_responses_total untyped
+bind_responses_total{job="kubernetes-service-endpoints",kubernetes_namespace="dns",result="SERVFAIL",kubernetes_name="bind2",instance="100.66.0.12:9119",kubernetes_role="endpoint"} 0 1469979577252
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="hypervisor",job="kubernetes-cluster",id="/",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",cpu="cpu33",kubernetes_role="node",zone="petting-zoo",instance="minion1.cc.staging.cloud.sap"} 870.98314741 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu20",id="/",zone="farm",job="kubernetes-cluster"} 24439.301596966 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",cpu="cpu69",id="/",kubernetes_role="node"} 4490.246219044 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion1.cc.staging.cloud.sap",kubernetes_role="node",species="hypervisor",cpu="cpu22",zone="petting-zoo",instance="minion1.cc.staging.cloud.sap",job="kubernetes-cluster",id="/"} 932.047830488 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion1.cc.staging.cloud.sap",job="kubernetes-cluster",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu79",species="hypervisor",zone="petting-zoo",id="/"} 538.727017903 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",cpu="cpu74",id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap"} 4253.35235511 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network1.cc.staging.cloud.sap",id="/",kubernetes_role="node",instance="network1.cc.staging.cloud.sap",job="kubernetes-cluster",species="network",cpu="cpu14",zone="petting-zoo"} 1535.95086609 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu59",id="/",zone="farm"} 10612.68312644 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",cpu="cpu54",species="hypervisor",job="kubernetes-cluster",kubernetes_role="node",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",zone="petting-zoo",instance="minion1.cc.staging.cloud.sap"} 710.298777813 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",cpu="cpu60",id="/"} 4409.005057199 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu16",id="/"} 15320.945217618 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",cpu="cpu45",id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap"} 11443.992319566 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="network0.cc.staging.cloud.sap",species="network",kubernetes_io_hostname="network0.cc.staging.cloud.sap",cpu="cpu06",job="kubernetes-cluster",zone="petting-zoo",kubernetes_role="node",id="/"} 4408.584384533 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",zone="petting-zoo",kubernetes_role="node",species="network",kubernetes_io_hostname="network0.cc.staging.cloud.sap",job="kubernetes-cluster",cpu="cpu10",instance="network0.cc.staging.cloud.sap"} 2530.085503549 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",zone="farm",cpu="cpu66",id="/",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap"} 12463.425284525 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu38",id="/",zone="farm"} 15223.277566981 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",species="hypervisor",zone="petting-zoo",instance="minion1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu67",id="/",kubernetes_io_hostname="minion1.cc.staging.cloud.sap"} 486.680566049 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu49",id="/"} 20989.243905675 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",species="network",instance="network1.cc.staging.cloud.sap",kubernetes_io_hostname="network1.cc.staging.cloud.sap",zone="petting-zoo",id="/",kubernetes_role="node",cpu="cpu36"} 1651.791506919 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="network0.cc.staging.cloud.sap",kubernetes_io_hostname="network0.cc.staging.cloud.sap",cpu="cpu07",species="network",zone="petting-zoo",id="/",job="kubernetes-cluster",kubernetes_role="node"} 3934.711575716 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",cpu="cpu31",id="/",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm"} 33097.996907819 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="network1.cc.staging.cloud.sap",zone="petting-zoo",kubernetes_role="node",kubernetes_io_hostname="network1.cc.staging.cloud.sap",job="kubernetes-cluster",species="network",cpu="cpu57",id="/"} 702.588711465 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",kubernetes_role="node",instance="network0.cc.staging.cloud.sap",cpu="cpu17",zone="petting-zoo",species="network",kubernetes_io_hostname="network0.cc.staging.cloud.sap",job="kubernetes-cluster"} 911.40661249 1469979592373
+# TYPE bind_responses_total untyped
+bind_responses_total{instance="10.45.26.137:8080",result="NXDOMAIN",kubernetes_name="bind3",job="bind3-eu-de-1"} 2257 1469979626961
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="network1.cc.staging.cloud.sap",kubernetes_role="node",job="kubernetes-cluster",cpu="cpu00",species="network",zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap",id="/"} 5246.467179936 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu13",instance="network0.cc.staging.cloud.sap",kubernetes_role="node",id="/",kubernetes_io_hostname="network0.cc.staging.cloud.sap",species="network",zone="petting-zoo",job="kubernetes-cluster"} 976.293396467 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",instance="minion1.cc.staging.cloud.sap",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",species="hypervisor",job="kubernetes-cluster",cpu="cpu11",kubernetes_role="node",zone="petting-zoo"} 835.201189571 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu55",id="/",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap"} 10871.010927887 1469979610856
+# TYPE bind_incoming_queries_total untyped
+bind_incoming_queries_total{type="AXFR",job="bind3-eu-de-1",instance="10.45.26.137:8080",kubernetes_name="bind3"} 1 1469979626961
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",cpu="cpu53",id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap"} 5020.248807499 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network1.cc.staging.cloud.sap",instance="network1.cc.staging.cloud.sap",zone="petting-zoo",cpu="cpu59",id="/",kubernetes_role="node",job="kubernetes-cluster",species="network"} 645.041465585 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",kubernetes_io_hostname="network1.cc.staging.cloud.sap",species="network",cpu="cpu03",id="/",instance="network1.cc.staging.cloud.sap",kubernetes_role="node",zone="petting-zoo"} 3036.953060911 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu39",id="/",zone="farm"} 14867.36383894 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",species="network",kubernetes_role="node",kubernetes_io_hostname="network1.cc.staging.cloud.sap",cpu="cpu37",instance="network1.cc.staging.cloud.sap",zone="petting-zoo",job="kubernetes-cluster"} 1586.495670565 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu79",id="/",zone="farm",job="kubernetes-cluster"} 4513.621764695 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",cpu="cpu11",id="/",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node"} 17137.79937648 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu64",id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap"} 4594.545313411 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu71",id="/"} 9618.068878198 1469979584853
+# TYPE bind_incoming_queries_total untyped
+bind_incoming_queries_total{type="NS",kubernetes_name="bind3",job="bind3-eu-de-1",instance="10.45.26.137:8080"} 162 1469979626961
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="network",zone="petting-zoo",kubernetes_role="node",instance="network1.cc.staging.cloud.sap",id="/",job="kubernetes-cluster",kubernetes_io_hostname="network1.cc.staging.cloud.sap",cpu="cpu32"} 2587.96210215 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu25",id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node"} 32102.161543989 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",id="/",job="kubernetes-cluster",species="network",zone="petting-zoo",cpu="cpu04",instance="network0.cc.staging.cloud.sap",kubernetes_io_hostname="network0.cc.staging.cloud.sap"} 5156.074565593 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network0.cc.staging.cloud.sap",job="kubernetes-cluster",zone="petting-zoo",instance="network0.cc.staging.cloud.sap",kubernetes_role="node",species="network",cpu="cpu58",id="/"} 613.95775573 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",id="/",zone="petting-zoo",instance="network0.cc.staging.cloud.sap",cpu="cpu65",kubernetes_io_hostname="network0.cc.staging.cloud.sap",kubernetes_role="node",species="network"} 724.84637455 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu41",id="/"} 31840.213122315 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",cpu="cpu38"} 27728.278841642 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",species="network",job="kubernetes-cluster",zone="petting-zoo",instance="network0.cc.staging.cloud.sap",kubernetes_io_hostname="network0.cc.staging.cloud.sap",cpu="cpu67",kubernetes_role="node"} 728.553528653 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="network1.cc.staging.cloud.sap",cpu="cpu31",id="/",job="kubernetes-cluster",kubernetes_role="node",species="network",zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap"} 3086.963882719 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",cpu="cpu72",id="/"} 9446.110492689 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu05",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",instance="minion1.cc.staging.cloud.sap",zone="petting-zoo",kubernetes_role="node",species="hypervisor",job="kubernetes-cluster",id="/"} 1790.310153314 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu44",id="/",zone="farm"} 30041.927680241 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",zone="farm",cpu="cpu06",id="/",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap"} 56345.700374422 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu19",id="/",zone="farm",kubernetes_role="node",job="kubernetes-cluster"} 24572.979685932 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",job="kubernetes-cluster",kubernetes_role="node",cpu="cpu67",kubernetes_io_hostname="network1.cc.staging.cloud.sap",id="/",instance="network1.cc.staging.cloud.sap",species="network"} 731.401686158 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu51",id="/"} 5151.961925013 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu03",id="/"} 111349.42334303 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu07",id="/",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap"} 102297.479355858 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",cpu="cpu30",kubernetes_role="node",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",zone="petting-zoo",job="kubernetes-cluster",species="hypervisor",instance="minion1.cc.staging.cloud.sap"} 1031.951092856 1469979587194
+# TYPE bind_responses_total untyped
+bind_responses_total{kubernetes_name="bind2",instance="100.66.0.12:9119",kubernetes_role="endpoint",result="NXDOMAIN",job="kubernetes-service-endpoints",kubernetes_namespace="dns"} 0 1469979577252
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",species="network",kubernetes_io_hostname="network1.cc.staging.cloud.sap",job="kubernetes-cluster",kubernetes_role="node",cpu="cpu08",zone="petting-zoo",instance="network1.cc.staging.cloud.sap"} 1935.723943484 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu01",instance="minion1.cc.staging.cloud.sap",species="hypervisor",kubernetes_role="node",id="/",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",job="kubernetes-cluster",zone="petting-zoo"} 3137.225537816 1469979587194
+# TYPE bind_responses_total untyped
+bind_responses_total{instance="10.45.26.137:8080",result="Success",kubernetes_name="bind3",job="bind3-eu-de-1"} 6624 1469979626961
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",job="kubernetes-cluster",kubernetes_io_hostname="network0.cc.staging.cloud.sap",cpu="cpu63",instance="network0.cc.staging.cloud.sap",id="/",kubernetes_role="node",species="network"} 759.460288072 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network0.cc.staging.cloud.sap",cpu="cpu73",id="/",instance="network0.cc.staging.cloud.sap",species="network",zone="petting-zoo",job="kubernetes-cluster",kubernetes_role="node"} 789.338695005 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu75",id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster"} 9318.417129364 1469979584853
+# TYPE bind_incoming_queries_total untyped
+bind_incoming_queries_total{instance="10.45.26.137:8080",type="A",kubernetes_name="bind3",job="bind3-eu-de-1"} 7039 1469979626961
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu23",id="/",zone="farm"} 15620.073614103 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network0.cc.staging.cloud.sap",cpu="cpu76",species="network",id="/",job="kubernetes-cluster",kubernetes_role="node",zone="petting-zoo",instance="network0.cc.staging.cloud.sap"} 797.64150245 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu18",id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node"} 26826.398881518 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",zone="petting-zoo",id="/",species="network",kubernetes_role="node",cpu="cpu30",instance="network1.cc.staging.cloud.sap",kubernetes_io_hostname="network1.cc.staging.cloud.sap"} 3547.105913095 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",cpu="cpu75",id="/",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",zone="farm"} 4483.828834384 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu51",id="/",zone="farm",kubernetes_role="node"} 10888.651007285 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="network",kubernetes_role="node",zone="petting-zoo",cpu="cpu28",kubernetes_io_hostname="network0.cc.staging.cloud.sap",job="kubernetes-cluster",instance="network0.cc.staging.cloud.sap",id="/"} 1135.966771896 1469979592373
+# TYPE bind_responses_total untyped
+bind_responses_total{kubernetes_namespace="dns",kubernetes_name="bind2",result="FORMERR",instance="100.66.0.12:9119",kubernetes_role="endpoint",job="kubernetes-service-endpoints"} 0 1469979577252
+# TYPE container_start_time_seconds untyped
+container_start_time_seconds{zone="farm",kubernetes_role="node",id="/",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap"} 1.468939816e+09 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",job="kubernetes-cluster",zone="petting-zoo",kubernetes_role="node",cpu="cpu29",species="network",kubernetes_io_hostname="network0.cc.staging.cloud.sap",instance="network0.cc.staging.cloud.sap"} 1112.645373427 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",cpu="cpu50",job="kubernetes-cluster",id="/",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",instance="minion1.cc.staging.cloud.sap",species="hypervisor",zone="petting-zoo"} 804.082942338 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",kubernetes_io_hostname="network0.cc.staging.cloud.sap",job="kubernetes-cluster",kubernetes_role="node",species="network",zone="petting-zoo",instance="network0.cc.staging.cloud.sap",cpu="cpu26"} 1097.872292715 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",cpu="cpu17",id="/",kubernetes_io_hostname="master1.cc.staging.cloud.sap"} 15132.666751045 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",instance="network1.cc.staging.cloud.sap",id="/",kubernetes_io_hostname="network1.cc.staging.cloud.sap",job="kubernetes-cluster",cpu="cpu65",zone="petting-zoo",species="network"} 767.871070932 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",instance="network1.cc.staging.cloud.sap",species="network",zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap",cpu="cpu27",id="/",kubernetes_role="node"} 1112.586946524 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",species="network",cpu="cpu29",job="kubernetes-cluster",id="/",kubernetes_io_hostname="network1.cc.staging.cloud.sap",zone="petting-zoo",instance="network1.cc.staging.cloud.sap"} 1071.426613278 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="master1.cc.staging.cloud.sap",cpu="cpu13",id="/",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",zone="farm",job="kubernetes-cluster"} 15932.442519573 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu64",id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node"} 12597.275726964 1469979584853
+# TYPE container_start_time_seconds untyped
+container_start_time_seconds{instance="network1.cc.staging.cloud.sap",kubernetes_role="node",zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap",job="kubernetes-cluster",species="network",id="/"} 1.469786692e+09 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion1.cc.staging.cloud.sap",id="/",zone="petting-zoo",kubernetes_role="node",species="hypervisor",job="kubernetes-cluster",cpu="cpu41",instance="minion1.cc.staging.cloud.sap"} 731.521111691 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu20",id="/"} 47521.296132367 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu23",instance="network0.cc.staging.cloud.sap",job="kubernetes-cluster",zone="petting-zoo",kubernetes_role="node",kubernetes_io_hostname="network0.cc.staging.cloud.sap",species="network",id="/"} 1122.035007227 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",cpu="cpu62"} 12352.167514694 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu62",id="/"} 11586.817673087 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu19",id="/",job="kubernetes-cluster",species="network",zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap",instance="network1.cc.staging.cloud.sap",kubernetes_role="node"} 1034.306933648 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu50",id="/",instance="master2.cc.staging.cloud.sap"} 8939.665209804 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu70",id="/",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node",job="kubernetes-cluster"} 9548.04637604 1469979610856
+# TYPE bind_incoming_queries_total untyped
+bind_incoming_queries_total{type="PTR",kubernetes_name="bind3",job="bind3-eu-de-1",instance="10.45.26.137:8080"} 67 1469979626961
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",cpu="cpu53",id="/"} 9078.011559559 1469979584853
+# TYPE bind_up untyped
+bind_up{kubernetes_name="bind2",instance="100.66.0.12:9119",kubernetes_role="endpoint",job="kubernetes-service-endpoints",kubernetes_namespace="dns"} 1 1469979577252
+# TYPE bind_incoming_queries_total untyped
+bind_incoming_queries_total{type="SRV",job="bind3-eu-de-1",instance="10.45.26.137:8080",kubernetes_name="bind3"} 1 1469979626961
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",cpu="cpu62",job="kubernetes-cluster",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",zone="petting-zoo",species="hypervisor",id="/",instance="minion1.cc.staging.cloud.sap"} 494.792202447 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",job="kubernetes-cluster",kubernetes_role="node",cpu="cpu49",zone="petting-zoo",instance="network0.cc.staging.cloud.sap",kubernetes_io_hostname="network0.cc.staging.cloud.sap",species="network"} 946.053163068 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu13",job="kubernetes-cluster",zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap",species="network",id="/",kubernetes_role="node",instance="network1.cc.staging.cloud.sap"} 1835.570309939 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu30",id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm"} 49668.291715612 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion1.cc.staging.cloud.sap",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",species="hypervisor",cpu="cpu76",id="/",zone="petting-zoo",job="kubernetes-cluster",kubernetes_role="node"} 590.044931532 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu70",id="/",instance="minion1.cc.staging.cloud.sap",job="kubernetes-cluster",zone="petting-zoo",kubernetes_role="node",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",species="hypervisor"} 649.101563006 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node",job="kubernetes-cluster",cpu="cpu05",id="/",instance="minion0.cc.staging.cloud.sap"} 106049.782735734 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu60",id="/",zone="farm"} 11577.466648475 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu21",id="/"} 17158.442554845 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu40",id="/"} 21473.381464386 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",zone="farm",cpu="cpu62",id="/",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap"} 4658.356709251 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu05"} 57018.297248187 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu08",id="/",job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap"} 59255.579723322 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu43",id="/",zone="farm",kubernetes_role="node",job="kubernetes-cluster"} 30284.809293279 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master1.cc.staging.cloud.sap",cpu="cpu68",id="/",kubernetes_role="node",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap"} 4485.115191928 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",job="kubernetes-cluster",cpu="cpu41",kubernetes_role="node",species="network",zone="petting-zoo",instance="network0.cc.staging.cloud.sap",kubernetes_io_hostname="network0.cc.staging.cloud.sap"} 2491.652124751 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="network0.cc.staging.cloud.sap",zone="petting-zoo",cpu="cpu25",kubernetes_io_hostname="network0.cc.staging.cloud.sap",species="network",id="/",job="kubernetes-cluster",kubernetes_role="node"} 1111.331403427 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node",cpu="cpu15",id="/"} 25961.822904413 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node",job="kubernetes-cluster",cpu="cpu01",id="/"} 118315.391023883 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion1.cc.staging.cloud.sap",kubernetes_role="node",species="hypervisor",job="kubernetes-cluster",id="/",zone="petting-zoo",cpu="cpu43",kubernetes_io_hostname="minion1.cc.staging.cloud.sap"} 721.562054517 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",kubernetes_io_hostname="network0.cc.staging.cloud.sap",zone="petting-zoo",cpu="cpu43",id="/",species="network",instance="network0.cc.staging.cloud.sap",job="kubernetes-cluster"} 1036.750949569 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",cpu="cpu03",id="/",zone="farm"} 71817.104650329 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu61",id="/",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm"} 11714.252599737 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",cpu="cpu35",id="/",job="kubernetes-cluster",zone="farm",kubernetes_role="node"} 30444.233644539 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu31",id="/"} 16572.564715693 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",instance="network0.cc.staging.cloud.sap",id="/",zone="petting-zoo",species="network",cpu="cpu62",kubernetes_role="node",kubernetes_io_hostname="network0.cc.staging.cloud.sap"} 753.080609326 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu01",kubernetes_io_hostname="network1.cc.staging.cloud.sap",kubernetes_role="node",id="/",instance="network1.cc.staging.cloud.sap",zone="petting-zoo",job="kubernetes-cluster",species="network"} 4337.734031272 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",cpu="cpu41",id="/",zone="farm"} 26753.322003046 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="network",kubernetes_io_hostname="network0.cc.staging.cloud.sap",id="/",zone="petting-zoo",cpu="cpu18",instance="network0.cc.staging.cloud.sap",kubernetes_role="node",job="kubernetes-cluster"} 845.816275819 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",kubernetes_io_hostname="network1.cc.staging.cloud.sap",job="kubernetes-cluster",cpu="cpu17",id="/",instance="network1.cc.staging.cloud.sap",zone="petting-zoo",species="network"} 1083.042334516 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu32"} 16055.703606267 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",zone="petting-zoo",instance="network1.cc.staging.cloud.sap",job="kubernetes-cluster",species="network",cpu="cpu33",kubernetes_role="node",kubernetes_io_hostname="network1.cc.staging.cloud.sap"} 2197.549645554 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap",species="network",cpu="cpu20",id="/",instance="network1.cc.staging.cloud.sap",kubernetes_role="node",job="kubernetes-cluster"} 1791.19306615 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion1.cc.staging.cloud.sap",cpu="cpu02",kubernetes_role="node",species="hypervisor",id="/",instance="minion1.cc.staging.cloud.sap",zone="petting-zoo",job="kubernetes-cluster"} 2163.354057138 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network0.cc.staging.cloud.sap",id="/",job="kubernetes-cluster",instance="network0.cc.staging.cloud.sap",species="network",zone="petting-zoo",kubernetes_role="node",cpu="cpu59"} 607.941907644 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu41",id="/",zone="farm"} 12607.921673512 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu64",kubernetes_io_hostname="network0.cc.staging.cloud.sap",kubernetes_role="node",id="/",job="kubernetes-cluster",zone="petting-zoo",instance="network0.cc.staging.cloud.sap",species="network"} 720.129304754 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",species="hypervisor",job="kubernetes-cluster",cpu="cpu17",id="/",instance="minion1.cc.staging.cloud.sap",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",zone="petting-zoo"} 789.972349721 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",cpu="cpu17"} 26980.340258769 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",cpu="cpu33",id="/",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap"} 31910.227030046 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",zone="petting-zoo",job="kubernetes-cluster",kubernetes_role="node",species="network",kubernetes_io_hostname="network1.cc.staging.cloud.sap",cpu="cpu25",instance="network1.cc.staging.cloud.sap"} 1196.665512936 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",cpu="cpu36"} 29871.804594664 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",id="/",species="hypervisor",job="kubernetes-cluster",cpu="cpu21",instance="minion1.cc.staging.cloud.sap",kubernetes_role="node",kubernetes_io_hostname="minion1.cc.staging.cloud.sap"} 945.909085993 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="hypervisor",id="/",kubernetes_role="node",cpu="cpu77",job="kubernetes-cluster",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",zone="petting-zoo",instance="minion1.cc.staging.cloud.sap"} 624.814538072 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu65",id="/",instance="master2.cc.staging.cloud.sap"} 12606.99002328 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu06",id="/",instance="master2.cc.staging.cloud.sap"} 62745.042929017 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu58",id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node"} 9354.619395111 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network1.cc.staging.cloud.sap",instance="network1.cc.staging.cloud.sap",job="kubernetes-cluster",id="/",kubernetes_role="node",species="network",cpu="cpu10",zone="petting-zoo"} 3952.85040457 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",species="network",id="/",instance="network0.cc.staging.cloud.sap",zone="petting-zoo",cpu="cpu09",kubernetes_io_hostname="network0.cc.staging.cloud.sap",kubernetes_role="node"} 3193.664342093 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu12",id="/",zone="farm",kubernetes_role="node",job="kubernetes-cluster"} 27753.809333981 1469979610856
+# TYPE bind_responses_total untyped
+bind_responses_total{kubernetes_name="bind3",job="bind3-eu-de-1",instance="10.45.26.137:8080",result="Nxrrset"} 1373 1469979626961
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu06",id="/",zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap"} 104119.820314296 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu04",id="/",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm"} 108371.67927279 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu18",id="/"} 14992.717707866 1469979583329
+# TYPE bind_responses_total untyped
+bind_responses_total{kubernetes_namespace="dns",instance="100.68.0.12:9119",result="SERVFAIL",kubernetes_name="bind1",job="kubernetes-service-endpoints",kubernetes_role="endpoint"} 0 1469979598790
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",cpu="cpu68",zone="petting-zoo",id="/",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",species="hypervisor",job="kubernetes-cluster",instance="minion1.cc.staging.cloud.sap"} 482.433506696 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu46",id="/"} 29916.359778089 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu28",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",zone="petting-zoo",kubernetes_role="node",instance="minion1.cc.staging.cloud.sap",species="hypervisor",job="kubernetes-cluster",id="/"} 883.103137592 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu47",id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node"} 21354.813914008 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",cpu="cpu78",kubernetes_role="node",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",zone="petting-zoo",id="/",species="hypervisor",instance="minion1.cc.staging.cloud.sap"} 671.038770977 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",kubernetes_io_hostname="network0.cc.staging.cloud.sap",job="kubernetes-cluster",zone="petting-zoo",cpu="cpu11",instance="network0.cc.staging.cloud.sap",species="network",id="/"} 1683.370846568 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu04"} 67885.619253376 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",id="/",zone="petting-zoo",cpu="cpu12",species="network",kubernetes_io_hostname="network0.cc.staging.cloud.sap",job="kubernetes-cluster",instance="network0.cc.staging.cloud.sap"} 1242.55221522 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu78",id="/",zone="farm",kubernetes_role="node",job="kubernetes-cluster"} 9692.497123842 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network1.cc.staging.cloud.sap",job="kubernetes-cluster",zone="petting-zoo",instance="network1.cc.staging.cloud.sap",cpu="cpu73",id="/",species="network",kubernetes_role="node"} 898.667579587 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",zone="farm",cpu="cpu01",id="/",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap"} 82705.110686464 1469979584853
+# TYPE container_start_time_seconds untyped
+container_start_time_seconds{job="kubernetes-cluster",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",zone="petting-zoo",kubernetes_role="node",id="/",instance="minion1.cc.staging.cloud.sap",species="hypervisor"} 1.46979383e+09 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",cpu="cpu19",id="/",species="network",instance="network0.cc.staging.cloud.sap",kubernetes_io_hostname="network0.cc.staging.cloud.sap",job="kubernetes-cluster",kubernetes_role="node"} 836.87850336 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="network0.cc.staging.cloud.sap",id="/",kubernetes_io_hostname="network0.cc.staging.cloud.sap",zone="petting-zoo",kubernetes_role="node",job="kubernetes-cluster",cpu="cpu00",species="network"} 3852.010152139 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",cpu="cpu65",id="/",kubernetes_role="node"} 4573.654488034 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",instance="network0.cc.staging.cloud.sap",kubernetes_io_hostname="network0.cc.staging.cloud.sap",job="kubernetes-cluster",species="network",id="/",zone="petting-zoo",cpu="cpu66"} 732.190992337 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",zone="petting-zoo",kubernetes_io_hostname="network0.cc.staging.cloud.sap",cpu="cpu21",id="/",species="network",job="kubernetes-cluster",instance="network0.cc.staging.cloud.sap"} 1188.607924113 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",job="kubernetes-cluster",kubernetes_role="node",cpu="cpu06",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",instance="minion1.cc.staging.cloud.sap",zone="petting-zoo",species="hypervisor"} 1750.709545537 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu09",id="/",zone="farm"} 99421.758696923 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",cpu="cpu57",id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap"} 4873.482902666 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu26",id="/",zone="petting-zoo",instance="minion1.cc.staging.cloud.sap",job="kubernetes-cluster",kubernetes_role="node",species="hypervisor",kubernetes_io_hostname="minion1.cc.staging.cloud.sap"} 904.792876801 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu75",id="/",zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap"} 9768.999916603 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu00",instance="minion1.cc.staging.cloud.sap",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",job="kubernetes-cluster",zone="petting-zoo",species="hypervisor",kubernetes_role="node",id="/"} 4207.828703899 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",cpu="cpu24",id="/",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node"} 30565.035279483 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu42",id="/"} 30678.315199294 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu59",id="/"} 4766.66226255 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion1.cc.staging.cloud.sap",id="/",instance="minion1.cc.staging.cloud.sap",zone="petting-zoo",job="kubernetes-cluster",species="hypervisor",kubernetes_role="node",cpu="cpu57"} 609.578886377 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu25",id="/",zone="farm"} 30089.325309272 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu37",id="/",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node",job="kubernetes-cluster"} 28128.423234265 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",cpu="cpu14",id="/",zone="farm",kubernetes_role="node"} 27418.445320896 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm",cpu="cpu42"} 22396.951783755 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu35",id="/",zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap"} 15320.094522781 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu66",instance="minion1.cc.staging.cloud.sap",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",id="/",job="kubernetes-cluster",species="hypervisor",zone="petting-zoo",kubernetes_role="node"} 477.972480164 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",id="/",kubernetes_role="node",cpu="cpu23",instance="minion1.cc.staging.cloud.sap",zone="petting-zoo",species="hypervisor"} 910.477404247 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network1.cc.staging.cloud.sap",instance="network1.cc.staging.cloud.sap",cpu="cpu11",species="network",id="/",zone="petting-zoo",kubernetes_role="node",job="kubernetes-cluster"} 2900.938739356 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="hypervisor",cpu="cpu44",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",id="/",zone="petting-zoo",job="kubernetes-cluster",kubernetes_role="node",instance="minion1.cc.staging.cloud.sap"} 713.323832286 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",cpu="cpu10",id="/"} 45569.963179376 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",cpu="cpu55",species="hypervisor",job="kubernetes-cluster",instance="minion1.cc.staging.cloud.sap",id="/",zone="petting-zoo"} 575.610393026 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network1.cc.staging.cloud.sap",instance="network1.cc.staging.cloud.sap",species="network",id="/",job="kubernetes-cluster",cpu="cpu15",zone="petting-zoo",kubernetes_role="node"} 1344.017054078 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",id="/",species="hypervisor",job="kubernetes-cluster",cpu="cpu52",instance="minion1.cc.staging.cloud.sap",kubernetes_role="node"} 887.395132318 1469979587194
+# TYPE bind_incoming_queries_total untyped
+bind_incoming_queries_total{type="CNAME",kubernetes_name="bind3",job="bind3-eu-de-1",instance="10.45.26.137:8080"} 85 1469979626961
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",species="network",cpu="cpu08",kubernetes_io_hostname="network0.cc.staging.cloud.sap",id="/",kubernetes_role="node",instance="network0.cc.staging.cloud.sap",zone="petting-zoo"} 3546.686358805 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",zone="petting-zoo",job="kubernetes-cluster",instance="network1.cc.staging.cloud.sap",cpu="cpu28",id="/",kubernetes_io_hostname="network1.cc.staging.cloud.sap",species="network"} 1098.051850989 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",zone="farm",cpu="cpu52",id="/",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap"} 5039.002359519 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",job="kubernetes-cluster",cpu="cpu50",species="network",kubernetes_role="node",zone="petting-zoo",instance="network1.cc.staging.cloud.sap",kubernetes_io_hostname="network1.cc.staging.cloud.sap"} 843.347030462 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node",cpu="cpu28"} 28908.576870569 1469979610856
+# TYPE container_memory_usage_bytes untyped
+container_memory_usage_bytes{kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm"} 9.6847798272e+10 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",instance="network0.cc.staging.cloud.sap",cpu="cpu37",zone="petting-zoo",species="network",job="kubernetes-cluster",kubernetes_io_hostname="network0.cc.staging.cloud.sap",id="/"} 966.068938046 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",cpu="cpu65",id="/"} 11488.414526198 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",job="kubernetes-cluster",cpu="cpu54",id="/",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",zone="farm"} 10869.462147536 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",id="/",kubernetes_io_hostname="network1.cc.staging.cloud.sap",instance="network1.cc.staging.cloud.sap",kubernetes_role="node",zone="petting-zoo",species="network",cpu="cpu71"} 1030.805685675 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="network",cpu="cpu01",job="kubernetes-cluster",zone="petting-zoo",kubernetes_io_hostname="network0.cc.staging.cloud.sap",kubernetes_role="node",instance="network0.cc.staging.cloud.sap",id="/"} 4505.515556451 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion1.cc.staging.cloud.sap",zone="petting-zoo",species="hypervisor",job="kubernetes-cluster",id="/",instance="minion1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu03"} 1945.026667997 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu25",instance="minion1.cc.staging.cloud.sap",species="hypervisor",id="/",job="kubernetes-cluster",zone="petting-zoo"} 929.034528107 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",zone="petting-zoo",id="/",instance="minion1.cc.staging.cloud.sap",species="hypervisor",cpu="cpu18",job="kubernetes-cluster"} 778.059410344 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="network",kubernetes_io_hostname="network1.cc.staging.cloud.sap",instance="network1.cc.staging.cloud.sap",zone="petting-zoo",id="/",kubernetes_role="node",job="kubernetes-cluster",cpu="cpu58"} 690.84773832 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu34",id="/",zone="farm",kubernetes_role="node"} 29621.084310378 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",cpu="cpu78",id="/"} 4483.370531797 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu10",id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster"} 35995.254779215 1469979584853
+# TYPE bind_up untyped
+bind_up{job="bind3-eu-de-1",instance="10.45.26.137:8080",kubernetes_name="bind3"} 1 1469979626961
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",kubernetes_io_hostname="network1.cc.staging.cloud.sap",zone="petting-zoo",kubernetes_role="node",species="network",instance="network1.cc.staging.cloud.sap",cpu="cpu78",id="/"} 997.466972776 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="petting-zoo",instance="network0.cc.staging.cloud.sap",job="kubernetes-cluster",species="network",kubernetes_io_hostname="network0.cc.staging.cloud.sap",id="/",cpu="cpu14",kubernetes_role="node"} 981.616502821 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",instance="minion1.cc.staging.cloud.sap",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",job="kubernetes-cluster",id="/",zone="petting-zoo",species="hypervisor",cpu="cpu24"} 933.644431236 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap",kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu47",id="/"} 29688.608211368 1469979610856
+# TYPE container_memory_usage_bytes untyped
+container_memory_usage_bytes{kubernetes_io_hostname="minion1.cc.staging.cloud.sap",zone="petting-zoo",kubernetes_role="node",instance="minion1.cc.staging.cloud.sap",species="hypervisor",job="kubernetes-cluster",id="/"} 2.066276352e+09 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="network0.cc.staging.cloud.sap",species="network",zone="petting-zoo",id="/",instance="network0.cc.staging.cloud.sap",cpu="cpu34",kubernetes_role="node",job="kubernetes-cluster"} 967.843090762 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",cpu="cpu07",id="/",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",zone="farm"} 55822.099381816 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion0.cc.staging.cloud.sap",cpu="cpu16",id="/",zone="farm",kubernetes_role="node",job="kubernetes-cluster",instance="minion0.cc.staging.cloud.sap"} 25837.778663399 1469979610856
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",kubernetes_role="node",species="network",instance="network1.cc.staging.cloud.sap",zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap",job="kubernetes-cluster",cpu="cpu06"} 2241.195152425 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu75",kubernetes_role="node",instance="network1.cc.staging.cloud.sap",species="network",zone="petting-zoo",job="kubernetes-cluster",kubernetes_io_hostname="network1.cc.staging.cloud.sap",id="/"} 821.19187375 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",kubernetes_io_hostname="master2.cc.staging.cloud.sap",cpu="cpu76",id="/",instance="master2.cc.staging.cloud.sap",job="kubernetes-cluster",zone="farm"} 9264.086015064 1469979584853
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu59",instance="minion1.cc.staging.cloud.sap",species="hypervisor",job="kubernetes-cluster",kubernetes_io_hostname="minion1.cc.staging.cloud.sap",id="/",zone="petting-zoo",kubernetes_role="node"} 580.569601334 1469979587194
+# TYPE container_start_time_seconds untyped
+container_start_time_seconds{job="kubernetes-cluster",instance="master1.cc.staging.cloud.sap",kubernetes_io_hostname="master1.cc.staging.cloud.sap",kubernetes_role="node",id="/",zone="farm"} 1.469539705e+09 1469979583329
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu78",species="network",zone="petting-zoo",kubernetes_io_hostname="network0.cc.staging.cloud.sap",job="kubernetes-cluster",instance="network0.cc.staging.cloud.sap",kubernetes_role="node",id="/"} 796.536118138 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_role="node",id="/",zone="petting-zoo",species="network",cpu="cpu60",instance="network0.cc.staging.cloud.sap",job="kubernetes-cluster",kubernetes_io_hostname="network0.cc.staging.cloud.sap"} 731.526547033 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{cpu="cpu05",kubernetes_io_hostname="network0.cc.staging.cloud.sap",zone="petting-zoo",instance="network0.cc.staging.cloud.sap",job="kubernetes-cluster",species="network",kubernetes_role="node",id="/"} 4808.063131588 1469979592373
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{species="network",kubernetes_role="node",job="kubernetes-cluster",instance="network1.cc.staging.cloud.sap",cpu="cpu47",kubernetes_io_hostname="network1.cc.staging.cloud.sap",id="/",zone="petting-zoo"} 844.332378644 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{kubernetes_io_hostname="minion1.cc.staging.cloud.sap",zone="petting-zoo",id="/",instance="minion1.cc.staging.cloud.sap",kubernetes_role="node",job="kubernetes-cluster",species="hypervisor",cpu="cpu29"} 868.064235748 1469979587194
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{id="/",kubernetes_role="node",kubernetes_io_hostname="network1.cc.staging.cloud.sap",cpu="cpu68",job="kubernetes-cluster",species="network",instance="network1.cc.staging.cloud.sap",zone="petting-zoo"} 716.347678984 1469979619956
+# TYPE container_memory_usage_bytes untyped
+container_memory_usage_bytes{kubernetes_role="node",species="network",zone="petting-zoo",kubernetes_io_hostname="network1.cc.staging.cloud.sap",job="kubernetes-cluster",id="/",instance="network1.cc.staging.cloud.sap"} 2.062905344e+09 1469979619956
+# TYPE container_cpu_usage_seconds_total untyped
+container_cpu_usage_seconds_total{instance="minion1.cc.staging.cloud.sap",zone="petting-zoo",job="kubernetes-cluster",species="hypervisor",cpu="cpu13",id="/",kubernetes_role="node",kubernetes_io_hostname="minion1.cc.staging.cloud.sap"} 915.001124797 1469979587194
+# TYPE bind_incoming_queries_total untyped
+bind_incoming_queries_total{type="SOA",kubernetes_name="bind3",job="bind3-eu-de-1",instance="10.45.26.137:8080"} 758 1469979626961

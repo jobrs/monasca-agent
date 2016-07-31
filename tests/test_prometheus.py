@@ -8,7 +8,7 @@ from monasca_agent.collector.checks_d.prometheus import Prometheus
 
 dir = os.getcwd()
 prometheus_metrics_t0 = "file://" + os.path.join(dir, 'prometheus_metrics_t0')
-prometheus_metrics_t1 = "https://prometheus.staging.cloud.sap/federate"
+prometheus_metrics_t1 = "file://" + os.path.join(dir, 'prometheus_metrics_t1') # "https://prometheus.staging.cloud.sap/federate"
 
 LOCAL_CONFIG = {'name': 'prometheus-federate',
                 'url': prometheus_metrics_t0,  # pass in sample prometheus metrics via file
@@ -40,8 +40,20 @@ FEDERATE_CONFIG = {'name': 'Prometheus',
                                'gauges': ['bind_(up)'],
                                'rates': ['bind_(incoming_queries)_total', 'bind_(responses)_total'],
                                'dimensions': {
-                                   "kubernetes.container_name": "kubernetes_name"
+                                   "kubernetes.container_name": "kubernetes_name",
+                                   "dns.bind_result": "result",
+                                   "dns.bind_type": "type"
                                },
+                           },
+                           'kubernetes': {
+                               'gauges': ['(container_start_time_sec)onds', 'container_memory_usage_bytes'],
+                               'rates': ['(container_cpu_usage_sec)onds_total', '(container_network_.*_packages)_total'],
+                               'dimensions': {
+                                    'kubernetes.container_name': 'kubernetes_container_name',
+                                    'hostname': 'kubernetes_io_hostname',
+                                    'kubernetes.cpu': 'cpu',
+                                    'kubernetes.zone': 'zone'
+                               }
                            }
                        }
                    }}
@@ -51,14 +63,8 @@ METRICS_FAMILIES = ["container_cpu_system_seconds_total",
                     "container_fs_io_time_seconds_total",
                     "container_fs_write_seconds_total"]
 
-CONFIG = {'init_config': {}, 'instances': [LOCAL_CONFIG]}
+CONFIG = {'init_config': {}, 'instances': [LOCAL_CONFIG, FEDERATE_CONFIG]}
 
-
-# kubernetes:
-# gauges: ['(container_start_time_sec)onds', 'container_memory_usage_bytes']
-# rates: ['(container_cpu_usage_sec)onds_total', '(container_network_.*_packages)_total']
-# dimensions:
-# kubernetes.container_name: kubernetes_container_name
 
 class TestPrometheusClientScraping(unittest.TestCase):
     def setUp(self):
@@ -97,6 +103,7 @@ class TestPrometheusClientScraping(unittest.TestCase):
                 0],
             'apiserver')
 
+        self.assertTrue('kubernetes.container_start_time_sec' in metric_family_names)
 
 if __name__ == '__main__':
     t = TestPrometheusClientScraping()
