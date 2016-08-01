@@ -8,7 +8,8 @@ from monasca_agent.collector.checks_d.prometheus import Prometheus
 
 dir = os.getcwd()
 prometheus_metrics_t0 = "file://" + os.path.join(dir, 'prometheus_metrics_t0')
-prometheus_metrics_t1 = "file://" + os.path.join(dir, 'prometheus_metrics_t1') # "https://prometheus.staging.cloud.sap/federate"
+prometheus_metrics_t1 = "file://" + os.path.join(dir, 'prometheus_metrics_t1')
+#prometheus_metrics_t1 = "https://prometheus.staging.cloud.sap/federate"
 
 LOCAL_CONFIG = {'name': 'prometheus-federate',
                 'url': prometheus_metrics_t0,  # pass in sample prometheus metrics via file
@@ -32,8 +33,10 @@ FEDERATE_CONFIG = {'name': 'Prometheus',
                    'mapping': {
                        'dimensions': {
                            'resource': 'resource',
+                           'kubernetes.container_name': 'kubernetes_container_name',
                            'kubernetes.namespace': 'kubernetes_namespace',
-                           'kubernetes.pod_name': 'kubernetes_pod_name'
+                           'kubernetes.pod_name': 'kubernetes_pod_name',
+                           'hostname': 'kubernetes_io_hostname',
                        },
                        'groups': {
                            'dns.bind': {
@@ -47,12 +50,30 @@ FEDERATE_CONFIG = {'name': 'Prometheus',
                            },
                            'kubernetes': {
                                'gauges': ['(container_start_time_sec)onds', 'container_memory_usage_bytes'],
-                               'rates': ['(container_cpu_usage_sec)onds_total', '(container_network_.*_packages)_total'],
+                               'rates': ['(container_cpu_usage_sec)onds_total',
+                                         '(container_network_.*_packages)_total'],
                                'dimensions': {
-                                    'kubernetes.container_name': 'kubernetes_container_name',
-                                    'hostname': 'kubernetes_io_hostname',
-                                    'kubernetes.cpu': 'cpu',
-                                    'kubernetes.zone': 'zone'
+                                   'kubernetes.cpu': {
+                                       'source_key': 'cpu',
+                                       'regex': 'cpu(.*)',
+                                   },
+                                   'kubernetes.zone': 'zone'
+                               }
+                           },
+                           'wsgi': {
+                               'rates': ['.*_(reponses)_by_api_counter', '.*_(requests)_total_counter'],
+                               'gauges': ['.*_(latency)_by_api_timer'],
+                               'dimensions': {
+                                   'status': 'status',
+                                   'instance_port': {
+                                       'regex': '.*:([0-9]+)', 'source_key': 'instance'
+                                   },
+                                   'le': 'le', 'service': 'component',
+                                   'instance_host': {
+                                       'regex': '(.*):[0-9]+',
+                                       'source_key': 'instance'
+                                   },
+                                   'quantile': 'quantile', 'api': 'api', 'method': 'method'
                                }
                            }
                        }
@@ -104,6 +125,8 @@ class TestPrometheusClientScraping(unittest.TestCase):
             'apiserver')
 
         self.assertTrue('kubernetes.container_start_time_sec' in metric_family_names)
+        self.assertTrue('kubernetes.container_memory_usage_bytes' in metric_family_names)
+        self.assertTrue('wsgi.latency' in metric_family_names)
 
 if __name__ == '__main__':
     t = TestPrometheusClientScraping()

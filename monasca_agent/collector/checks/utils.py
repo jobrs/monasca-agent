@@ -66,18 +66,28 @@ class DynamicCheckHelper:
         Describes how to transform dictionary like metadata attached to a metric into Monasca dimensions
         """
 
-        def __init__(self, dimension, regex='(.*)'):
+        def __init__(self, dimension, regex='(.*)', separator=None):
             """
             :param dimension to be mapped to
             :param regex: regular expression used to extract value from source value
             """
             self.dimension = dimension
             self.regex = regex
+            self.separator = separator
             self.cregex = re.compile(regex) if regex != '(.*)' else None
 
         def map_value(self, source_value):
+            """
+            transform source value into target dimension value
+            :param source_value: label value to transform
+            :return: transformed dimension value or None if the regular expression did not match
+            """
             if self.cregex:
-                return DynamicCheckHelper._normalize_dim_value(self.cregex.match(source_value).group(1))
+                match_groups = self.cregex.match(source_value)
+                if match_groups:
+                    return DynamicCheckHelper._normalize_dim_value(self.separator.join(match_groups.groups()))
+                else:
+                    return None
             else:
                 return DynamicCheckHelper._normalize_dim_value(source_value)
 
@@ -92,14 +102,16 @@ class DynamicCheckHelper:
         for dim, spec in config.get('dimensions', {}).iteritems():
             if isinstance(spec, dict):
                 label = spec.get('source_key', dim)
+                sepa = spec.get('separator', '-')
                 regex = spec.get('regex', '(.*)')
             else:
                 label = spec
                 regex = '(.*)'
+                sepa = None
 
             # note: source keys can be mapped to multiple dimensions
             arr = result.get(label, [])
-            mapping = DynamicCheckHelper.DimMapping(dimension=dim, regex=regex)
+            mapping = DynamicCheckHelper.DimMapping(dimension=dim, regex=regex, separator=sepa)
             arr.append(mapping)
             result[label] = arr
 
@@ -144,11 +156,15 @@ class DynamicCheckHelper:
         b) Complex mapping:
 
             <dimension>:
-               source_key: <source_key>             # key as provided by metric source
-               regex: <mapping_pattern>             # regular expression with a single match-group in braces
+               source_key: <source_key>             # key as provided by metric source (default: <dimension>)
+               regex: <mapping_pattern>             # regular expression (default: '(.*)' = identity)
+               separator: <match_group_separator>   # concatenate match-groups \1, \2, ... in regex with separator (default: '-')
 
-            The regex is applied to the dimension value. The match-group denotes the extracted part of the dimension
-            value. The rest is ignored
+
+            The regex is applied to the dimension value. If the regular expression does not match, then the metric
+            is ignored. If match-groups are part of the regular expression then the regex is used for value
+            transformation: The resulting dimension value is created by concatenating all match groups (in braces),
+            using the specified separator (default: '-'). If not match-group is specified, then the value is passed through unchanged.
 
         Both metrics and dimension can be defined globally or as part of a group. When a metric is specified in a group,
         then the group name is used as a prefix to the metric and the group-specific dimension mappings take precedence
@@ -481,6 +497,10 @@ class DynamicCheckHelper:
         metric_name = metric_prefix + metric_entry.metric_name
         # determine the target dimensions
         dims = self._map_dimensions(instance['name'], labels, group, default_dimensions)
+        if dims is None:
+            # regex for at least one dimension filtered the metric out
+            return True
+
         # apply fixed default dimensions
         if fixed_dimensions:
             dims.update(fixed_dimensions)
@@ -521,7 +541,7 @@ class DynamicCheckHelper:
         :param group:
         :param instance_name:
         :param labels:
-        :return:
+        :return: mapped dimensions or None if the dimensions filter did not match and the metric needs to be filtered
         """
         dims = default_dimensions.copy()
         #  map all specified dimension all keys
@@ -535,11 +555,16 @@ class DynamicCheckHelper:
                     target_dim = map_spec.dimension
                     # apply the mapping function to the value
                     if target_dim not in dims:  # do not overwrite
-                        dims[target_dim] = map_spec.map_value(labelvalue)
+                        mapped_value = map_spec.map_value(labelvalue)
+                        if mapped_value is None:
+                            # None means: filter it out based on dimension value
+                            return None
+                        dims[target_dim] = mapped_value
                 except (IndexError, AttributeError):  # probably the regex was faulty
                     log.exception(
                         'dimension %s value could not be mapped from %s: regex for mapped dimension %s does not match %s',
                         target_dim, labelvalue, labelname, map_spec.regex)
+                    return None
 
         return dims
 
