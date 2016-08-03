@@ -84,13 +84,15 @@ class Prometheus(services_checks.ServicesCheck):
     def _update_container_metrics(self, instance, metric_name, container, metric_type=None, timestamp=None,
                                   fixed_dimensions=None):
 
-        if metric_type == 'untyped':
-            metric_type = None
+        # TBD determine metric from Prometheus input
+
+        labels = container[1]
+        value = float(container[2])
 
         self._publisher.push_metric(instance,
                                     metric=metric_name,
-                                    value=container[2],
-                                    labels=container[1],
+                                    value=value,
+                                    labels=labels,
                                     timestamp=timestamp,
                                     fixed_dimensions=fixed_dimensions)
 

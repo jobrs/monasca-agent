@@ -100,7 +100,7 @@ class TestPrometheusClientScraping(unittest.TestCase):
     def testEndpointScraping(self):
         # check parsing and pushing metrics works
         self.check.run()
-        time.sleep(2)
+        time.sleep(5)
         self.check.run()
 
         time.sleep(2)

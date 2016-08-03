@@ -129,7 +129,7 @@ class MonascaAPI(object):
                 self.url = self.keystone.get_monasca_url()
             return monascaclient.client.Client(self.api_version, self.url, write_timeout=self.write_timeout, **kwargs)
         else:
-            self._failed_auth_cnt += 0
+            self._failed_auth_cnt += 1
             self._handle_auth_fail()
 
         return None
