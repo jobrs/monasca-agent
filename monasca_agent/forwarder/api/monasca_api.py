@@ -172,14 +172,15 @@ class MonascaAPI(object):
         return False
 
     def _handle_auth_fail(self):
-        self._failure_reason = 'The Monasca agent user {0} cannot be authenticated. '.format(
-            self.config.get('username'))
+        self._failure_reason = 'The Monasca agent user {0} cannot be authenticated (attempt {1}).'.format(
+            self.config.get('username'), self._failed_auth_cnt)
         log.error(self._failure_reason)
-        wait_time = random.randint(MonascaAPI.MIN_AUTH_BACKOFF,
-                                   min(2 ** self._failed_auth_cnt * MonascaAPI.MIN_AUTH_BACKOFF,
+        factor = 2 ** self._failed_auth_cnt
+        wait_time = random.randint(factor * MonascaAPI.MIN_AUTH_BACKOFF,
+                                   min((factor+1) * MonascaAPI.MIN_AUTH_BACKOFF,
                                        MonascaAPI.MAX_AUTH_BACKOFF))
         self._resume_time = time.time() + wait_time
-        log.error("%s: Waiting %d seconds before getting new token.", self._failure_reason, wait_time)
+        log.error("%s - Waiting %d seconds before getting new token.", self._failure_reason, wait_time)
 
     def _queue_message(self, msg, reason):
         self.message_queue.append(msg)
