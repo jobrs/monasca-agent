@@ -6,6 +6,9 @@ Plugin to scrape prometheus endpoint
 from __future__ import print_function
 
 # Check if dependency is available
+import socket
+import urlparse
+
 try:
     import prometheus_client.parser as prometheus_client_parser
 except Exception:
@@ -54,6 +57,17 @@ class Prometheus(services_checks.ServicesCheck):
         if prometheus_client_parser is None:
             self.log.warning("Skipping prometheus plugin check due to missing 'prometheus_client' module.")
             return
+
+        parsed = urlparse.urlparse(instance['url'])
+        # Option: skip check if elasticsearch is not listening
+        if instance.get('skip_unavail', False):
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            result = sock.connect_ex(parsed.hostname, parsed.port)
+            sock.close()
+            if result != 0:
+                self.log.info("Prometheus not available at {}: skipping check", parsed.hostname, parsed.port)
+                return
+
         self._update_metrics(instance)
 
     # overriding method to catch Infinity exception
