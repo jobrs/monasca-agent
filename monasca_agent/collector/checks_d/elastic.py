@@ -265,13 +265,13 @@ class ElasticSearch(AgentCheck):
         if parsed[2] != "":
             config_url = "%s://%s" % (parsed[0], parsed[1])
 
-        # If localhost: skip check if elasticsearch is not reachable
+        # Option: skip check if elasticsearch is not listening
         if instance.get('skip_unavail', False):
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             result = sock.connect_ex(parsed.hostname, parsed.port)
             sock.close()
             if result != 0:
-                self.log.info("No ElasticSearch not available at {}: skipping check", parsed.hostname, parsed.port)
+                self.log.info("ElasticSearch not available at {}: skipping check", parsed.hostname, parsed.port)
                 return
 
         # Tag by URL so we can differentiate the metrics from multiple instances
