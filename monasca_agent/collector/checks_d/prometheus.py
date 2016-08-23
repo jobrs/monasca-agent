@@ -65,7 +65,7 @@ class Prometheus(services_checks.ServicesCheck):
             result = sock.connect_ex((parsed.hostname, parsed.port))
             sock.close()
             if result != 0:
-                self.log.info("Prometheus not available at {}: skipping check", parsed.hostname, parsed.port)
+                self.log.info("Prometheus not available at %s:%d skipping check", parsed.hostname, parsed.port)
                 return
 
         self._update_metrics(instance)
