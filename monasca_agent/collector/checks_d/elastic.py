@@ -241,8 +241,8 @@ class ElasticSearch(AgentCheck):
         "elasticsearch.pending_tasks_priority_urgent": ("gauge", "pending_tasks_priority_urgent")
     }
 
-    def __init__(self, name, init_config, agent_config):
-        AgentCheck.__init__(self, name, init_config, agent_config)
+    def __init__(self, name, init_config, agent_config, instances):
+        AgentCheck.__init__(self, name, init_config, agent_config, instances)
 
         # Host status needs to persist across all checks
         self.cluster_status = {}

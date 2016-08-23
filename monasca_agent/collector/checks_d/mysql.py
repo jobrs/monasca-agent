@@ -48,8 +48,8 @@ STATUS_VARS = {
 
 class MySql(checks.AgentCheck):
 
-    def __init__(self, name, init_config, agent_config):
-        super(MySql, self).__init__(name, init_config, agent_config)
+    def __init__(self, name, init_config, agent_config, instances):
+        super(MySql, self).__init__(name, init_config, agent_config, instances)
         self.mysql_version = {}
         self.greater_502 = {}
 
