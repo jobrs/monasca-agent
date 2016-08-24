@@ -9,6 +9,8 @@ from __future__ import print_function
 import socket
 import urlparse
 
+import math
+
 try:
     import prometheus_client.parser as prometheus_client_parser
 except Exception:
@@ -102,6 +104,10 @@ class Prometheus(services_checks.ServicesCheck):
 
         labels = container[1]
         value = float(container[2])
+        if math.isnan(value):
+            self.log.debug('filtering out NaN value provided for metric %s{%s}', metric_name, labels)
+            return
+
 
         self._publisher.push_metric(instance,
                                     metric=metric_name,
