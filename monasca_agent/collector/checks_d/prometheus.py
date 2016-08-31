@@ -51,7 +51,14 @@ class Prometheus(services_checks.ServicesCheck):
             # for Prometheus federation URLs, set the name match filter according to the mapping
             if url.endswith('/federate'):
                 mapped_metrics = self._publisher.get_mapped_metrics(inst)
-                url += '?match[]={__name__=~"' + ("|".join(mapped_metrics)) + '"}'
+                url += '?match[]={__name__=~"' + ("|".join(mapped_metrics) + '"')
+                filter = inst.get('match_labels')
+                for key, value in inst.get('match_labels', {}).iteritems():
+                    if isinstance(value, list):
+                        url += ',{}=~"{}"'.format(key, "|".join(value))
+                    else:
+                        url += ',{}=~"{}"'.format(key, value)
+                url += '}'
                 log.info("Fetching from Prometheus federation URL: %s", url)
             self._urls[inst['name']] = url
 

@@ -9,7 +9,7 @@ from monasca_agent.collector.checks_d.prometheus import Prometheus
 dir = os.getcwd()
 prometheus_metrics_t0 = "file://" + os.path.join(dir, 'prometheus_metrics_t0')
 prometheus_metrics_t1 = "file://" + os.path.join(dir, 'prometheus_metrics_t1')
-#prometheus_metrics_t1 = "https://prometheus.staging.cloud.sap/federate"
+#prometheus_metrics_t1 = "https://prometheus.eu-de-1.cloud.sap/federate"
 
 LOCAL_CONFIG = {'name': 'prometheus-federate',
                 'url': prometheus_metrics_t0,  # pass in sample prometheus metrics via file
@@ -30,11 +30,16 @@ LOCAL_CONFIG = {'name': 'prometheus-federate',
 
 FEDERATE_CONFIG = {'name': 'Prometheus',
                    'url': prometheus_metrics_t1,  # pass in sample prometheus metrics via file
+                   'match_labels': {
+                     'job': ['kubernetes-cluster', 'test' ],
+                     'kubernetes_io_hostname': 'minion2.cc.eu-de-1.cloud.sap'
+                   },
                    'mapping': {
                        'dimensions': {
                            'resource': 'resource',
                            'kubernetes.container_name': 'kubernetes_container_name',
                            'kubernetes.namespace': 'kubernetes_namespace',
+                           'kubernetes.namespace': 'io_kubernetes_pod_namespace',
                            'kubernetes.pod_name': 'kubernetes_pod_name',
                            'hostname': 'kubernetes_io_hostname',
                        },
@@ -48,6 +53,19 @@ FEDERATE_CONFIG = {'name': 'Prometheus',
                                    "dns.bind_type": "type"
                                },
                            },
+                           'datapath': {
+                               'gauges': [ 'datapath_(.*_status)'],
+                               'dimensions': {
+                                   'status': 'status',
+                                   'instance_port': {
+                                       'regex': '.*:([0-9]+)', 'source_key': 'instance'
+                                   },
+                                   'instance_host': {
+                                       'regex': '(.*):[0-9]+',
+                                       'source_key': 'instance'
+                                   },
+                               }
+                           },
                            'kubernetes': {
                                'gauges': ['(container_start_time_sec)onds', 'container_memory_usage_bytes'],
                                'rates': ['(container_cpu_usage_sec)onds_total',
@@ -57,12 +75,13 @@ FEDERATE_CONFIG = {'name': 'Prometheus',
                                        'source_key': 'cpu',
                                        'regex': 'cpu(.*)',
                                    },
-                                   'kubernetes.zone': 'zone'
+                                   'kubernetes.zone': 'zone',
+                                   'kubernetes.cgroup.path': 'id'
                                }
                            },
                            'wsgi': {
-                               'rates': ['.*_(reponses)_by_api_counter', '.*_(requests)_total_counter'],
-                               'gauges': ['.*_(latency)_by_api_timer'],
+                               'rates': ['openstack_(reponses)_by_api_counter', 'openstack_(requests)_total_counter'],
+                               'gauges': ['openstack_(latency)_by_api_timer'],
                                'dimensions': {
                                    'status': 'status',
                                    'instance_port': {
@@ -100,13 +119,12 @@ class TestPrometheusClientScraping(unittest.TestCase):
     def testEndpointScraping(self):
         # check parsing and pushing metrics works
         self.check.run()
-        time.sleep(5)
+        time.sleep(65)
         self.check.run()
-
-        time.sleep(2)
+        time.sleep(65)
         metrics = self.check.get_metrics()
 
-        metric_family_names = [m.name for m in metrics]
+        metric_family_names = set([m.name for m in metrics])
 
         # check parsed metrics
         self.assertTrue(metrics)
@@ -124,6 +142,11 @@ class TestPrometheusClientScraping(unittest.TestCase):
                 0],
             'apiserver')
 
+        self.assertTrue('datapath.nslookup_common_status' in metric_family_names)
+        self.assertTrue('datapath.nslookup_vmware_instance_status' in metric_family_names)
+        self.assertTrue('datapath.tcp_connect_to_kvm_instance_status' in metric_family_names)
+        self.assertTrue('datapath.tcp_connect_to_vmware_instance_status' in metric_family_names)
+        self.assertTrue('datapath.nslookup_kvm_instance_status' in metric_family_names)
         self.assertTrue('kubernetes.container_start_time_sec' in metric_family_names)
         self.assertTrue('kubernetes.container_memory_usage_bytes' in metric_family_names)
         self.assertTrue('wsgi.latency' in metric_family_names)
