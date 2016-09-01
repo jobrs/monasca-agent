@@ -67,6 +67,9 @@ class SwiftRecon(checks.AgentCheck):
             m = re.match(r'^-> https?://([a-zA-Z0-9-.]+)\S*\s(.*)', line)
             if m:
                 hostname, json_str = m.group(1), m.group(2)
+                if not json_str.startswith("{"):
+                    log.error("Metric could not be determined for node {0} - {1}".format(hostname, json_str))
+                    continue
                 # json_str is not actually JSON, but Python stringification of
                 # dict; beat it into submission
                 json_str = re.sub(r"u'(.+?)'", r'"\1"', json_str)
