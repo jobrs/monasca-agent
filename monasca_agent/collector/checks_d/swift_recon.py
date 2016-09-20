@@ -67,7 +67,7 @@ class SwiftRecon(checks.AgentCheck):
             m = re.match(r'^-> https?://([a-zA-Z0-9-.]+)\S*\s(.*)', line)
             if m:
                 hostname, json_str = m.group(1), m.group(2)
-                if not json_str.startswith("{"):
+                if not json_str.startswith("{") or json_str.startswith("["):
                     log.error("swift-recon {0} erroneous for node {1}: {2}".format(params, hostname, json_str))
                     continue
                 # json_str is not actually JSON, but Python stringification of
