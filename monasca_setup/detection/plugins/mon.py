@@ -46,17 +46,19 @@ class MonAPI(monasca_setup.detection.Plugin):
         """Run detection, set self.available True if the service is detected."""
         monasca_api = monasca_setup.detection.find_process_cmdline('monasca-api')
         if monasca_api is not None:
+            self._api_port = 8070
+            self._admin_port = None
             # monasca-api can show up in urls and be an arg to this setup program, check port also
             # Find the right port from the config, this is specific to the Java version
             try:
                 with open('/etc/monasca/api-config.yml', 'r') as config:
                     self.api_config = yaml.load(config.read())
-                api_port = self.api_config['server']['applicationConnectors'][0]['port']
+                    self._api_port = self.api_config['server']['applicationConnectors'][0]['port']
+                    self._admin_port = self.api_config['server']['adminConnectors'][0]['port']
             except Exception:
-                api_port = 8070
-                log.warn('Failed parsing /etc/monasca/api-config.yml, defaulting api port to {0}'.format(api_port))
+                log.warn('Failed parsing /etc/monasca/api-config.yml, defaulting api port to {0}'.format(self._api_port))
             for conn in monasca_api.connections('inet'):
-                if conn.laddr[1] == api_port:
+                if conn.laddr[1] == self._api_port:
                     self.available = True
                     return
 
@@ -67,49 +69,52 @@ class MonAPI(monasca_setup.detection.Plugin):
         log.info("\tEnabling the Monasca api process check")
         config.merge(watch_process(['monasca-api'], 'monitoring', 'monasca-api', exact_match=False))
 
-        log.info("\tEnabling the Monasca api healthcheck")
-        config.merge(dropwizard_health_check('monitoring', 'monasca-api', 'http://localhost:8081/healthcheck'))
+        # configure DropWizard metrics only for Java API
+        if self._admin_port:
+            log.info("\tEnabling the Monasca api healthcheck")
+            metrics_url = 'http://localhost:{}/healthcheck'.format(self._admin_port)
+            config.merge(dropwizard_health_check('monitoring', 'monasca-api', metrics_url))
 
-        log.info("\tEnabling the Monasca api metrics")
-        whitelist = [
-            {
-                "name": "jvm.memory.total.max",
-                "path": "gauges/jvm.memory.total.max/value",
-                "type": "gauge"
-            },
-            {
-                "name": "jvm.memory.total.used",
-                "path": "gauges/jvm.memory.total.used/value",
-                "type": "gauge"
-            },
-            {
-                "name": "metrics.published",
-                "path": "meters/monasca.api.app.MetricService.metrics.published/count",
-                "type": "rate"
-            }
-        ]
-
-        if not self._is_hibernate_on():
-            # if hibernate is not used, it is mysql with DBI
-            # for that case having below entries makes sense
-            log.debug('MonApi has not enabled Hibernate, adding DBI metrics')
-            whitelist.extend([
+            log.info("\tEnabling the Monasca api metrics")
+            whitelist = [
                 {
-                    "name": "raw-sql.time.avg",
-                    "path": "timers/org.skife.jdbi.v2.DBI.raw-sql/mean",
+                    "name": "jvm.memory.total.max",
+                    "path": "gauges/jvm.memory.total.max/value",
                     "type": "gauge"
                 },
                 {
-                    "name": "raw-sql.time.max",
-                    "path": "timers/org.skife.jdbi.v2.DBI.raw-sql/max",
+                    "name": "jvm.memory.total.used",
+                    "path": "gauges/jvm.memory.total.used/value",
                     "type": "gauge"
+                },
+                {
+                    "name": "metrics.published",
+                    "path": "meters/monasca.api.app.MetricService.metrics.published/count",
+                    "type": "rate"
                 }
-            ])
+            ]
 
-        config.merge(dropwizard_metrics('monitoring',
-                                        'monasca-api',
-                                        'http://localhost:8081/metrics',
-                                        whitelist))
+            if not self._is_hibernate_on():
+                # if hibernate is not used, it is mysql with DBI
+                # for that case having below entries makes sense
+                log.debug('MonApi has not enabled Hibernate, adding DBI metrics')
+                whitelist.extend([
+                    {
+                        "name": "raw-sql.time.avg",
+                        "path": "timers/org.skife.jdbi.v2.DBI.raw-sql/mean",
+                        "type": "gauge"
+                    },
+                    {
+                        "name": "raw-sql.time.max",
+                        "path": "timers/org.skife.jdbi.v2.DBI.raw-sql/max",
+                        "type": "gauge"
+                    }
+                ])
+
+            config.merge(dropwizard_metrics('monitoring',
+                                            'monasca-api',
+                                            metrics_url,
+                                            whitelist))
 
         return config
 
