@@ -13,17 +13,16 @@ log = logging.getLogger(__name__)
 
 
 class MonascaAPI(object):
-
     """Sends measurements to MonascaAPI
         Any errors should raise an exception so the transaction calling
         this is not committed
     """
 
     LOG_INTERVAL = 10  # messages
-    MIN_BACKOFF = 10   # seconds
-    MAX_BACKOFF = 60   # seconds
-    MIN_AUTH_BACKOFF = 60   # seconds to wait after failed authentications (wrong password, locked user, no role)
-    MAX_AUTH_BACKOFF = 60*15   # max. time to wait (limit for exponential backoff)
+    MIN_BACKOFF = 10  # seconds
+    MAX_BACKOFF = 60  # seconds
+    MIN_AUTH_BACKOFF = 60  # seconds to wait after failed authentications (wrong password, locked user, no role)
+    MAX_AUTH_BACKOFF = 60 * 15  # max. time to wait (limit for exponential backoff)
 
     def __init__(self, config):
         """Initialize Mon api client connection."""
@@ -44,6 +43,8 @@ class MonascaAPI(object):
             self.amplifier = int(config['amplifier'])
         except KeyError:
             self.amplifier = None
+
+        random.seed()
 
     def _post(self, measurements, delegated_tenant=None):
         """Does the actual http post
@@ -176,9 +177,9 @@ class MonascaAPI(object):
             self.config.get('username'), self._failed_auth_cnt)
         log.error(self._failure_reason)
         factor = 2 ** self._failed_auth_cnt
-        wait_time = random.randint(factor * MonascaAPI.MIN_AUTH_BACKOFF,
-                                   min((factor+1) * MonascaAPI.MIN_AUTH_BACKOFF,
-                                       MonascaAPI.MAX_AUTH_BACKOFF))
+        wait_time = min(
+            random.randint(factor * MonascaAPI.MIN_AUTH_BACKOFF, (factor + 1) * MonascaAPI.MIN_AUTH_BACKOFF),
+            MonascaAPI.MAX_AUTH_BACKOFF)
         self._resume_time = time.time() + wait_time
         log.error("%s - Waiting %d seconds before getting new token.", self._failure_reason, wait_time)
 
