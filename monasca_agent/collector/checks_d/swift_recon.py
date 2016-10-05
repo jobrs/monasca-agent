@@ -1,4 +1,4 @@
-import json
+import ast
 import logging
 import re
 import subprocess
@@ -66,17 +66,13 @@ class SwiftRecon(checks.AgentCheck):
         for line in output.splitlines():
             m = re.match(r'^-> https?://([a-zA-Z0-9-.]+)\S*\s(.*)', line)
             if m:
-                hostname, json_str = m.group(1), m.group(2)
-                if not (json_str.startswith("{") or json_str.startswith("[")):
-                    log.error("swift-recon {0} erroneous for node {1}: {2}".format(params, hostname, json_str))
+                log.debug("Output from swift-recon {0}: {1}".format(" ".join(params), line))
+                hostname, data_str = m.group(1), m.group(2)
+                try:
+                    result[hostname] = ast.literal_eval(data_str)
+                except (ValueError, SyntaxError):
+                    log.error("swift-recon {0} erroneous for node {1}: {2}".format(params, hostname, data_str))
                     continue
-                # json_str is not actually JSON, but Python stringification of
-                # dict; beat it into submission
-                json_str = re.sub(r"u'(.+?)'", r'"\1"', json_str)
-                json_str = json_str.replace("'", '"')
-                json_str = json_str.replace(": False", ": false")
-                json_str = json_str.replace(": True", ": true")
-                result[hostname] = json.loads(json_str)
         return result
 
     ############################################################################
@@ -297,6 +293,8 @@ class SwiftRecon(checks.AgentCheck):
                 self.submit_gauge(metric, None, value, dimensions)
 
     def submit_gauge(self, metric, hostname, value, dimensions):
+        if value is None:
+            value = 0 ## fail-safe
         assert(type(value) in (types.IntType, types.LongType,
                                types.FloatType))
 
