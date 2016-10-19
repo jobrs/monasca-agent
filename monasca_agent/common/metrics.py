@@ -263,13 +263,13 @@ class Rate(Metric):
     def _rate(self, sample1, sample2):
         rate_interval = sample2[0] - sample1[0]
         if rate_interval == 0:
-            log.warn('Metric %s has an interval of 0. Not flushing.' % self.name)
+            log.warn('Metric %s {{%s}} has an interval of 0. Not flushing.', self.name, self.dimensions)
             raise Infinity()
 
         delta = sample2[1] - sample1[1]
         if delta < 0:
-            log.info('Metric %s has a rate < 0. Counter may have been Reset.' % self.name)
-            raise UnknownValue()
+            log.info('Metric %s {{%s}} has a rate < 0. Counter may have been Reset.', self.name, self.dimensions)
+            return 0
 
         return (delta / float(rate_interval))
 
