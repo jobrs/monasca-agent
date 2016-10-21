@@ -135,18 +135,20 @@ class Server(object):
             if m[0] == '@':
                 sample_rate = float(m[1:])
                 assert 0 <= sample_rate <= 1
-            # Parse dimensions
-            elif m[0] == '#':
-                dimensions = Server._parse_dogstatsd_tags(m)
+            # Parse dimensions, supporting both Monasca and DogStatsd extensions
+            elif m[0] == '#' and len(m) > 2:
+                if m[1] == '{':
+                    dimensions = ast.literal_eval(m[1:])
+                else:
+                    dimensions = Server._parse_dogstatsd_tags(m)
 
         return name, value, metric_type, dimensions, sample_rate
 
     @staticmethod
     def _parse_dogstatsd_tags(statsd_msg):
-        dimensions={}
+        dimensions = {}
         s = ''
-        key = None
-        value =None
+        key = ''
         for c in statsd_msg[1:]:
             if c == ':':
                 key=s
