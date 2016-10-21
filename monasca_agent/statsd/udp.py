@@ -137,9 +137,32 @@ class Server(object):
                 assert 0 <= sample_rate <= 1
             # Parse dimensions
             elif m[0] == '#':
-                dimensions = ast.literal_eval(m[1:])
+                dimensions = Server._parse_dogstatsd_tags(m)
 
         return name, value, metric_type, dimensions, sample_rate
+
+    @staticmethod
+    def _parse_dogstatsd_tags(statsd_msg):
+        dimensions={}
+        s = ''
+        key = None
+        value =None
+        for c in statsd_msg[1:]:
+            if c == ':':
+                key=s
+                s=''
+            elif c == ',':
+                if len(s) > 0 and len(key) > 0:
+                  dimensions[key] = s
+                key=None
+                s=''
+            else:
+                s += c
+        if len(s) > 0 and len(key) > 0:
+            dimensions[key] = s
+
+        # dimensions = {k: v for k, v in [tuple(tag.split(u':')) for tag in statsd_msg[1:].split(u',')]}
+        return dimensions
 
     def submit_packets(self, packets):
         for packet in packets.split("\n"):
