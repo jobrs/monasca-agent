@@ -7,7 +7,7 @@ import re
 from time import time
 
 import monasca_agent.common.metrics as metrics_pkg
-
+from monasca_agent.common.exceptions import Infinity, UnknownValue
 
 log = logging.getLogger(__name__)
 
@@ -106,8 +106,12 @@ class MetricsAggregator(object):
         for context, metric in self.metrics.items():
             try:
                 metrics.extend(metric.flush(timestamp))
+            except Infinity:
+                pass
+            except UnknownValue:
+                pass
             except Exception:
-                log.exception('Error flushing {0} metrics.'.format(metric.name))
+                log.exception('Error flushing {0} {1} metrics.'.format(metric.name, metric.dimensions))
 
         # Log a warning regarding metrics with old timestamps being submitted
         if self.num_discarded_old_points > 0:
