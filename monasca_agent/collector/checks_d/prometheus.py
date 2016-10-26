@@ -5,15 +5,12 @@ Plugin to scrape prometheus endpoint
 # This file uses 'print' as a function rather than a statement, a la Python3
 from __future__ import print_function
 
-# Check if dependency is available
-import socket
-import urlparse
-
 import math
-
 import requests
 
 # import prometheus client dependency dynamically
+from requests import RequestException
+
 try:
     import prometheus_client.parser as prometheus_client_parser
 except ImportError:
@@ -63,8 +60,6 @@ class Prometheus(services_checks.ServicesCheck):
             self.log.warning("Skipping prometheus plugin check due to missing 'prometheus_client' module.")
             return
 
-        parsed = urlparse.urlparse(instance['url'])
-
         self._update_metrics(instance)
 
     # overriding method to catch Infinity exception
@@ -111,8 +106,7 @@ class Prometheus(services_checks.ServicesCheck):
                                     timestamp=timestamp,
                                     fixed_dimensions=fixed_dimensions)
 
-    @staticmethod
-    def _retrieve_and_parse_metrics(url, timeout):
+    def _retrieve_and_parse_metrics(self, url, timeout):
         """
         Metrics from prometheus come in plain text from the endpoint and therefore need to be parsed.
         To do that the prometheus client's text_string_to_metric_families -method is used. That method returns a
@@ -133,18 +127,20 @@ class Prometheus(services_checks.ServicesCheck):
                                     ..] '
 
         :param url: the url of the prometheus metrics
-        :return: metric_families generator
+        :return: metric_families iterable
         """
-        body = requests.get(url, timeout=timeout).text
+        try:
+            body = requests.get(url, timeout=timeout).text
+        except RequestException:
+            self.log.exception("Retrieving metrics from endpoint %s failed: %s", url)
+            return []
+
         metric_families = prometheus_client_parser.text_string_to_metric_families(body)
         return metric_families
 
     def _update_metrics(self, instance):
         metric_families_generator = self._retrieve_and_parse_metrics(self._urls[instance['name']],
                                                                      int(instance.get('timeout', '5')))
-
-        if not metric_families_generator:
-            raise Exception('No metrics retrieved cmd=%s' % self.metrics_cmd)
 
         for metric_family in metric_families_generator:
             container = None
