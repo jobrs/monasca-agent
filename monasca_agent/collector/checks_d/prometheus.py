@@ -64,14 +64,6 @@ class Prometheus(services_checks.ServicesCheck):
             return
 
         parsed = urlparse.urlparse(instance['url'])
-        # Option: skip check if elasticsearch is not listening
-        if instance.get('skip_unavail', False):
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            result = sock.connect_ex((parsed.hostname, parsed.port))
-            sock.close()
-            if result != 0:
-                self.log.info("Prometheus not available at %s:%d skipping check", parsed.hostname, parsed.port)
-                return
 
         self._update_metrics(instance)
 
@@ -120,7 +112,7 @@ class Prometheus(services_checks.ServicesCheck):
                                     fixed_dimensions=fixed_dimensions)
 
     @staticmethod
-    def _retrieve_and_parse_metrics(url):
+    def _retrieve_and_parse_metrics(url, timeout):
         """
         Metrics from prometheus come in plain text from the endpoint and therefore need to be parsed.
         To do that the prometheus client's text_string_to_metric_families -method is used. That method returns a
@@ -143,12 +135,13 @@ class Prometheus(services_checks.ServicesCheck):
         :param url: the url of the prometheus metrics
         :return: metric_families generator
         """
-        body = requests.get(url).text
+        body = requests.get(url, timeout=timeout).text
         metric_families = prometheus_client_parser.text_string_to_metric_families(body)
         return metric_families
 
     def _update_metrics(self, instance):
-        metric_families_generator = self._retrieve_and_parse_metrics(self._urls[instance['name']])
+        metric_families_generator = self._retrieve_and_parse_metrics(self._urls[instance['name']],
+                                                                     int(instance.get('timeout', '5')))
 
         if not metric_families_generator:
             raise Exception('No metrics retrieved cmd=%s' % self.metrics_cmd)
