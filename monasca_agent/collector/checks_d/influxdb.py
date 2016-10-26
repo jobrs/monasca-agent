@@ -137,7 +137,7 @@ class InfluxDB(services_checks.ServicesCheck):
                         self.log.debug('InfluxDB did not report metric %s.%s', mod, met_iname)
 
     def _push_metric(self, metric_type, metric_name, metric_value, dimensions):
-        self.log.debug('push %s %s = %s {%s}', metric_type, metric_name, dimensions)
+        self.log.debug('push %s %s = %s %s', metric_type, metric_name, dimensions)
 
         if metric_type == RATE:
             self.rate(metric_name, float(metric_value), dimensions=dimensions)
