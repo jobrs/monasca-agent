@@ -130,7 +130,9 @@ class Prometheus(services_checks.ServicesCheck):
         :return: metric_families iterable
         """
         try:
-            body = requests.get(url, timeout=timeout).text
+            response = requests.get(url, timeout=timeout)
+            response.raise_for_status()
+            body = response.text
         except RequestException:
             self.log.exception("Retrieving metrics from endpoint %s failed: %s", url)
             return []
