@@ -16,6 +16,7 @@ class SwiftRecon(checks.AgentCheck):
         "storage.used",
         "storage.free",
         "storage.capacity",
+        "storage.used_percent",
         "md5.ring.matched",
         "md5.ring.not_matched",
         "md5.ring.errors",
@@ -197,6 +198,10 @@ class SwiftRecon(checks.AgentCheck):
 
     def storage_capacity(self):
         return self.storage('capacity')
+    
+    def storage_used_percent:
+        return self.storage['used'] / self.storage['capacity']
+                    
 
     # configuration consistency
 
@@ -281,8 +286,9 @@ class SwiftRecon(checks.AgentCheck):
 
             value = eval("self." + metric.replace(".", "_") + "()")
 
-            if metric.startswith('storage'):
+            if metric.startswith('storage') and not metric.endswith('percent'):
                 metric = metric + '_bytes'
+            
             metric = self.normalize(metric.lower(), 'swift.cluster')
 
             # value may be a dictionary with values by storage node...
