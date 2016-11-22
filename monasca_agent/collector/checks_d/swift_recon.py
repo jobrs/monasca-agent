@@ -285,7 +285,7 @@ class SwiftRecon(checks.AgentCheck):
             log.debug("Checking metric {0}".format(metric))
 
             value = eval("self." + metric.replace(".", "_") + "()")
-            
+
             if metric.startswith('storage') and not metric.endswith('percent'):
                 metric = metric + '_bytes'
             
