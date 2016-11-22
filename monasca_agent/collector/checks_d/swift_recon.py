@@ -88,6 +88,7 @@ class SwiftRecon(checks.AgentCheck):
                     if m.group(1) == 'used':
                         self.diskusage['used'] = long(m.group(2))
                         self.diskusage['capacity'] = long(m.group(3))
+                        self.diskusage['used_percent'] = self.diskusage['used'] / self.diskusage['capacity']
                     elif m.group(1) == 'free':
                         self.diskusage['free'] = long(m.group(2))
                 else:
@@ -199,8 +200,8 @@ class SwiftRecon(checks.AgentCheck):
     def storage_capacity(self):
         return self.storage('capacity')
     
-    def storage_used_percent:
-        return self.storage['used'] / self.storage['capacity']
+    def storage_used_percent(self):
+        return self.storage['used_percent']
                     
 
     # configuration consistency
