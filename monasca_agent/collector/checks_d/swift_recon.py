@@ -201,7 +201,7 @@ class SwiftRecon(checks.AgentCheck):
         return self.storage('capacity')
     
     def storage_used_percent(self):
-        return self.storage['used_percent']
+        return self.storage('used_percent')
                     
 
     # configuration consistency
