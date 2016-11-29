@@ -52,14 +52,14 @@ class DynamicCheckHelper:
         :param value:
         :return:
         Replace \\x?? values with _
-        Replace the following characters with _: > < = { } ( ) , ' " \ ; &
+        Replace illegal characters
+         - according to ANTLR grammar: ( '}' | '{' | '&' | '|' | '>' | '<' | '=' | ',' | ')' | '(' | ' ' | '"' )
+         - according to Python API validation: "<>={}(),\"\\\\|;&"
         Truncate to 255 chars
         """
 
-        return re.sub(r'["\']', '|', re.sub(r'[(}]', ']', re.sub(r'[({]', '[', re.sub(r'[\\><=,;&]', '-',
-                                                                                      value.replace(r'\x2d',
-                                                                                                    '-').replace(
-                                                                                          r'\x7e', '~')))))[:255]
+        return re.sub(r'[|\\;,&=\']', '-', re.sub(r'[(}>]', ']', re.sub(r'[({<]', '[', value.replace(r'\x2d', '-').
+                                                                        replace(r'\x7e', '~'))))[:255]
 
     class DimMapping:
         """
@@ -131,8 +131,8 @@ class DynamicCheckHelper:
          with zero or more match groups.
         If match groups are specified, the match group values are
         concatenated with '_'. If no match group is specified, the name is taken as is. The resulting name is
-        normalized according to Monasca naming standards for metrics. This implies that dots are replaced by underscores
-        and *CamelCase* is transformed into *lower_case*. Special characters are eliminated, too.
+        normalized according to Monasca naming standards for metrics. This implies that dots are replaced by
+        underscores and *CamelCase* is transformed into *lower_case*. Special characters are eliminated, too.
 
         a) Simple mapping:
 
@@ -158,13 +158,15 @@ class DynamicCheckHelper:
             <dimension>:
                source_key: <source_key>             # key as provided by metric source (default: <dimension>)
                regex: <mapping_pattern>             # regular expression (default: '(.*)' = identity)
-               separator: <match_group_separator>   # concatenate match-groups \1, \2, ... in regex with separator (default: '-')
+               separator: <match_group_separator>   # concatenate match-groups \1, \2, ... in regex with separator
+               (default: '-')
 
 
             The regex is applied to the dimension value. If the regular expression does not match, then the metric
             is ignored. If match-groups are part of the regular expression then the regex is used for value
             transformation: The resulting dimension value is created by concatenating all match groups (in braces),
-            using the specified separator (default: '-'). If not match-group is specified, then the value is passed through unchanged.
+            using the specified separator (default: '-'). If not match-group is specified, then the value is passed
+            through unchanged.
 
         Both metrics and dimension can be defined globally or as part of a group. When a metric is specified in a group,
         then the group name is used as a prefix to the metric and the group-specific dimension mappings take precedence
@@ -397,7 +399,8 @@ class DynamicCheckHelper:
             ext_labels = self.extract_dist_labels(instance['name'], group, metric_dict, labels, index)
             if not ext_labels:
                 log.debug(
-                    "skipping array due to lack of mapped dimensions for group %s (at least 'index' should be supported)",
+                    "skipping array due to lack of mapped dimensions for group %s "
+                    "(at least 'index' should be supported)",
                     group if group else '<root>')
                 return
 
@@ -562,7 +565,8 @@ class DynamicCheckHelper:
                         dims[target_dim] = mapped_value
                 except (IndexError, AttributeError):  # probably the regex was faulty
                     log.exception(
-                        'dimension %s value could not be mapped from %s: regex for mapped dimension %s does not match %s',
+                        'dimension %s value could not be mapped from %s: regex for mapped dimension %s '
+                        'does not match %s',
                         target_dim, labelvalue, labelname, map_spec.regex)
                     return None
 
