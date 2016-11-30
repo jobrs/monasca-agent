@@ -134,7 +134,7 @@ class Prometheus(services_checks.ServicesCheck):
             response.raise_for_status()
             body = response.text
         except RequestException:
-            self.log.exception("Retrieving metrics from endpoint %s failed: %s", url)
+            self.log.exception("Retrieving metrics from endpoint %s failed", url)
             return []
 
         metric_families = prometheus_client_parser.text_string_to_metric_families(body)
