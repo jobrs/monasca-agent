@@ -9,6 +9,7 @@ import math
 import requests
 
 # import prometheus client dependency dynamically
+from monasca_agent.common import util
 from requests import RequestException
 
 try:
@@ -39,7 +40,7 @@ class Prometheus(services_checks.ServicesCheck):
         # last time of polling
         self._last_ts = {}
         self._publisher = utils.DynamicCheckHelper(self)
-        self._urls = {}
+        self._config = {}
         for inst in instances:
             url = inst['url']
             # for Prometheus federation URLs, set the name match filter according to the mapping
@@ -53,7 +54,8 @@ class Prometheus(services_checks.ServicesCheck):
                         url += ',{}=~"{}"'.format(key, value)
                 url += '}'
                 log.info("Fetching from Prometheus federation URL: %s", url)
-            self._urls[inst['name']] = url
+            self._config[inst['name']] = {'url': url, 'timeout': int(inst.get('timeout', 5)),
+                                    'collect_response_time': bool(inst.get('collect_response_time', False))}
 
     def _check(self, instance):
         if prometheus_client_parser is None:
@@ -106,7 +108,7 @@ class Prometheus(services_checks.ServicesCheck):
                                     timestamp=timestamp,
                                     fixed_dimensions=fixed_dimensions)
 
-    def _retrieve_and_parse_metrics(self, url, timeout):
+    def _retrieve_and_parse_metrics(self, url, timeout, collect_response_time, instance_name):
         """
         Metrics from prometheus come in plain text from the endpoint and therefore need to be parsed.
         To do that the prometheus client's text_string_to_metric_families -method is used. That method returns a
@@ -129,20 +131,34 @@ class Prometheus(services_checks.ServicesCheck):
         :param url: the url of the prometheus metrics
         :return: metric_families iterable
         """
+
+        timer = util.Timer()
+
         try:
             response = requests.get(url, timeout=timeout)
+
+            # report response time first, even when there is HTTP errors
+            if collect_response_time:
+                # Stop the timer as early as possible
+                running_time = timer.total()
+                self.gauge('monasca.agent.collect_time', running_time, dimensions={'agent_check': 'influxdb',
+                                                                                   'instance': instance_name})
+
             response.raise_for_status()
             body = response.text
         except RequestException:
             self.log.exception("Retrieving metrics from endpoint %s failed", url)
+            self.rate('monasca.agent.collect_errors', 1, dimensions={'agent_check': 'prometheus',
+                                                                     'instance': instance_name})
             return []
 
         metric_families = prometheus_client_parser.text_string_to_metric_families(body)
         return metric_families
 
     def _update_metrics(self, instance):
-        metric_families_generator = self._retrieve_and_parse_metrics(self._urls[instance['name']],
-                                                                     int(instance.get('timeout', '5')))
+        cfg = self._config[]
+        metric_families_generator = self._retrieve_and_parse_metrics(cfg['url'], cfg['timeout'],
+                                                                     cfg['collect_response_time'], instance['name'])
 
         for metric_family in metric_families_generator:
             container = None
@@ -153,6 +169,8 @@ class Prometheus(services_checks.ServicesCheck):
             except Exception as e:
                 self.log.warning("Unable to collect metric: {0} for container: {1} . - {2} ".format(
                     metric_family.name, container[1].get('name'), repr(e)))
+                self.rate('monasca.agent.collect_errors', 1, dimensions={'agent_check': 'prometheus',
+                                                                         'instance': instance['name']})
 
     def _update_last_ts(self, instance_name):
         utc_now = datetime.utcnow()

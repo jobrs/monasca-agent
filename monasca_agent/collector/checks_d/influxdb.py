@@ -85,7 +85,7 @@ class InfluxDB(services_checks.ServicesCheck):
         endpoint = base_url + '/query'
 
         return endpoint, username, password, timeout, headers, whitelist, metricdef, \
-            collect_response_time, disable_ssl_validation
+               collect_response_time, disable_ssl_validation
 
     def _create_status_event(self, status, msg, instance):
         """Does nothing: status events are not yet supported by Mon API.
@@ -93,10 +93,11 @@ class InfluxDB(services_checks.ServicesCheck):
         """
         return
 
-    def _push_error(self, error_string, dimensions):
+    def _push_error(self, error_string, instance_name):
         self.log.error(error_string)
         self.warning(error_string)
-        self.gauge(HTTP_STATUS_MNAME, 1, dimensions=dimensions, value_meta={'error': error_string})
+        self.rate('monasca.agent.collect_errors', 1, dimensions={'agent_check': 'influxdb',
+                                                                 'instance': instance_name})
 
     def _rate_or_gauge_statuses(self, content, dimensions, whitelist, metricdef):
 
@@ -124,7 +125,8 @@ class InfluxDB(services_checks.ServicesCheck):
                         if mod in trans and v in trans[mod][DIMENSIONS_KEY]:
                             dims[k] = trans[mod][DIMENSIONS_KEY][v]
                         else:
-                            self.log.warning("InfluxDB did not report label %s for stats module %s (check mapping)", v, mod)
+                            self.log.warning("InfluxDB did not report label %s for stats module %s (check mapping)", v,
+                                             mod)
                 else:
                     met_type = met_def[TYPE_KEY]
                     met_iname = met_def.get(INFLUXDB_NAME_KEY, met)
@@ -146,10 +148,11 @@ class InfluxDB(services_checks.ServicesCheck):
 
     def _check(self, instance):
         endpoint, username, password, timeout, headers, whitelist, metricdef, \
-            collect_response_time, disable_ssl_validation = self._load_conf(instance)
+        collect_response_time, disable_ssl_validation = self._load_conf(instance)
 
         timer = util.Timer()
         merged_dimensions = self._set_dimensions({'component': 'influxdb', 'url': endpoint}, instance)
+        instance_name = instance.get('name', "unnamed")
 
         try:
             merged_headers = headers.copy()
@@ -167,12 +170,13 @@ class InfluxDB(services_checks.ServicesCheck):
             if collect_response_time:
                 # Stop the timer as early as possible
                 running_time = timer.total()
-                self.gauge('http_response_time', running_time, dimensions=merged_dimensions)
+                self.gauge('monasca.agent.collect_time', running_time, dimensions={'agent_check': 'influxdb',
+                                                                                   'instance': instance_name})
 
             # check HTTP errors
             if int(resp.status_code) >= 500:
                 error_string = '{0} is DOWN, error code: {1}'.format(endpoint, resp.status_code)
-                self._push_error(error_string, merged_dimensions)
+                self._push_error(error_string, instance_name)
                 return services_checks.Status.DOWN, error_string
 
             elif int(resp.status_code) >= 400:
@@ -190,7 +194,7 @@ class InfluxDB(services_checks.ServicesCheck):
 
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError) as e:
             error_string = '{0} is not reachable via network, error: {1}'.format(endpoint, repr(e))
-            self._push_error(error_string, merged_dimensions)
+            self._push_error(error_string, instance_name)
             return services_checks.Status.DOWN, error_string
 
         except requests.exceptions.Timeout as e:
@@ -198,7 +202,7 @@ class InfluxDB(services_checks.ServicesCheck):
             error_string = '{0} did not respond within {2} ms, error: {1}.'.format(endpoint,
                                                                                    repr(e),
                                                                                    length)
-            self._push_error(error_string, merged_dimensions)
+            self._push_error(error_string, instance_name)
             return services_checks.Status.DOWN, error_string
 
         except requests.exceptions.RequestException as e:
