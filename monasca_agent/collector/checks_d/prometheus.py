@@ -156,7 +156,7 @@ class Prometheus(services_checks.ServicesCheck):
         return metric_families
 
     def _update_metrics(self, instance):
-        cfg = self._config[]
+        cfg = self._config[instance['name']]
         metric_families_generator = self._retrieve_and_parse_metrics(cfg['url'], cfg['timeout'],
                                                                      cfg['collect_response_time'], instance['name'])
 
