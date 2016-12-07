@@ -1,4 +1,4 @@
-# (C) Copyright 2016 Hewlett Packard Enterprise Development Company LP
+# (C) Copyright 2016 Hewlett Packard Enterprise Development LP
 
 import logging
 
@@ -24,7 +24,7 @@ class CertificateCheck(monasca_setup.detection.ArgsPlugin):
        which is a comma-separated list of urls
        Examples:
 
-       monasca-setup -d hostalive -a "urls=https://ThisCloud.example:8070"
+       monasca-setup -d CertificateCheck -a "urls=https://ThisCloud.example:8070"
        These arguments are optional:
        ca_certs: file containing the certificates for Certificate Authorities
                  default is CA_CERTS
@@ -60,7 +60,7 @@ class CertificateCheck(monasca_setup.detection.ArgsPlugin):
         if 'timeout' in self.args:
             timeout = float(self.args['timeout'])
             if timeout <= 0.0:
-                log.error('Invalid timeout value {}, ignoring' %
+                log.error('Invalid timeout value %s, ignoring' %
                           self.args['timeout'])
             else:
                 init_config['timeout'] = timeout

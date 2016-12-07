@@ -52,7 +52,8 @@ class IIS(AgentCheck):
     def _get_wmi_conn(self, host, user, password):
         key = "%s:%s:%s" % (host, user, password)
         if key not in self.wmi_conns:
-            self.wmi_conns[key] = wmi.WMI(host, user=user, password=password)
+            self.wmi_conns[key] = wmi.WMI(computer=host, user=user,
+                                          password=password)
         return self.wmi_conns[key]
 
     def check(self, instance):
@@ -89,9 +90,8 @@ class IIS(AgentCheck):
 
             for metric, mtype, wmi_val in self.METRICS:
                 if not hasattr(iis_site, wmi_val):
-                    self.warning(
-                        'Unable to fetch metric %s. Missing %s in Win32_PerfFormattedData_W3SVC_WebService' %
-                        (metric, wmi_val))
+                    self.log.warn('Unable to fetch metric %s. Missing %s in '
+                                  'Win32_PerfFormattedData_W3SVC_WebService' % (metric, wmi_val))
                     continue
 
                 # Submit the metric value with the correct type

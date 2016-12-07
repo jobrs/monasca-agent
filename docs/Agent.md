@@ -44,23 +44,17 @@ The Agent is composed of the following components:
 # Installing
 The Agent (monasca-agent) is available for installation from the Python Package Index (PyPI). To install it, you first need `pip` installed on the node to be monitored. Instructions on installing pip may be found at https://pip.pypa.io/en/latest/installing.html.  The Agent will NOT run under any flavor of Windows or Mac OS at this time but has been tested thoroughly on Ubuntu and should work under most flavors of Linux.  Support may be added for Mac OS and Windows in the future.  Example of an Ubuntu or Debian based install:
 
-```
-sudo apt-get install python-pip
-```
+    $ sudo apt-get install python-pip
 
 To ensure you are running the latest version of pip
 
-```
-sudo pip install --upgrade pip
-```
+    $ sudo pip install --upgrade pip
 
 Warning, the Agent is known to not install properly under python-pip version 1.0, which is packaged with Ubuntu 12.04 LTS (Precise Pangolin).
 
 The Agent can be installed using pip as follows:
 
-```
-sudo pip install monasca-agent
-```
+    $ sudo pip install monasca-agent
 
 # Configuring
 The Agent requires configuration in order to run. There are two ways to configure the agent, either using the [monasca-setup](#monasca-setup) script or manually.
@@ -74,9 +68,10 @@ The plugin configuration files are located in /etc/monasca/agent/conf.d.
 
 monasca-setup is located in `[installed prefix dir]/bin/monasca-setup` and can be run as follows:
 
-```
-sudo monasca-setup --username KEYSTONE_USERNAME --password KEYSTONE_PASSWORD --project_name KEYSTONE_PROJECT_NAME --keystone_url http://URL_OF_KEYSTONE_API:35357/v3
-```
+    $ sudo monasca-setup --username KEYSTONE_USERNAME \
+      --password KEYSTONE_PASSWORD --project_name KEYSTONE_PROJECT_NAME \
+      --keystone_url http://URL_OF_KEYSTONE_API:35357/v3
+
 It is also possible to skip most detection plugins in monasca-setup with the `--system_only` flag. You can then come back later and run individual detection plugins without additional arguments,
 for example `monasca-setup -d mysql`. This allows a base install to setup the agent and required credentials then later easily add additional services and monitoring.
 
@@ -96,6 +91,9 @@ All parameters require a '--' before the parameter such as '--verbose'. Run `mon
 | project_domain_name | Project domain name for keystone authentication | |
 | project_id | Keystone project id  for keystone authentication | |
 | check_frequency | How often to run metric collection in seconds | 60 |
+| num_collector_threads | Number of threads to use in collector for running checks | 1 |
+| pool_full_max_retries | Maximum number of collection cycles where all of the threads in the pool are still running plugins before the collector will exit| 4 |
+| plugin_collect_time_warn | Number of seconds a plugin collection time exceeds that causes a warning to be logged for that plugin| 6 |
 | keystone_url | This is a required parameter that specifies the url of the keystone api for retrieving tokens. It must be a v3 endpoint. | http://192.168.1.5:35357/v3 |
 | dimensions | A comma separated list of key:value pairs to include as dimensions in all submitted metrics| region:a,az:1 |
 | service | This is an optional parameter that specifies the name of the service associated with this particular node | nova, cinder, myservice |
@@ -109,6 +107,10 @@ All parameters require a '--' before the parameter such as '--verbose'. Run `mon
 | skip_detection_plugins | Skip provided space separated list of detection plugins. | system |
 | overwrite | This is an optional parameter to overwrite the plugin configuration.  Use this if you don't want to keep the original configuration.  If this parameter is not specified, the configuration will be appended to the existing configuration, possibly creating duplicate checks.  **NOTE:** The agent config file, agent.yaml, will always be overwritten, even if this parameter is not specified. | |
 | detection_args | Some detection plugins can be passed arguments. This is a string that will be passed to the detection plugins. | "hostname=ping.me" |
+| detection_args_json | A JSON string can be passed to the detection plugin. | '{"process_config":{"process_names":["monasca-api","monasca-notification"],"dimensions":{"service":"monitoring"}}}' |
+| max_measurement_buffer_size | Integer value for the maximum number of measurements to buffer locally while unable to connect to the monasca-api. If the queue exceeds this value, measurements will be dropped in batches. A value of '-1' indicates no limit | 100000 |
+| backlog_send_rate | Integer value of how many batches of buffered measurements to send each time the forwarder flushes data | 1000 |
+| monasca_statsd_port | Integer value for statsd daemon port number | 8125 |
 
 ### Providing Arguments to Detection plugins
 When running individual detection plugins you can specify arguments that augment the configuration created. In some instances the arguments just provide additional
@@ -122,12 +124,12 @@ This is not the recommended way to configure the agent but if you are having tro
 
 Start by creating an agent.yaml file.  An example configuration file can be found in <install_dir>/share/monasca/agent/.
 
-    sudo mkdir -p /etc/monasca/agent
-    sudo cp /usr/local/share/monasca/agent/agent.yaml.template /etc/monasca/agent/agent.yaml
+    $ sudo mkdir -p /etc/monasca/agent
+    $ sudo cp /usr/local/share/monasca/agent/agent.yaml.template /etc/monasca/agent/agent.yaml
 
 and then edit the file with your favorite text editor (vi, nano, emacs, etc.)
 
-    sudo nano /etc/monasca/agent/agent.yaml
+    $ sudo nano /etc/monasca/agent/agent.yaml
 
 In particular, replace any values that have curly braces.
 Example:
@@ -153,7 +155,7 @@ You must replace all of the curly brace values and you can also optionally tweak
 
 Once the configuration file has been updated and saved, monasca-agent must be restarted.
 
-    sudo service monasca-agent restart
+    $ sudo service monasca-agent restart
 
 ## Dimension Precedence
 If a dimension is specified in /etc/monasca/agent/agent.yaml with the same name (e.g. service)
@@ -187,12 +189,13 @@ Agent plugins are activated by placing a valid configuration file in the /etc/mo
 
 For example, to activate the http_check plugin:
 
-    sudo mkdir -p /etc/monasca/agent/conf.d
-    sudo cp /usr/local/share/monasca/agent/conf.d/http_check.yaml.example /etc/monasca/agent/conf.d/http_check.yaml
+    $ sudo mkdir -p /etc/monasca/agent/conf.d
+    $ sudo cp /usr/local/share/monasca/agent/conf.d/http_check.yaml.example \
+      /etc/monasca/agent/conf.d/http_check.yaml
 
 and then edit the file as needed for your configuration.
 
-    sudo nano /etc/monasca/agent/conf.d/http_check.yaml
+    $ sudo nano /etc/monasca/agent/conf.d/http_check.yaml
 
 The plugins are annotated and include the possible configuration parameters. In general, though, configuration files are split into two sections:
 init_config
@@ -231,9 +234,24 @@ A plugin config is specified something like this:
              env: stage
              newDim: test
 
+monasca-collector service can receive a `--config-file` argument, which represents an alternate agent configuration file, instead of the default /etc/monasca/agent.yaml.
+
+example:
+
+```
+monasca-collector --config-file="/path/to/monasca_agent.yaml"
+```
+
 # Running
 The monasca-setup command will create an appropriate startup script for the agent and so the agent can be run by using the standard daemon control tool for your operating system. If you have configured manually the startup script templates can be found in the code under the packaging directory.
 
+# Running the collector with multiple threads
+The number of threads to use for running the plugins is via num_collector_threads. Setting this value to greater than 1 can be very useful when some plugins take a relatively long time to run. With num_collector_threads set to 1, the plugins are run serially. If the sum of the collection times for each plugin is greater than the check_frequency, then the metrics will not be collected as often as they should be. With more threads, the collection time is closer to the longest plugin collection time.
 
+The collector is optimized for collecting as many metrics on schedule as possible. The plugins are run in reverse order of their collection time, i.e., the fastest plugin first. Also, if a plugin does not complete within the collection frequency, that plugin will be skipped in the next collection cycle. These two optimizations together ensure that plugins that complete with collection frequency seconds will get run on every collection cycle.
+
+If there is some problem with multiple plugins that end up blocking the entire thread pool, the collector will exit so that it can be restarted by the supervisord. The parameter pool_full_max_retries controls when this happens. If pool_full_max_retries consecutive collection cycles have ended with the Thread Pool completely full, the collector will exit.
+
+Some of the plugins have their own thread pools to handle asynchronous checks. The collector thread pool is separate and has no special interaction with those thread pools.
 # License
-(C) Copyright 2015 Hewlett Packard Enterprise Development Company LP
+(C) Copyright 2015-2016 Hewlett Packard Enterprise Development LP

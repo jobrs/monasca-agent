@@ -1,4 +1,4 @@
-# (C) Copyright 2015-2016 Hewlett Packard Enterprise Development Company LP
+# (C) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
 
 import logging
 import urllib2
@@ -38,14 +38,17 @@ class RabbitMQ(monasca_setup.detection.Plugin):
     """
     def __init__(self, *args, **kwargs):
         super(RabbitMQ, self).__init__(*args, **kwargs)
-        self._watch_api = False
-        if self.args:
+        if self.args is None:
+            self._watch_api = False
+        else:
             self._watch_api = self.args.pop('watch_api', False)
+        if type(self._watch_api) is str:
+            self._watch_api = (self._watch_api.lower() == 'true')
 
     def _detect(self):
         """Run detection, set self.available True if the service is detected.
         """
-        if monasca_setup.detection.find_process_cmdline('rabbitmq-server') is not None:
+        if monasca_setup.detection.find_process_service('rabbitmq-server') is not None:
             self.available = True
 
     def _get_config(self):
@@ -126,7 +129,7 @@ class RabbitMQ(monasca_setup.detection.Plugin):
         """
         config = monasca_setup.agent_config.Plugins()
         # First watch the process
-        config.merge(monasca_setup.detection.watch_process(['rabbitmq-server'], 'rabbitmq', detailed=False))
+        config.merge(monasca_setup.detection.watch_process(['epmd'], 'rabbitmq', detailed=False))
         log.info("\tWatching the rabbitmq-server process.")
         config.merge(monasca_setup.detection.watch_process_by_username('rabbitmq', 'rabbitmq', 'rabbitmq'))
         log.info("\tWatching all processes owned by the rabbitmq user.")
@@ -140,10 +143,15 @@ class RabbitMQ(monasca_setup.detection.Plugin):
             service_name = 'rabbitmq'
 
             # Setup an active http_status check on the API
+            if self.api_url.endswith("/"):
+                check_api_url = self.api_url
+            else:
+                check_api_url = self.api_url + "/"
+
             log.info("\tConfiguring an http_check for the {0} API.".format(
                 service_name))
             config.merge(service_api_check(service_name,
-                                           self.api_url,
+                                           check_api_url,
                                            '.*RabbitMQ.*',
                                            use_keystone=False,
                                            service=service_name))

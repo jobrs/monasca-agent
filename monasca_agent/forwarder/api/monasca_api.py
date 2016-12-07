@@ -1,7 +1,8 @@
-# (C) Copyright 2015 Hewlett Packard Enterprise Development Company LP
+# (C) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
 
 import collections
 import copy
+import json
 import logging
 import random
 import time
@@ -34,9 +35,24 @@ class MonascaAPI(object):
         self._failure_reason = None
         self._resume_time = None
         self._failed_auth_cnt = 0
+        self._log_interval_remaining = 1
+        self._current_number_measurements = 0
         self.max_buffer_size = int(config['max_buffer_size'])
+        self.max_measurement_buffer_size = int(config['max_measurement_buffer_size'])
+
+        if self.max_buffer_size > -1:
+            log.debug("'max_buffer_size' is deprecated. Please use"
+                      " 'max_measurement_buffer_size' instead")
+            if self.max_measurement_buffer_size > -1:
+                log.debug("Overriding 'max_buffer_size' option with new"
+                          " 'max_measurment_buffer_size' option")
+                self.max_buffer_size = -1
+
         self.backlog_send_rate = int(config['backlog_send_rate'])
-        self.message_queue = collections.deque(maxlen=self.max_buffer_size)
+        if self.max_buffer_size > -1:
+            self.message_queue = collections.deque(maxlen=self.max_buffer_size)
+        else:
+            self.message_queue = collections.deque()
         self.write_timeout = int(config['write_timeout'])
         # 'amplifier' is completely optional and may not exist in the config
         try:
@@ -46,7 +62,7 @@ class MonascaAPI(object):
 
         random.seed()
 
-    def _post(self, measurements, delegated_tenant=None):
+    def _post(self, measurements, tenant=None):
         """Does the actual http post
             measurements is a list of Measurement
         """
@@ -54,8 +70,9 @@ class MonascaAPI(object):
             'jsonbody': measurements
         }
 
-        if delegated_tenant is not None:
-            kwargs['tenant_id'] = delegated_tenant
+        if tenant:
+            kwargs['tenant_id'] = tenant
+
         if not self.mon_client:
             self.mon_client = self.get_monclient()
             if not self.mon_client:
@@ -68,10 +85,13 @@ class MonascaAPI(object):
                 messages_sent = 0
                 for index in range(0, len(self.message_queue)):
                     if index < self.backlog_send_rate:
-                        msg = self.message_queue.pop()
+
+                        msg = json.loads(self.message_queue.pop())
 
                         if self._send_message(**msg):
                             messages_sent += 1
+                            for value in msg.values():
+                                self._current_number_measurements -= len(value)
                         else:
                             self._queue_message(msg, self._failure_reason)
                             break
@@ -79,6 +99,7 @@ class MonascaAPI(object):
                         break
                 log.info("Sent {0} messages from the backlog.".format(messages_sent))
                 log.info("{0} messages remaining in the queue.".format(len(self.message_queue)))
+                self._log_interval_remaining = 0
         else:
             self._queue_message(kwargs.copy(), self._failure_reason)
 
@@ -88,31 +109,18 @@ class MonascaAPI(object):
             the monitoring api
         """
         # Add default dimensions
-        for measurement in measurements:
-            if isinstance(measurement.dimensions, list):
-                measurement.dimensions = dict([(d[0], d[1]) for d in measurement.dimensions])
-
-        # "Amplify" these measurements to produce extra load, if so configured
-        if self.amplifier is not None and self.amplifier > 0:
-            extra_measurements = []
-            for measurement in measurements:
-                for multiple in range(1, self.amplifier + 1):
-                    # Create a copy of the measurement, but with the addition
-                    # of an 'amplifier' dimension
-                    measurement_copy = copy.deepcopy(measurement)
-                    measurement_copy.dimensions.update({'amplifier': multiple})
-                    extra_measurements.append(measurement_copy)
-            measurements.extend(extra_measurements)
+        for envelope in measurements:
+            measurement = envelope['measurement']
+            if isinstance(measurement['dimensions'], list):
+                measurement['dimensions'] = dict([(d[0], d[1]) for d in measurement['dimensions']])
 
         # Split out separate POSTs for each delegated tenant (includes 'None')
         tenant_group = {}
-        for measurement in measurements:
-            m_dict = measurement.__dict__
-            m_dict['timestamp'] *= 1000
-            delegated_tenant = m_dict.pop('delegated_tenant')
-            if delegated_tenant not in tenant_group:
-                tenant_group[delegated_tenant] = []
-            tenant_group[delegated_tenant].extend([m_dict.copy()])
+        for envelope in measurements:
+            measurement = envelope['measurement']
+            tenant = envelope['tenant_id']
+            tenant_group.setdefault(tenant, []).append(copy.deepcopy(measurement))
+
         for tenant in tenant_group:
             self._post(tenant_group[tenant], tenant)
 
@@ -162,12 +170,10 @@ class MonascaAPI(object):
                 self._resume_time = time.time() + wait_time
                 log.info("Invalid token detected. Waiting %d seconds before getting new token.", wait_time)
             else:
-                log.error("Error sending message to monasca-api. Error is {0}."
-                          .format(str(ex.message)))
+                log.exception("HTTPException: error sending message to monasca-api.")
                 self._failure_reason = 'Error sending message to the Monasca API: {0}'.format(str(ex.message))
-        except Exception as ex:
-            log.error("Error sending message to Monasca API. Error is {0}."
-                      .format(str(ex.message)))
+        except Exception:
+            log.exception("Error sending message to Monasca API.")
             self._failure_reason = 'The Monasca API is DOWN or unreachable'
 
         return False
@@ -184,10 +190,35 @@ class MonascaAPI(object):
         log.error("%s - Waiting %d seconds before getting new token.", self._failure_reason, wait_time)
 
     def _queue_message(self, msg, reason):
-        self.message_queue.append(msg)
-        queue_size = len(self.message_queue)
-        if queue_size is 1 or queue_size % MonascaAPI.LOG_INTERVAL == 0:
+        if self.max_buffer_size == 0 or self.max_measurement_buffer_size == 0:
+            return
+
+        self.message_queue.append(json.dumps(msg))
+
+        for value in msg.values():
+            self._current_number_measurements += len(value)
+
+        if self.max_measurement_buffer_size > -1:
+            while self._current_number_measurements > self.max_measurement_buffer_size:
+                self._remove_oldest_from_queue()
+
+        if self._log_interval_remaining <= 1:
             log.warn("{0}. Queuing the messages to send later...".format(reason))
             log.info("Current agent queue size: {0} of {1}.".format(len(self.message_queue),
                                                                     self.max_buffer_size))
+            log.info("Current measurements in queue: {0} of {1}".format(
+                self._current_number_measurements, self.max_measurement_buffer_size))
+
             log.info("A message will be logged for every {0} messages queued.".format(MonascaAPI.LOG_INTERVAL))
+            self._log_interval_remaining = MonascaAPI.LOG_INTERVAL
+        else:
+            self._log_interval_remaining -= 1
+
+    def _remove_oldest_from_queue(self):
+        removed_batch = json.loads(self.message_queue.popleft())
+        num_discarded = 0
+        for value in removed_batch.values():
+            num_discarded += len(value)
+        self._current_number_measurements -= num_discarded
+        log.warn("Queue too large, discarding oldest batch: {0} measurements discarded".format(
+            num_discarded))

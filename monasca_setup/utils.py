@@ -54,8 +54,8 @@ def select_plugins(plugin_names, plugin_list, skip=False):
     lower_plugins = [p.lower() for p in plugin_names]
     plugins = []
     for plugin in plugin_list:
-        b = (plugin.__name__.lower() in lower_plugins)
-        if b != skip:
+        selected = (plugin.__name__.lower() in lower_plugins)
+        if selected != skip:
             plugins.append(plugin)
 
     if len(plugins) != len(plugin_names) and not skip:
@@ -66,12 +66,22 @@ def select_plugins(plugin_names, plugin_list, skip=False):
     return plugins
 
 
-def write_template(template_path, out_path, variables, group, is_yaml=False):
+def write_template(template_path,
+                   out_path,
+                   variables,
+                   group,
+                   user,
+                   is_yaml=False):
     """Write a file using a simple python string template.
        Assumes 640 for the permissions and root:group for ownership.
+
     :param template_path: Location of the Template to use
     :param out_path: Location of the file to write
     :param variables: dictionary with key/value pairs to use in writing the template
+    :param group: group to set as owner of config file
+    :param user: user to set as owner of config file
+    :param is_yaml: is configuration file in YAML format
+
     :return: None
     """
     if not os.path.exists(template_path):
@@ -87,5 +97,6 @@ def write_template(template_path, out_path, variables, group, is_yaml=False):
                                           default_flow_style=False))
             else:
                 conf.write(contents)
-    os.chown(out_path, 0, group)
+
+    os.chown(out_path, user, group)
     os.chmod(out_path, 0o640)

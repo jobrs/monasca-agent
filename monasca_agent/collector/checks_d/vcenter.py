@@ -1,4 +1,4 @@
-# (C) Copyright 2016 Hewlett Packard Enterprise Development Company LP
+# (C) Copyright 2016 Hewlett Packard Enterprise Development LP
 """VCenter Only.
 
 Generic VCenter check. This check allows you to specify particular metrics that
@@ -81,6 +81,7 @@ class VCenterCheck(AgentCheck):
             self.password,
             3,  # retry count
             0.5,  # task_poll_interval
+            port=self.port,
             scheme="https")
         return api_session
 
@@ -299,9 +300,11 @@ class VCenterCheck(AgentCheck):
     def check(self, instance):
         try:
             if self.is_new_session:
+                self.instance = instance
                 self.vcenter_ip = instance.get('vcenter_ip', None)
                 self.user = instance.get('username', None)
                 self.password = instance.get('password', None)
+                self.port = instance.get('port', 443)
                 self.clusters = instance.get('clusters', None)
                 if not self.vcenter_ip:
                     self.log.warn("vCenter not configured")
@@ -310,6 +313,8 @@ class VCenterCheck(AgentCheck):
                     self.log.warn("No clusters configured to monitor")
                     return
                 self.session = self._get_api_session()
+                self.vc_uuid = (self.session.vim.service_content.
+                                about.instanceUuid)
                 self._ops = VcenterOperations(self.session,
                                               self._max_objects,
                                               self.log)
@@ -446,13 +451,14 @@ class VCenterCheck(AgentCheck):
                            (managed_cluster, key, data.get(key)))
 
     def _get_dims(self, cluster, mor_id):
-        return {
+        cluster_id = mor_id + "." + self.vc_uuid
+        local_dimensions = {
             "vcenter_ip": self.vcenter_ip,
-            "cluster": cluster,
-            "host_type": "compute_node",
-            "role": "esx",
-            "id": cluster + "-" + self.vcenter_ip
+            "esx_cluster_id": cluster_id
         }
+        final_dimensions = self._set_dimensions(local_dimensions,
+                                                self.instance)
+        return final_dimensions
 
     @staticmethod
     def parse_agent_config(agentConfig):

@@ -1,15 +1,10 @@
-# (C) Copyright 2015-2016 Hewlett Packard Enterprise Development Company LP
+# (C) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
 
 import logging
 import os
 import pkg_resources
 import six
 import yaml
-
-try:
-    from yaml import CLoader as Loader
-except ImportError:
-    from yaml import Loader
 
 from monasca_agent.common.exceptions import PathNotFound
 import monasca_agent.common.singleton as singleton
@@ -27,8 +22,15 @@ log = logging.getLogger(__name__)
 class Config(object):
 
     def __init__(self, configFile=None):
+        # importing it here, in order to avoid a circular import
+        # as monasca_agent.common.util imports this module.
+        from monasca_agent.common import util
+
+        options, args = util.get_parsed_args()
         if configFile is not None:
             self._configFile = configFile
+        elif options.config_file is not None:
+            self._configFile = options.config_file
         elif os.path.exists(DEFAULT_CONFIG_FILE):
             self._configFile = DEFAULT_CONFIG_FILE
         elif os.path.exists(os.getcwd() + '/agent.yaml'):
@@ -66,6 +68,7 @@ class Config(object):
                                 'keystone_timeout': 20,
                                 'keystone_url': '',
                                 'max_buffer_size': 1000,
+                                'max_measurement_buffer_size': -1,
                                 'write_timeout': 10,
                                 'backlog_send_rate': 5},
                         'Statsd': {'recent_point_threshold': None,
@@ -111,7 +114,7 @@ class Config(object):
         try:
             with open(self._configFile, 'r') as f:
                 log.debug('Loading config file from {0}'.format(self._configFile))
-                config = yaml.load(f.read(), Loader=Loader)
+                config = yaml.safe_load(f.read())
                 [self._config[section].update(config[section]) for section in config.keys()]
         except Exception as e:
             log.exception('Error loading config file from {0}'.format(self._configFile))
@@ -126,7 +129,7 @@ class Config(object):
     def check_yaml(self, conf_path):
         f = open(conf_path)
         try:
-            check_config = yaml.load(f.read(), Loader=Loader)
+            check_config = yaml.safe_load(f.read())
             assert 'init_config' in check_config, "No 'init_config' section found"
             assert 'instances' in check_config, "No 'instances' section found"
 

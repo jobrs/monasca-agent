@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# (C) Copyright 2015,2016 Hewlett Packard Enterprise Development Company LP
+# (C) Copyright 2015,2016 Hewlett Packard Enterprise Development LP
 """
     Licensed under Simplified BSD License (see LICENSE)
     (C) Boxed Ice 2010 all rights reserved
@@ -29,9 +29,7 @@ import tornado.options
 import tornado.web
 
 # agent import
-import monasca_agent.common.check_status as check_status
 import monasca_agent.common.config as cfg
-import monasca_agent.common.metrics as metrics
 import monasca_agent.common.util as util
 import monasca_agent.forwarder.api.monasca_api as mon
 
@@ -56,9 +54,9 @@ class AgentInputHandler(tornado.web.RequestHandler):
         """
         global message_batch
 
-        msg = tornado.escape.json_decode(self.request.body)
         try:
-            message_batch.extend([metrics.Measurement(**m) for m in msg])
+            msg = tornado.escape.json_decode(self.request.body)
+            message_batch.extend(msg)
         except Exception:
             log.exception('Error parsing body of Agent Input')
             raise tornado.web.HTTPError(500)
@@ -209,6 +207,9 @@ def main():
     tornado.options.define("sslcheck", default=1, help="Verify SSL hostname, on by default")
     tornado.options.define("use_simple_http_client", default=0,
                            help="Use Tornado SimpleHTTPClient instead of CurlAsyncHTTPClient")
+    tornado.options.define("config_file", default=None,
+                           help="Location for an alternate config rather than "
+                                "using the default config location.")
     args = tornado.options.parse_command_line()
     skip_ssl_validation = False
     use_simple_http_client = False
@@ -222,18 +223,12 @@ def main():
     # If we don't have any arguments, run the server.
     if not args:
         app = init_forwarder(skip_ssl_validation, use_simple_http_client=use_simple_http_client)
-        try:
-            app.run()
-        finally:
-            check_status.ForwarderStatus.remove_latest_status()
+        app.run()
 
     else:
         usage = "%s [help|info]. Run with no commands to start the server" % (sys.argv[0])
         command = args[0]
-        if command == 'info':
-            logging.getLogger().setLevel(logging.ERROR)
-            return check_status.ForwarderStatus.print_latest_status()
-        elif command == 'help':
+        if command == 'help':
             print(usage)
         else:
             print("Unknown command: %s" % command)

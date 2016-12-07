@@ -1,4 +1,4 @@
-# (C) Copyright 2015-2016 Hewlett Packard Enterprise Development Company LP
+# (C) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
 """ Aggregation classes used by the collector and statsd to batch messages sent to the forwarder.
 """
 import json
@@ -51,10 +51,8 @@ class MetricsAggregator(object):
     """A metric aggregator class."""
 
     def __init__(self, hostname, recent_point_threshold=None):
-        self.events = []
         self.total_count = 0
         self.count = 0
-        self.event_count = 0
         self.hostname = hostname
 
         recent_point_threshold = recent_point_threshold or RECENT_POINT_THRESHOLD_DEFAULT
@@ -63,53 +61,13 @@ class MetricsAggregator(object):
 
         self.metrics = {}
 
-    def event(
-            self,
-            title,
-            text,
-            date_happened=None,
-            alert_type=None,
-            aggregation_key=None,
-            source_type_name=None,
-            priority=None,
-            dimensions=None,
-            hostname=None):
-        event = {'msg_title': title,
-                 'msg_text': text}
-        if date_happened is not None:
-            event['timestamp'] = date_happened
-        else:
-            event['timestamp'] = int(time())
-        if alert_type is not None:
-            event['alert_type'] = alert_type
-        if aggregation_key is not None:
-            event['aggregation_key'] = aggregation_key
-        if source_type_name is not None:
-            event['source_type_name'] = source_type_name
-        if priority is not None:
-            event['priority'] = priority
-        if dimensions is not None:
-            event['dimensions'] = dimensions
-        if hostname is not None:
-            event['host'] = hostname
-        else:
-            event['host'] = self.hostname
-
-        self.events.append(event)
-
     def flush(self):
-        timestamp = time()
-
         # Flush samples.  The individual metrics reset their internal samples
         # when required
         metrics = []
         for context, metric in self.metrics.items():
             try:
-                metrics.extend(metric.flush(timestamp))
-            except Infinity:
-                pass
-            except UnknownValue:
-                pass
+                metrics.extend(metric.flush())
             except Exception:
                 log.exception('Error flushing {0} {1} metrics.'.format(metric.name, metric.dimensions))
 
@@ -125,35 +83,10 @@ class MetricsAggregator(object):
         self.count = 0
         return metrics
 
-    def flush_events(self):
-        events = self.events
-        self.events = []
-
-        self.total_count += self.event_count
-        self.event_count = 0
-
-        log.debug("Received {0} events since last flush".format(len(events)))
-
-        return events
-
-    @staticmethod
-    def formatter(metric, value, timestamp, dimensions, hostname, delegated_tenant=None,
-                  device_name=None, metric_type=None, value_meta=None):
-        """Formats metrics, put them into a Measurement class
-           (metric, timestamp, value, {"dimensions": {"name1": "value1", "name2": "value2"}, ...})
-           dimensions should be a dictionary
-        """
-        if 'hostname' not in dimensions and hostname:
-            dimensions.update({'hostname': hostname})
-        if device_name:
-            dimensions.update({'device': device_name})
-
-        return metrics_pkg.Measurement(metric,
-                                       int(timestamp),
-                                       value,
-                                       dimensions,
-                                       delegated_tenant=delegated_tenant,
-                                       value_meta=value_meta)
+    def get_hostname_to_post(self, hostname):
+        if 'SUPPRESS' == hostname:
+            return None
+        return hostname or self.hostname
 
     def packets_per_second(self, interval):
         if interval == 0:
@@ -175,8 +108,7 @@ class MetricsAggregator(object):
                 return False
 
         try:
-            value_meta_json = json.dumps(value_meta)
-            if len(value_meta_json) > VALUE_META_VALUE_MAX_LENGTH:
+            if get_value_meta_overage(value_meta):
                 msg = "valueMeta name value combinations must be {0} characters or less: {1} -> {2} valueMeta {3}"
                 log.error(msg.format(VALUE_META_VALUE_MAX_LENGTH, name, dimensions, value_meta))
                 return False
@@ -231,21 +163,26 @@ class MetricsAggregator(object):
         if value_meta:
             if not self._valid_value_meta(value_meta, name, dimensions):
                 raise InvalidValueMeta
-            meta = tuple(value_meta.items())
-        else:
-            meta = None
 
-        context = (name, tuple(dimensions.items()), meta, delegated_tenant,
-                   hostname, device_name)
+        hostname_to_post = self.get_hostname_to_post(hostname)
+
+        if 'hostname' not in dimensions and hostname_to_post:
+            dimensions.update({'hostname': hostname_to_post})
+
+        # TODO(joe): Shouldn't device_name be added to dimensions in the check
+        #            plugin?  Why is it special cased through so many layers?
+        if device_name:
+            dimensions.update({'device': device_name})
+
+        # TODO(joe): Decide if hostname_to_post and device_name are necessary
+        #            for the context tuple
+        context = (name, tuple(dimensions.items()), delegated_tenant,
+                   hostname_to_post, device_name)
 
         if context not in self.metrics:
-            self.metrics[context] = metric_class(self.formatter,
-                                                 name,
+            self.metrics[context] = metric_class(name,
                                                  dimensions,
-                                                 hostname or self.hostname,
-                                                 device_name,
-                                                 delegated_tenant,
-                                                 value_meta)
+                                                 tenant=delegated_tenant)
         cur_time = time()
         if timestamp is not None:
             if cur_time - int(timestamp) > self.recent_point_threshold:
@@ -254,4 +191,11 @@ class MetricsAggregator(object):
                 return
         else:
             timestamp = cur_time
+        self.metrics[context].value_meta = value_meta
         self.metrics[context].sample(value, sample_rate, timestamp)
+
+
+def get_value_meta_overage(value_meta):
+    if len(json.dumps(value_meta)) > VALUE_META_VALUE_MAX_LENGTH:
+        return len(json.dumps(value_meta)) - VALUE_META_VALUE_MAX_LENGTH
+    return 0

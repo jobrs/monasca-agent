@@ -1,4 +1,4 @@
-# (C) Copyright 2015-2016 Hewlett Packard Enterprise Development Company LP
+# (C) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
 
 """ Util functions to assist in detection.
 """
@@ -39,7 +39,8 @@ def find_process_cmdline(search_string):
     """
     for process in psutil.process_iter():
         try:
-            if search_string in ' '.join(process.cmdline()):
+            if (search_string in ' '.join(process.cmdline()) and
+               'monasca-setup' not in ' '.join(process.cmdline())):
                 return process
         except psutil.NoSuchProcess:
             continue
@@ -58,6 +59,18 @@ def find_process_name(pname):
             continue
 
     return None
+
+
+def find_process_service(sname):
+    """Simple function to call systemctl (service) to check if a service is running.
+    """
+    try:
+        subprocess.check_call(['service', sname, 'status'], stdout=PIPE, stderr=PIPE)
+        return True
+    except subprocess.CalledProcessError:
+        return False
+
+    return False
 
 
 def find_addr_listening_on_port(port):
@@ -109,7 +122,7 @@ def watch_process_by_username(username, process_name, service=None, component=No
     return config
 
 
-def watch_file_size(directory_name, file_names, file_recursive,
+def watch_file_size(directory_name, file_names, file_recursive=False,
                     service=None, component=None):
     """Takes a directory, a list of files, recursive flag and returns a
         Plugins object with the config set.

@@ -37,15 +37,21 @@ Api:
   # Name of the ca certs file
   ca_file: {args.ca_file}
 
-  # The following 2 options are for handling buffering and reconnection to the monasca-api
-  # If you want the messages to be sent as fast as possible, set these two options to
-  # the same number.  If you have a larger system with many agents, you may want to throttle
-  # the number of messages sent to the API by setting the backlog_send_rate to a lower number.
+  # The following 3 options are for handling buffering and reconnection to the monasca-api
+  # If the agent forwarder is consuming too much memory, you may want to set
+  # max_measurement_buffer_size to a lower value. If you have a larger system with many agents,
+  # you may want to throttle the number of messages sent to the API by setting the
+  # backlog_send_rate to a lower number.
 
-  # Maximum number of messages to buffer when unable to communicate with the monasca-api
-  max_buffer_size: 1000
+  # DEPRECATED - please use max_measurement_buffer_size instead
+  # Maximum number of messages (batches of measurements) to buffer when unable to communicate
+  # with the monasca-api (-1 means no limit)
+  max_buffer_size: {args.max_buffer_size}
+  # Maximum number of measurements to buffer when unable to communicate with the monasca-api
+  # (-1 means no limit)
+  max_measurement_buffer_size: {args.max_measurement_buffer_size}
   # Maximum number of messages to send at one time when communication with the monasca-api is restored
-  backlog_send_rate: 1000
+  backlog_send_rate: {args.backlog_send_rate}
 
   # Publish extra metrics to the API by adding this number of 'amplifier' dimensions.
   # For load testing purposes only; set to 0 for production use.
@@ -72,8 +78,15 @@ Main:
   # time to wait between collection runs
   check_freq: {args.check_frequency}
 
+  # Number of Collector Threads to run
+  num_collector_threads: {args.num_collector_threads}
+
+  # Maximum number of collection cycles where all of the threads in the pool are
+  # still running plugins before the collector will exit
+  pool_full_max_retries: {args.pool_full_max_retries}
+
   # Threshold value for warning on collection time of each check (in seconds)
-  sub_collection_warn: 6
+  sub_collection_warn: {args.plugin_collect_time_warn}
 
   # Collector restart interval (in hours)
   collector_restart_interval: 24
@@ -95,7 +108,7 @@ Statsd:
   # Monasca Statsd is a small server that aggregates your custom app metrics.
 
   #  Make sure your client is sending to the same port.
-  monasca_statsd_port : 8125
+  monasca_statsd_port : {args.monasca_statsd_port}
 
   ## The monasca_statsd flush period.
   # monasca_statsd_interval : 20

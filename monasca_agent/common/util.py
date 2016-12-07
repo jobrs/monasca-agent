@@ -1,6 +1,5 @@
 # (C) Copyright 2015-2016 Hewlett Packard Enterprise Development Company LP
 
-import datetime
 import glob
 import hashlib
 import imp
@@ -11,11 +10,11 @@ import optparse
 import os
 import platform
 import re
-import signal
 import socket
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import traceback
 import uuid
@@ -232,18 +231,11 @@ class Paths(object):
 
     def get_confd_path(self):
         bad_path = ''
-        if self.osname == 'windows':
-            try:
-                return self._windows_confd_path()
-            except PathNotFound as e:
-                if len(e.args) > 0:
-                    bad_path = e.args[0]
-        else:
-            try:
-                return self._unix_confd_path()
-            except PathNotFound as e:
-                if len(e.args) > 0:
-                    bad_path = e.args[0]
+        try:
+            return self._unix_confd_path()
+        except PathNotFound as e:
+            if len(e.args) > 0:
+                bad_path = e.args[0]
 
         cur_path = os.path.dirname(os.path.realpath(__file__))
         cur_path = os.path.join(cur_path, 'conf.d')
@@ -254,26 +246,18 @@ class Paths(object):
         raise PathNotFound(bad_path)
 
     def _unix_confd_path(self):
-        path = os.path.join(os.path.dirname(configuration.DEFAULT_CONFIG_FILE), 'conf.d')
-        path2 = os.path.join(os.getcwd(), 'conf.d')
-        if os.path.exists(path):
-            return path
-        elif os.path.exists(path2):
-            return path2
-        raise PathNotFound(path)
+        try:
+            return configuration.Config().get_confd_path()
+        except PathNotFound:
+            pass
 
-    def _windows_confd_path(self):
-        common_data = self._windows_commondata_path()
-        path = os.path.join(common_data, 'Datadog', 'conf.d')
+        path = os.path.join(os.getcwd(), 'conf.d')
         if os.path.exists(path):
             return path
         raise PathNotFound(path)
 
     def get_checksd_path(self):
-        if self.osname == 'windows':
-            return self._windows_checksd_path()
-        else:
-            return self._unix_checksd_path()
+        return self._unix_checksd_path()
 
     def _unix_checksd_path(self):
         # Unix only will look up based on the current directory
@@ -284,54 +268,6 @@ class Paths(object):
         if os.path.exists(checksd_path):
             return checksd_path
         raise PathNotFound(checksd_path)
-
-    def _windows_checksd_path(self):
-        if hasattr(sys, 'frozen'):
-            # we're frozen - from py2exe
-            prog_path = os.path.dirname(sys.executable)
-            checksd_path = os.path.join(prog_path, '..', 'checks_d')
-        else:
-            cur_path = os.path.dirname(__file__)
-            checksd_path = os.path.join(cur_path, '../collector/checks_d')
-
-        if os.path.exists(checksd_path):
-            return checksd_path
-        raise PathNotFound(checksd_path)
-
-    def _windows_commondata_path():
-        """Return the common appdata path, using ctypes
-        From http://stackoverflow.com/questions/626796/\
-        how-do-i-find-the-windows-common-application-data-folder-using-python
-        """
-        import ctypes
-        from ctypes import windll
-        from ctypes import wintypes
-
-        _SHGetFolderPath = windll.shell32.SHGetFolderPathW
-        _SHGetFolderPath.argtypes = [wintypes.HWND,
-                                     ctypes.c_int,
-                                     wintypes.HANDLE,
-                                     wintypes.DWORD, wintypes.LPCWSTR]
-
-        path_buf = wintypes.create_unicode_buffer(wintypes.MAX_PATH)
-        return path_buf.value
-
-    def set_win32_cert_path(self):
-        """In order to use tornado.httpclient with the packaged .exe on Windows we
-        need to override the default ceritifcate location which is based on the path
-        to tornado and will give something like "C:\path\to\program.exe\tornado/cert-file".
-        """
-        if hasattr(sys, 'frozen'):
-            # we're frozen - from py2exe
-            prog_path = os.path.dirname(sys.executable)
-            crt_path = os.path.join(prog_path, 'ca-certificates.crt')
-        else:
-            cur_path = os.path.dirname(__file__)
-            crt_path = os.path.join(cur_path, 'packaging', 'monasca-agent', 'win32',
-                                    'install_files', 'ca-certificates.crt')
-        import tornado.simple_httpclient
-        log.info("Windows certificate path: %s" % crt_path)
-        tornado.simple_httpclient._DEFAULT_CA_CERTS = crt_path
 
 
 def plural(count):
@@ -359,19 +295,18 @@ def get_uuid():
     return uuid.uuid5(uuid.NAMESPACE_DNS, platform.node() + str(uuid.getnode())).hex
 
 
-def timeout_command(command, timeout):
-    # call shell-command with timeout (in seconds).
+def timeout_command(command, timeout, command_input=None):
+    # call shell-command with timeout (in seconds) and stdinput for the command (optional)
     # returns None if timeout or the command output.
-    start = datetime.datetime.now()
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    while process.poll() is None:
-        time.sleep(0.1)
-        now = datetime.datetime.now()
-        if (now - start).seconds > timeout:
-            os.kill(process.pid, signal.SIGKILL)
-            os.waitpid(-1, os.WNOHANG)
-            return None
-    return process.stdout.read()
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+    command_timer = threading.Timer(timeout, process.kill)
+    try:
+        command_timer.start()
+        stdout, stderr = process.communicate(input=command_input.encode() if command_input else None)
+        return_code = process.returncode
+        return stdout, stderr, return_code
+    finally:
+        command_timer.cancel()
 
 
 def get_os():
@@ -511,6 +446,9 @@ def get_parsed_args():
     parser.add_option('-c', '--clean', action='store_true', default=False, dest='clean')
     parser.add_option('-v', '--verbose', action='store_true', default=False, dest='verbose',
                       help='Print out stacktraces for errors in checks')
+    parser.add_option('-f', '--config-file', default=None, dest='config_file',
+                      help='Location for an alternate config rather than '
+                           'using the default config location.')
 
     try:
         options, args = parser.parse_args()
@@ -673,7 +611,7 @@ def initialize_logging(logger_name):
         # set up file loggers
         log_file = logging_config.get('%s_log_file' % logger_name)
         if log_file is not None and not logging_config['disable_file_logging']:
-            # make sure the log directory is writeable
+            # make sure the log directory is writable
             # NOTE: the entire directory needs to be writable so that rotation works
             if os.access(os.path.dirname(log_file), os.R_OK | os.W_OK):
                 file_handler = logging.handlers.RotatingFileHandler(

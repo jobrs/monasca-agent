@@ -1,9 +1,8 @@
-# (C) Copyright 2016 Hewlett Packard Enterprise Development Company LP
+# (C) Copyright 2016 Hewlett Packard Enterprise Development LP
 
 from datetime import datetime
 import socket
 import ssl
-import time
 from urlparse import urlparse
 
 from monasca_agent.collector.checks import AgentCheck
@@ -20,19 +19,11 @@ class CertificateCheck(AgentCheck):
         self._ca_certs = init_config.get('ca_certs')
         self._ciphers = init_config.get('ciphers')
         self._timeout = init_config.get('timeout')
-        self._collection_period = init_config.get('collect_period')
-        self._last_collect_time = datetime.fromordinal(1)
         self.log.debug('ca_certs file is %s' % self._ca_certs)
         self.log.debug('cipers are %s' % self._ciphers)
         self.log.debug('timeout is %f' % self._timeout)
-        self.log.debug('collection_period is %d' % self._collection_period)
 
     def check(self, instance):
-        time_since_last = datetime.now() - self._last_collect_time
-        if time_since_last.seconds < self._collection_period:
-            self.log.debug('Skipping collection for %d seconds' %
-                           time_since_last.seconds)
-            return
         url = instance.get('url', None)
         dimensions = self._set_dimensions(None, instance)
         dimensions['url'] = url
@@ -45,7 +36,6 @@ class CertificateCheck(AgentCheck):
                        dimensions=dimensions)
             self.log.debug('%d days till expiration for %s' % (expire_in.days,
                                                                url))
-            self._last_collect_time = datetime.now()
 
         except Exception as e:
             self.log.warning('Exception trying to GET certificate for %s: %s' %

@@ -1,4 +1,4 @@
-# (C) Copyright 2015 Hewlett Packard Enterprise Development Company LP
+# (C) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
 
 import glob
 import logging
@@ -105,11 +105,11 @@ class JMXFetch(object):
         java_bin_path: is the path to the java executable. It was
         previously set in the "instance" part of the yaml file of the
         jmx check. So we need to parse yaml files to get it.
-        We assume that this value is alwayws the same for every jmx check
+        We assume that this value is always the same for every jmx check
         so we can return the first value returned
 
         java_options: is string contains options that will be passed to java_bin_path
-        We assume that this value is alwayws the same for every jmx check
+        We assume that this value is always the same for every jmx check
         so we can return the first value returned
         '''
 
@@ -125,11 +125,7 @@ class JMXFetch(object):
             if os.path.exists(conf):
                 f = open(conf)
                 try:
-                    if hasattr(yaml, 'CLoader'):
-                        Loader = yaml.CLoader
-                    else:
-                        Loader = yaml.Loader
-                    check_config = yaml.load(f.read(), Loader=Loader)
+                    check_config = yaml.safe_load(f.read())
                     assert check_config is not None
                     f.close()
                 except Exception:

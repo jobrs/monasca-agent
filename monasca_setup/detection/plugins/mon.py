@@ -1,4 +1,4 @@
-# (C) Copyright 2015 Hewlett Packard Enterprise Development Company LP
+# (C) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
 
 """Classes for monitoring the monitoring server stack.
 
@@ -52,7 +52,7 @@ class MonAPI(monasca_setup.detection.Plugin):
             # Find the right port from the config, this is specific to the Java version
             try:
                 with open('/etc/monasca/api-config.yml', 'r') as config:
-                    self.api_config = yaml.load(config.read())
+                    self.api_config = yaml.safe_load(config.read())
                     self._api_port = self.api_config['server']['applicationConnectors'][0]['port']
                     self._admin_port = self.api_config['server']['adminConnectors'][0]['port']
             except Exception:
@@ -166,7 +166,7 @@ class MonPersister(monasca_setup.detection.Plugin):
         """Read persister-config.yml file to find the exact numThreads."""
         try:
             with open('/etc/monasca/persister-config.yml', 'r') as config:
-                self.persister_config = yaml.load(config.read())
+                self.persister_config = yaml.safe_load(config.read())
         except Exception:
             log.exception('Failed parsing /etc/monasca/persister-config.yml')
             self.available = False
@@ -182,8 +182,24 @@ class MonPersister(monasca_setup.detection.Plugin):
         log.info("\tEnabling the Monasca persister process check")
         config.merge(watch_process(['monasca-persister'], 'monitoring', 'monasca-persister', exact_match=False))
 
+        adminConnector = self.persister_config['server']['adminConnectors'][0]
+        try:
+            admin_endpoint_type = adminConnector['type']
+        except Exception:
+            admin_endpoint_type = "http"
+
+        try:
+            admin_endpoint_port = adminConnector['port']
+        except Exception:
+            admin_endpoint_port = 8091
+
         log.info("\tEnabling the Monasca persister healthcheck")
-        config.merge(dropwizard_health_check('monitoring', 'monasca-persister', 'http://localhost:8091/healthcheck'))
+        config.merge(
+            dropwizard_health_check(
+                'monitoring',
+                'monasca-persister',
+                '{0}://localhost:{1}/healthcheck'.format(admin_endpoint_type,
+                                                         admin_endpoint_port)))
 
         log.info("\tEnabling the Monasca persister metrics")
         whitelist = [
@@ -249,7 +265,13 @@ class MonPersister(monasca_setup.detection.Plugin):
                           }
             whitelist.append(new_thread)
 
-        config.merge(dropwizard_metrics('monitoring', 'monasca-persister', 'http://localhost:8091/metrics', whitelist))
+        config.merge(
+            dropwizard_metrics(
+                'monitoring',
+                'monasca-persister',
+                '{0}://localhost:{1}/metrics'.format(admin_endpoint_type,
+                                                     admin_endpoint_port),
+                whitelist))
         return config
 
     def dependencies_installed(self):
@@ -260,14 +282,15 @@ class MonThresh(monasca_setup.detection.Plugin):
     """Detect the running mon-thresh and monitor."""
     def _detect(self):
         """Run detection, set self.available True if the service is detected."""
-        if find_process_cmdline('backtype.storm.daemon') is not None:
-            self.available = True
+        # The node will be running either nimbus or supervisor or both
+        self.available = (find_process_cmdline('storm.daemon.nimbus') is not None or
+                          find_process_cmdline('storm.daemon.supervisor') is not None)
 
     def build_config(self):
         """Build the config as a Plugins object and return."""
         log.info("\tWatching the mon-thresh process.")
         config = monasca_setup.agent_config.Plugins()
-        for process in ['backtype.storm.daemon.nimbus', 'backtype.storm.daemon.supervisor', 'backtype.storm.daemon.worker']:
+        for process in ['storm.daemon.nimbus', 'storm.daemon.supervisor', 'storm.daemon.worker']:
             if find_process_cmdline(process) is not None:
                 config.merge(watch_process([process], 'monitoring', 'apache-storm', exact_match=False, detailed=False))
         config.merge(watch_process_by_username('storm', 'monasca-thresh', 'monitoring', 'apache-storm'))
@@ -283,7 +306,7 @@ def dropwizard_health_check(service, component, url):
     config['http_check'] = {'init_config': None,
                             'instances': [{'name': "{0}-{1} healthcheck".format(service, component),
                                            'url': url,
-                                           'timeout': 1,
+                                           'timeout': 5,
                                            'include_content': False,
                                            'dimensions': {'service': service, 'component': component}}]}
     return config
@@ -295,7 +318,7 @@ def dropwizard_metrics(service, component, url, whitelist):
     config['http_metrics'] = {'init_config': None,
                               'instances': [{'name': "{0}-{1} metrics".format(service, component),
                                              'url': url,
-                                             'timeout': 1,
+                                             'timeout': 5,
                                              'dimensions': {'service': service, 'component': component},
                                              'whitelist': whitelist}]}
     return config

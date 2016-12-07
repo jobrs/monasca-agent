@@ -1,11 +1,10 @@
 #!/bin/env python
-# (C) Copyright 2015 Hewlett Packard Enterprise Development Company LP
+# (C) Copyright 2015,2016Hewlett Packard Enterprise Development Company LP
 """Monasca Agent wrapper for Nagios checks.
 
 """
 
 import hashlib
-import json
 import os
 import pickle
 import socket
@@ -14,8 +13,7 @@ import time
 
 from monasca_agent.collector.checks.services_checks import ServicesCheck
 from monasca_agent.collector.checks.services_checks import Status
-
-DETAIL_MAX_LEN = 2034  # The 2048 value_meta limit - the 14 characters used in the detail wrapper: len('{"detail": ""}')
+import monasca_agent.common.aggregator as aggregator
 
 
 class WrapNagios(ServicesCheck):
@@ -38,12 +36,6 @@ class WrapNagios(ServicesCheck):
                 return True
         else:
             return False
-
-    def _create_status_event(self, status, msg, instance):
-        """Does nothing: status events are not yet supported by Mon API.
-
-        """
-        return
 
     def _check(self, instance):
         """Run the command specified by check_command and capture the result.
@@ -116,9 +108,13 @@ class WrapNagios(ServicesCheck):
 
         status_code = proc.poll()
         if detail:
+            value_meta = {'detail': detail}
+            overage = aggregator.get_value_meta_overage(value_meta)
+            if overage:
+                value_meta = {'detail': detail[:-overage]}
             self.gauge(metric_name, status_code,
                        dimensions=dimensions,
-                       value_meta={'detail': detail[0:DETAIL_MAX_LEN]})
+                       value_meta=value_meta)
         else:
             self.gauge(metric_name, status_code, dimensions=dimensions)
         # Return DOWN on critical, UP otherwise

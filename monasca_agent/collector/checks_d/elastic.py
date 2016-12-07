@@ -1,11 +1,10 @@
-# (C) Copyright 2015 Hewlett Packard Enterprise Development Company LP
+# (C) Copyright 2015,2016 Hewlett Packard Enterprise Development Company LP
 
 from collections import defaultdict
 import json
 import socket
 import subprocess
 import sys
-import time
 import urllib2
 import urlparse
 
@@ -409,7 +408,7 @@ class ElasticSearch(AgentCheck):
                     self.hostname.decode('utf-8'),
                     socket.gethostname().decode('utf-8'),
                     socket.getfqdn().decode('utf-8'),
-                    socket.gethostbyname(socket.gethostname())
+                    socket.gethostbyname(socket.gethostname()).decode('utf-8')
                 )
                 self.log.debug("hostnames converted: %s", hostnames)
 #                if node_hostname.decode('utf-8') in hostnames:
@@ -517,14 +516,9 @@ class ElasticSearch(AgentCheck):
     def _process_health_data(self, config_url, data, dimensions=None):
         if self.cluster_status.get(config_url, None) is None:
             self.cluster_status[config_url] = data['status']
-            if data['status'] in ["yellow", "red"]:
-                event = self._create_event(data['status'])
-                self.event(event)
 
         if data['status'] != self.cluster_status.get(config_url):
             self.cluster_status[config_url] = data['status']
-            event = self._create_event(data['status'])
-            self.event(event)
 
         # noinspection PyUnusedLocal
         def process_metric(pmetric, xtype, path, xform=None):
@@ -561,8 +555,6 @@ class ElasticSearch(AgentCheck):
             desc = self.CLUSTER_PENDING_TASKS[metric]
             process_metric(metric, *desc)
 
-# --------------------------------
-
     def _create_event(self, status):
         hostname = self.hostname.decode('utf-8')
         if status == "red":
@@ -589,3 +581,5 @@ class ElasticSearch(AgentCheck):
                 "source_type_name": "elasticsearch",
                 "event_object": hostname
                 }
+=======
+>>>>>>> c170af038da8826bb47bb1196387aa7fef36b5c1

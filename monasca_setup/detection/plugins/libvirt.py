@@ -1,4 +1,4 @@
-# (c) Copyright 2015-2016 Hewlett Packard Enterprise Development Company LP
+# (c) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
 
 import ConfigParser
 import grp
@@ -28,6 +28,8 @@ vm_probation = 60 * 5  # Five minutes
 # By default 'scale_group' metadata is used here for supporting auto
 # scaling in Heat.
 metadata = ['scale_group']
+# Include scale group dimension for customer metrics.
+customer_metadata = ['scale_group']
 # List 'ping' commands (paths and parameters) in order of preference.
 # The plugin will use the first fuctional command. 127.0.0.1 will be appended.
 ping_options = [["/usr/bin/fping", "-n", "-c1", "-t250", "-q"],
@@ -35,6 +37,16 @@ ping_options = [["/usr/bin/fping", "-n", "-c1", "-t250", "-q"],
                 ["/bin/ping", "-n", "-c1", "-w1", "-q"]]
 # Path to 'ip' command (needed to execute ping within network namespaces)
 ip_cmd = "/sbin/ip"
+# How many ping commands to run concurrently
+default_max_ping_concurrency = 8
+# Disk metrics can be collected at a larger interval than other vm metrics
+default_disk_collection_period = 0
+# VNIC metrics can be collected at a larger interval than other vm metrics
+default_vnic_collection_period = 0
+
+# Arguments which should be written as integers, not strings
+INT_ARGS = ['disk_collection_period', 'vnic_collection_period',
+            'max_ping_concurrency', 'nova_refresh', 'vm_probation']
 
 
 class Libvirt(Plugin):
@@ -100,7 +112,18 @@ class Libvirt(Plugin):
             init_config = {'cache_dir': cache_dir,
                            'nova_refresh': nova_refresh,
                            'vm_probation': vm_probation,
-                           'metadata': metadata}
+                           'metadata': metadata,
+                           'customer_metadata': customer_metadata,
+                           'max_ping_concurrency': default_max_ping_concurrency,
+                           'disk_collection_period': default_disk_collection_period,
+                           'vnic_collection_period': default_vnic_collection_period}
+
+            # Set default parameters for included checks
+            init_config['vm_cpu_check_enable'] = self.literal_eval('True')
+            init_config['vm_disks_check_enable'] = self.literal_eval('True')
+            init_config['vm_network_check_enable'] = self.literal_eval('True')
+            init_config['vm_ping_check_enable'] = self.literal_eval('True')
+            init_config['vm_extended_disks_check_enable'] = self.literal_eval('False')
 
             for option in cfg_needed:
                 init_config[option] = nova_cfg.get(cfg_section, cfg_needed[option])
@@ -154,7 +177,15 @@ class Libvirt(Plugin):
             # Handle monasca-setup detection arguments, which take precedence
             if self.args:
                 for arg in self.args:
-                    init_config[arg] = self.literal_eval(self.args[arg])
+                    if arg in INT_ARGS:
+                        value = self.args[arg]
+                        try:
+                            init_config[arg] = int(value)
+                        except ValueError:
+                            log.warn("\tInvalid integer value '{0}' for parameter {1}, ignoring value"
+                                     .format(value, arg))
+                    else:
+                        init_config[arg] = self.literal_eval(self.args[arg])
 
             config['libvirt'] = {'init_config': init_config,
                                  'instances': []}

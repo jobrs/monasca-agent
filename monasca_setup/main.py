@@ -1,11 +1,12 @@
 #!/usr/bin/env python
-# (C) Copyright 2015-2016 Hewlett Packard Enterprise Development Company LP
+# (C) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
 
 """ Detect running daemons then configure and start the agent.
 """
 
 import argparse
 from glob import glob
+import json
 import logging
 import os
 import pwd
@@ -73,6 +74,7 @@ def main(argv=None):
     else:
         # Run detection for all the plugins, halting on any failures if plugins were specified in the arguments
         detected_config = plugin_detection(plugins, args.template_dir, args.detection_args,
+                                           args.detection_args_json,
                                            skip_failed=(args.detection_plugins is None))
         if detected_config is None:
             return 1  # Indicates detection problem, skip remaining steps and give non-zero exit code
@@ -103,7 +105,11 @@ def base_configuration(args):
     :param args: Arguments from the command line
     :return: None
     """
-    gid = pwd.getpwnam(args.user).pw_gid
+    stat = pwd.getpwnam(args.user)
+
+    uid = stat.pw_uid
+    gid = stat.pw_gid
+
     # Write the main agent.yaml - Note this is always overwritten
     log.info('Configuring base Agent settings.')
     dimensions = {}
@@ -117,53 +123,84 @@ def base_configuration(args):
     write_template(os.path.join(args.template_dir, 'agent.yaml.template'),
                    os.path.join(args.config_dir, 'agent.yaml'),
                    {'args': args, 'hostname': socket.getfqdn()},
-                   gid,
+                   group=gid,
+                   user=uid,
                    is_yaml=True)
 
     # Write the supervisor.conf
     write_template(os.path.join(args.template_dir, 'supervisor.conf.template'),
                    os.path.join(args.config_dir, 'supervisor.conf'),
                    {'prefix': PREFIX_DIR, 'log_dir': args.log_dir, 'monasca_user': args.user},
-                   gid)
+                   user=uid,
+                   group=gid)
 
 
 def modify_config(args, detected_config):
-    changes = False
-    # Compare existing and detected config for each check plugin and write out the plugin config if changes
-    for key, value in detected_config.iteritems():
+    """Compare existing and detected config for each check plugin and write out
+       the plugin config if there are changes
+    """
+    modified_config = False
+
+    for detection_plugin_name, new_config in detected_config.iteritems():
         if args.overwrite:
-            changes = True
+            modified_config = True
             if args.dry_run:
                 continue
             else:
-                agent_config.save_plugin_config(args.config_dir, key, args.user, value)
+                agent_config.save_plugin_config(args.config_dir, detection_plugin_name, args.user, new_config)
         else:
-            old_config = agent_config.read_plugin_config_from_disk(args.config_dir, key)
+            config = agent_config.read_plugin_config_from_disk(args.config_dir, detection_plugin_name)
             # merge old and new config, new has precedence
-            if old_config is not None:
-                if key == "http_check":
-                    old_config_urls = [i['url'] for i in old_config['instances'] if 'url' in i]
-                    value, old_config = agent_config.check_endpoint_changes(value, old_config)
-                agent_config.merge_by_name(value['instances'], old_config['instances'])
-                # Sort before compare, if instances have no name the sort will fail making order changes significant
+            if config is not None:
+                # For HttpCheck, if the new input url has the same host and
+                # port but a different protocol comparing with one of the
+                # existing instances in http_check.yaml, we want to keep the
+                # existing http check instance and replace the url with the
+                # new protocol. If name in this instance is the same as the
+                # url, we replace name with new url too.
+                # For more details please see:
+                # monasca-agent/docs/DeveloperDocs/agent_internals.md
+                if detection_plugin_name == "http_check":
+                    # Save old http_check urls from config for later comparison
+                    config_urls = [i['url'] for i in config['instances'] if
+                                   'url' in i]
+
+                    # Check endpoint change, use new protocol instead
+                    # Note: config is possibly changed after running
+                    # check_endpoint_changes function.
+                    config = agent_config.check_endpoint_changes(new_config, config)
+
+                agent_config.merge_by_name(new_config['instances'], config['instances'])
+                # Sort before compare, if instances have no name the sort will
+                #  fail making order changes significant
                 try:
-                    value['instances'].sort(key=lambda k: k['name'])
-                    old_config['instances'].sort(key=lambda k: k['name'])
+                    new_config['instances'].sort(key=lambda k: k['name'])
+                    config['instances'].sort(key=lambda k: k['name'])
                 except Exception:
                     pass
-                value_urls = [i['url'] for i in value['instances'] if 'url' in i]
-                if key == "http_check":
-                    if value_urls == old_config_urls:  # Don't write config if no change
+
+                if detection_plugin_name == "http_check":
+                    new_config_urls = [i['url'] for i in new_config['instances'] if 'url' in i]
+                    # Don't write config if no change
+                    if new_config_urls == config_urls and new_config == config:
                         continue
                 else:
-                    if value == old_config:
+                    if new_config == config:
                         continue
-            changes = True
+            modified_config = True
             if args.dry_run:
-                log.info("Changes would be made to the config file for the {0} check plugin".format(key))
+                log.info("Changes would be made to the config file for the {0}"
+                         " check plugin".format(detection_plugin_name))
             else:
-                agent_config.save_plugin_config(args.config_dir, key, args.user, value)
-    return changes
+                agent_config.save_plugin_config(args.config_dir, detection_plugin_name, args.user, new_config)
+    return modified_config
+
+
+def validate_positive(value):
+    int_value = int(value)
+    if int_value <= 0:
+        raise argparse.ArgumentTypeError("%s must be greater than zero" % value)
+    return int_value
 
 
 def parse_arguments(parser):
@@ -188,9 +225,22 @@ def parse_arguments(parser):
                              "This assumes the base config has already run.")
     parser.add_argument('--skip_detection_plugins', nargs='*',
                         help="Skip detection for all plugins in this space separated list.")
-    parser.add_argument('-a', '--detection_args', help="A string of arguments that will be passed to detection " +
-                                                       "plugins. Only certain detection plugins use arguments.")
-    parser.add_argument('--check_frequency', help="How often to run metric collection in seconds", type=int, default=30)
+    detection_args_group = parser.add_mutually_exclusive_group()
+    detection_args_group.add_argument('-a', '--detection_args', help="A string of arguments that will be passed to detection " +
+                                      "plugins. Only certain detection plugins use arguments.")
+    detection_args_group.add_argument('-json', '--detection_args_json',
+                                      help="A JSON string that will be passed to detection plugins that parse JSON.")
+    parser.add_argument('--check_frequency', help="How often to run metric collection in seconds",
+                        type=validate_positive, default=30)
+    parser.add_argument('--num_collector_threads', help="Number of Threads to use in Collector " +
+                                                        "for running checks", type=validate_positive, default=1)
+    parser.add_argument('--pool_full_max_retries', help="Maximum number of collection cycles where all of the threads " +
+                                                        "in the pool are still running plugins before the " +
+                                                        "collector will exit and be restart",
+                        type=validate_positive, default=4)
+    parser.add_argument('--plugin_collect_time_warn', help="Number of seconds a plugin collection time exceeds " +
+                                                           "that causes a warning to be logged for that plugin",
+                        type=validate_positive, default=6)
     parser.add_argument('--dimensions', help="Additional dimensions to set for all metrics. A comma separated list " +
                                              "of name/value pairs, 'name:value,name2:value2'")
     parser.add_argument('--ca_file', help="Sets the path to the ca certs file if using certificates. " +
@@ -223,10 +273,25 @@ def parse_arguments(parser):
                                             "Useful for load testing; not for production use.", default=0)
     parser.add_argument('-v', '--verbose', help="Verbose Output", action="store_true")
     parser.add_argument('--dry_run', help="Make no changes just report on changes", action="store_true")
+    parser.add_argument('--max_buffer_size',
+                        help="Maximum number of batches of measurements to"
+                             " buffer while unable to communicate with monasca-api",
+                        default=1000)
+    parser.add_argument('--max_measurement_buffer_size',
+                        help="Maximum number of measurements to buffer when unable to communicate"
+                             " with the monasca-api",
+                        default=-1)
+    parser.add_argument('--backlog_send_rate',
+                        help="Maximum number of buffered batches of measurements to send at"
+                             " one time when connection to the monasca-api is restored",
+                        default=1000)
+    parser.add_argument('--monasca_statsd_port',
+                        help="Statsd daemon port number",
+                        default=8125)
     return parser.parse_args()
 
 
-def plugin_detection(plugins, template_dir, detection_args, skip_failed=True, remove=False):
+def plugin_detection(plugins, template_dir, detection_args, detection_args_json, skip_failed=True, remove=False):
     """Runs the detection step for each plugin in the list and returns the complete detected agent config.
     :param plugins: A list of detection plugin classes
     :param template_dir: Location of plugin configuration templates
@@ -235,9 +300,14 @@ def plugin_detection(plugins, template_dir, detection_args, skip_failed=True, re
     :return: An agent_config instance representing the total configuration from all detection plugins run.
     """
     plugin_config = agent_config.Plugins()
+    if detection_args_json:
+        json_data = json.loads(detection_args_json)
     for detect_class in plugins:
         # todo add option to install dependencies
-        detect = detect_class(template_dir, False, detection_args)
+        if detection_args_json:
+            detect = detect_class(template_dir, False, **json_data)
+        else:
+            detect = detect_class(template_dir, False, detection_args)
         if detect.available:
             new_config = detect.build_config_with_name()
             if not remove:
@@ -264,9 +334,9 @@ def remove_config(args, plugin_names):
     detected_plugins = utils.discover_plugins(CUSTOM_PLUGIN_PATH)
     plugins = utils.select_plugins(args.detection_plugins, detected_plugins)
 
-    if args.detection_args is not None:
+    if (args.detection_args or args.detection_args_json):
         detected_config = plugin_detection(
-            plugins, args.template_dir, args.detection_args,
+            plugins, args.template_dir, args.detection_args, args.detection_args_json,
             skip_failed=(args.detection_plugins is None), remove=True)
 
     for file_path in existing_config_files:

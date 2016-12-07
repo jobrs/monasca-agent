@@ -13,7 +13,6 @@ import time
 import checks.collector
 import checks.services_checks as status_checks
 import jmxfetch
-import monasca_agent.common.check_status
 import monasca_agent.common.config as cfg
 import monasca_agent.common.daemon
 import monasca_agent.common.emitter
@@ -61,14 +60,11 @@ class CollectorDaemon(monasca_agent.common.daemon.Daemon):
         if self.collector:
             self.collector.stop()
         log.debug("Collector is stopped.")
+        sys.exit(0)
 
     def _handle_sigusr1(self, signum, frame):
         self._handle_sigterm(signum, frame)
         self._do_restart()
-
-    def info(self, verbose=None):
-        logging.getLogger().setLevel(logging.ERROR)
-        return monasca_agent.common.check_status.CollectorStatus.print_latest_status(verbose=verbose)
 
     def run(self, config):
         """Main loop of the collector.
@@ -78,13 +74,12 @@ class CollectorDaemon(monasca_agent.common.daemon.Daemon):
         signal.signal(signal.SIGTERM, self._handle_sigterm)
 
         # A SIGUSR1 signals an exit with an autorestart
-        signal.signal(signal.SIGUSR1, self._handle_sigusr1)
+        if hasattr(signal, 'SIGUSR1'):
+            # Windows does not have this signal.
+            signal.signal(signal.SIGUSR1, self._handle_sigusr1)
 
         # Handle Keyboard Interrupt
         signal.signal(signal.SIGINT, self._handle_sigterm)
-
-        # Save the agent start-up stats.
-        monasca_agent.common.check_status.CollectorStatus().persist()
 
         # Load the checks_d checks
         checksd = util.load_check_directory()
@@ -113,7 +108,7 @@ class CollectorDaemon(monasca_agent.common.daemon.Daemon):
                     log.warn("Cannot enable profiler")
 
             # Do the work.
-            self.collector.run()
+            self.collector.run(check_frequency)
 
             # disable profiler and printout stats to stdout
             if config.get('profile', False) and config.get('profile').lower() == 'yes' and profiled:
@@ -142,12 +137,6 @@ class CollectorDaemon(monasca_agent.common.daemon.Daemon):
                     log.info("Collection took {0} which is as long or longer then the configured collection frequency "
                              "of {1}. Starting collection again without waiting in result.".format(collection_time,
                                                                                                    check_frequency))
-
-        # Now clean-up.
-        try:
-            monasca_agent.common.check_status.CollectorStatus.remove_latest_status()
-        except Exception:
-            pass
 
         # Explicitly kill the process, because it might be running
         # as a daemon.

@@ -59,7 +59,7 @@ The order of precedence for all dimensions is:
 | Name | Description |
 | ---- | ----------- | 
 | hostname | The FQDN of the host being measured. |
-| observer_hostname | The FQDN of the host that runs a check against another host. |
+| observer_host | The FQDN of the host that runs a check against another host. |
 | url | In the case of the http endpoint check the url of the http endpoint being checked. |
 | device | The device name |
 | service | The service name that owns this metric |
@@ -111,15 +111,12 @@ If the owner of the VM is to receive his or her own metrics, the Agent needs to 
 In the below example, the Agent's Keystone username is "monasca-agent" and the Agent's Keystone project name is "mini-mon".
 
 Example commands to add the Agent user/project to the monitoring-delegate role:
-```
-keystone role-create --name=monitoring-delegate
 
-user_id=`keystone user-list |grep monasca-agent |cut -d'|' -f2`
-role_id=`keystone role-list |grep monitoring-delegate |cut -d'|' -f2`
-tenant_id=`keystone tenant-list |grep mini-mon |cut -d'|' -f2`
-
-keystone user-role-add --user=${user_id// /} --role=${role_id// /} --tenant_id=${tenant_id// /}
-```
+    $ keystone role-create --name=monitoring-delegate
+    $ user_id=`keystone user-list |grep monasca-agent |cut -d'|' -f2`
+    $ role_id=`keystone role-list |grep monitoring-delegate |cut -d'|' -f2`
+    $ tenant_id=`keystone tenant-list |grep mini-mon |cut -d'|' -f2`
+    $ keystone user-role-add --user=${user_id// /} --role=${role_id// /} --tenant_id=${tenant_id// /}
 
 Once the Agent's user and project are assigned to the `monitoring-delegate` group, the Agent can submit metrics for other tenants.
 
@@ -165,12 +162,6 @@ Here are some examples of how code can be instrumented using calls to monasca-st
 		With dimensions:
 		statsd.gauge('users_online', 91, dimensions={'Origin': 'Dev', 'Environment': 'Test'})
 
-    * Sample a histogram.
-		statsd.histogram('file.upload_size', 20456)
-
-		With dimensions:
-		statsd.histogram('file.upload_size', 20456, sample_rate=0.5, dimensions={'Name': 'MyFile.pdf', 'Version': '1.0'})
-
     * Time a function call.
 		@statsd.timed('page.render')
 		def render_page():
@@ -184,4 +175,4 @@ Here are some examples of how code can be instrumented using calls to monasca-st
 ```
 
 # License
-(C) Copyright 2015 Hewlett Packard Enterprise Development Company LP
+(C) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
