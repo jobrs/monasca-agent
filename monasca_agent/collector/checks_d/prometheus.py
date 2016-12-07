@@ -59,7 +59,7 @@ class Prometheus(services_checks.ServicesCheck):
 
     def _check(self, instance):
         if prometheus_client_parser is None:
-            self.log.warning("Skipping prometheus plugin check due to missing 'prometheus_client' module.")
+            self.log.error("Skipping prometheus plugin check due to missing 'prometheus_client' module.")
             return
 
         self._update_metrics(instance)
@@ -73,13 +73,15 @@ class Prometheus(services_checks.ServicesCheck):
         """
         try:
             return super(Prometheus, self).get_metrics(prettyprint)
-        except exceptions.Infinity:
+        except exceptions.Infinity as ex:
             # self._disabledMetrics.append(metric_name)
             self.log.exception("Caught infinity exception in prometheus plugin.")
             if not prettyprint:
                 self.log.error("More dimensions needs to be mapped in order to resolve clashing measurements")
                 return self.get_metrics(True)
             else:
+                self.rate('monasca.agent.mapping_errors', 1, dimensions={'agent_check': 'prometheus',
+                                                                         'metric': ex.metric})
                 return []
 
     @staticmethod

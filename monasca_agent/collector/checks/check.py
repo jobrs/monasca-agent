@@ -153,7 +153,7 @@ class Check(util.Dimensions):
             assert len(self._sample_store[metric][key]) in (1, 2), self._sample_store[metric]
 
     @classmethod
-    def _rate(cls, sample1, sample2):
+    def _rate(cls, metric, sample1, sample2):
         """Simple rate.
         """
         try:
@@ -163,12 +163,12 @@ class Check(util.Dimensions):
 
             delta = sample2[1] - sample1[1]
             if delta < 0:
-                raise exceptions.UnknownValue()
+                raise exceptions.UnknownValue(metric=metric)
 
             return (sample2[0], delta / rate_interval, sample2[2], sample2[3])
-        except exceptions.Infinity:
+        except exceptions.Infinity(metric=metric):
             raise
-        except exceptions.UnknownValue:
+        except exceptions.UnknownValue(metric=metric):
             raise
         except Exception as e:
             raise exceptions.NaN(e)
@@ -182,15 +182,14 @@ class Check(util.Dimensions):
 
         # Never seen this metric
         if metric not in self._sample_store:
-            raise exceptions.UnknownValue()
+            raise exceptions.UnknownValue(metric=metric)
 
         # Not enough value to compute rate
         elif self.is_counter(metric) and len(self._sample_store[metric][key]) < 2:
-            raise exceptions.UnknownValue()
+            raise exceptions.UnknownValue(metric=metric)
 
         elif self.is_counter(metric) and len(self._sample_store[metric][key]) >= 2:
-            res = self._rate(
-                self._sample_store[metric][key][-2], self._sample_store[metric][key][-1])
+            res = self._rate(metric, self._sample_store[metric][key][-2], self._sample_store[metric][key][-1])
             if expire:
                 del self._sample_store[metric][key][:-1]
             return res
@@ -199,7 +198,7 @@ class Check(util.Dimensions):
             return self._sample_store[metric][key][-1]
 
         else:
-            raise exceptions.UnknownValue()
+            raise exceptions.UnknownValue(metric=metric)
 
     def get_sample(self, metric, dimensions=None, device_name=None, expire=True):
         """Return the last value for that metric.
