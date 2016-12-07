@@ -1,37 +1,84 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [System Checks](#system-checks)
-  - [System Metrics](#system-metrics)
-      - [Limiting System Metrics](#limiting-system-metrics)
 - [Standard Plugins](#standard-plugins)
   - [Dot File Configuration](#dot-file-configuration)
-  - [Default Plugin Detection](#default-plugin-detection)
   - [Plugin Configuration](#plugin-configuration)
       - [init_config](#init_config)
       - [instances](#instances)
       - [dimensions](#dimensions)
       - [Plugin Documentation](#plugin-documentation)
-  - [Nagios Checks](#nagios-checks)
-    - [Nagios Wrapper](#nagios-wrapper)
-    - [Check_MK_Agent Local](#check_mk_agent-local)
-    - [MK Livestatus](#mk-livestatus)
-  - [Host Alive Checks](#host-alive-checks)
-  - [Process Checks](#process-checks)
-  - [File Size Checks](#file-size-checks)
+- [Detection Plugins](#detection-plugins)
+  - [Plugin](#plugin)
+  - [ArgsPlugin](#argsplugin)
+  - [ServicePlugin](#serviceplugin)
+  - [List of Detection Plugins](#list-of-detection-plugins)
+- [Agent Plugin Detail](#agent-plugin-detail)
+  - [System Metrics](#system-metrics)
+    - [CPU](#cpu)
+    - [Load](#load)
+    - [Memory](#memory)
+    - [Disk](#disk)
+    - [Network](#network)
+    - [Monasca Agent](#monasca-agent)
+    - [Limiting System Metrics](#limiting-system-metrics)
+  - [Apache](#apache)
+  - [Cacti](#cacti)
+  - [Check_MK_Local](#check_mk_local)
+  - [Certificate Expiration (HTTPS)](#certificate-expiration-https)
+  - [Couch](#couch)
+  - [Couchbase](#couchbase)
+  - [Crash](#crash)
+    - [Overview](#overview)
+    - [Metrics](#metrics)
+    - [Configuration](#configuration)
   - [Directory Checks](#directory-checks)
-  - [Network Connection Checks](#network-connection-checks)
-  - [Http Endpoint Checks](#http-endpoint-checks)
-  - [Http Metrics](#http-metrics)
-  - [InfluxDB Checks](#influxdb-checks)
-  - [MySQL Checks](#mysql-checks)
-  - [Vertica Checks](#vertica-checks)
+  - [Docker](#docker)
   - [Elasticsearch Checks](#elasticsearch-checks)
-  - [ZooKeeper Checks](#zookeeper-checks)
+    - [Additional links](#additional-links)
+  - [File Size](#file-size)
+  - [GearmanD](#gearmand)
+  - [Gunicorn](#gunicorn)
+  - [HAProxy](#haproxy)
+  - [HDFS](#hdfs)
+  - [Host Alive](#host-alive)
+  - [HTTP (endpoint status)](#http-endpoint-status)
+  - [HTTP Metrics](#http-metrics)
+  - [IIS](#iis)
+  - [Jenkins](#jenkins)
   - [Kafka Checks](#kafka-checks)
+  - [KyotoTycoon](#kyototycoon)
+  - [Libvirt VM Monitoring](#libvirt-vm-monitoring)
+  - [Open vSwitch Neutron Router Monitoring](#open-vswitch-neutron-router-monitoring)
+  - [Lighttpd](#lighttpd)
+  - [Mcache](#mcache)
+  - [MK Livestatus](#mk-livestatus)
+  - [Mongo](#mongo)
+  - [MySQL Checks](#mysql-checks)
+  - [Nagios Wrapper](#nagios-wrapper)
+  - [Nginx](#nginx)
+  - [NTP](#ntp)
+  - [Postfix Checks](#postfix-checks)
+  - [PostgreSQL](#postgresql)
+  - [Process Checks](#process-checks)
   - [RabbitMQ Checks](#rabbitmq-checks)
-  - [Apache Web Server Checks](#apache-web-server-checks)
+  - [RedisDB](#redisdb)
+  - [Riak](#riak)
+  - [SolidFire](#solidfire)
+  - [SQLServer](#sqlserver)
+  - [Supervisord](#supervisord)
+  - [Swift Diags](#swift-diags)
+  - [TCP Check](#tcp-check)
+  - [Varnish](#varnish)
+  - [VCenter](#vcenter)
+    - [Sample Config](#sample-config)
+    - [ESX Cluster Metrics](#esx-cluster-metrics)
+    - [ESX Cluster Dimensions](#esx-cluster-dimensions)
+  - [Vertica Checks](#vertica-checks)
+  - [WMI Check](#wmi-check)
+  - [ZooKeeper](#zookeeper)
+  - [Kibana](#kibana)
   - [OpenStack Monitoring](#openstack-monitoring)
     - [Nova Checks](#nova-checks)
         - [Nova Processes Monitored](#nova-processes-monitored)
@@ -54,172 +101,106 @@
     - [Ceilometer Checks](#ceilometer-checks)
         - [Ceilometer Processes Monitored](#ceilometer-processes-monitored)
         - [Example Ceilometer Metrics](#example-ceilometer-metrics)
-  - [Libvirt VM Monitoring](#libvirt-vm-monitoring)
-    - [Overview](#overview)
-    - [Configuration](#configuration)
-    - [Instance Cache](#instance-cache)
-    - [Metrics Cache](#metrics-cache)
-    - [Per-Instance Metrics](#per-instance-metrics)
-      - [host_alive_status Codes](#host_alive_status-codes)
-    - [VM Dimensions](#vm-dimensions)
-    - [Aggregate Metrics](#aggregate-metrics)
-  - [Crash Dump Monitoring](#crash-dump-monitoring)
-    - [Overview](#overview-1)
-    - [Metrics](#metrics-1)
-    - [Configuration](#configuration-1)
-  - [VCenter Cluster Monitoring](#vcenter-cluster-monitoring)
-    - [ESX Cluster Metrics](#esx-cluster-metrics)
-    - [ESX Cluster Dimensions](#esx-cluster-dimensions)
+    - [Freezer Checks](#freezer-checks)
+        - [Freezer Processes Monitored](#freezer-processes-monitored)
+        - [Example Freezer Metrics](#example-freezer-metrics)
 - [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-
-# System Checks
-This section documents all the checks that are supported by the Agent.
-
-## System Metrics
-This section documents the system metrics that are sent by the Agent.  This section includes checks by the network plugin as these are considered more system level checks.
-
-| Metric Name | Dimensions | Semantics |
-| ----------- | ---------- | --------- |
-| cpu.idle_perc  | | Percentage of time the CPU is idle when no I/O requests are in progress |
-| cpu.wait_perc | | Percentage of time the CPU is idle AND there is at least one I/O request in progress |
-| cpu.stolen_perc | | Percentage of stolen CPU time, i.e. the time spent in other OS contexts when running in a virtualized environment |
-| cpu.system_perc | | Percentage of time the CPU is used at the system level |
-| cpu.user_perc  | | Percentage of time the CPU is used at the user level |
-| cpu.total_logical_cores  | | Total number of logical cores available for an entire node (Includes hyper threading).  **NOTE: This is an optional metric that is only sent when send_rollup_stats is set to true.** |
-| disk.inode_used_perc | device, mount_point | The percentage of inodes that are used on a device |
-| disk.space_used_perc | device, mount_point | The percentage of disk space that is being used on a device |
-| disk.total_space_mb | | The total amount of disk space in Mbytes aggregated across all the disks on a particular node.  **NOTE: This is an optional metric that is only sent when send_rollup_stats is set to true.** |
-| disk.total_used_space_mb | | The total amount of used disk space in Mbytes aggregated across all the disks on a particular node.  **NOTE: This is an optional metric that is only sent when send_rollup_stats is set to true.** |
-| io.read_kbytes_sec | device | Kbytes/sec read by an io device
-| io.read_req_sec | device   | Number of read requests/sec to an io device
-| io.read_time_sec | device   | Amount of read time in seconds to an io device
-| io.write_kbytes_sec |device | Kbytes/sec written by an io device
-| io.write_req_sec   | device | Number of write requests/sec to an io device
-| io.write_time_sec | device   | Amount of write time in seconds to an io device
-| load.avg_1_min  | | The average system load over a 1 minute period
-| load.avg_5_min  | | The average system load over a 5 minute period
-| load.avg_15_min  | | The average system load over a 15 minute period
-| mem.free_mb | | Mbytes of free memory
-| mem.swap_free_perc | | Percentage of free swap memory that is free
-| mem.swap_free_mb | | Mbytes of free swap memory that is free
-| mem.swap_total_mb | | Mbytes of total physical swap memory
-| mem.swap_used_mb | | Mbytes of total swap memory used
-| mem.total_mb | | Total Mbytes of memory
-| mem.usable_mb | | Total Mbytes of usable memory
-| mem.usable_perc | | Percentage of total memory that is usable
-| mem.used_buffers | | Number of buffers in Mbytes being used by the kernel for block io
-| mem.used_cached | | Mbytes of memory used for the page cache
-| mem.used_shared  | | Mbytes of memory shared between separate processes and typically used for inter-process communication
-| net.in_bytes_sec  | device | Number of network bytes received per second
-| net.out_bytes_sec  | device | Number of network bytes sent per second
-| net.in_packets_sec  | device | Number of network packets received per second
-| net.out_packets_sec  | device | Number of network packets sent per second
-| net.in_errors_sec  | device | Number of network errors on incoming network traffic per second
-| net.out_errors_sec  | device | Number of network errors on outgoing network traffic per second
-| net.in_packets_dropped_sec  | device | Number of inbound network packets dropped per second
-| net.out_packets_dropped_sec  | device | Number of inbound network packets dropped per second
-| monasca.thread_count  | service=monitoring component=monasca-agent | Number of threads that the collector is consuming for this collection run
-| monasca.emit_time_sec  | service=monitoring component=monasca-agent | Amount of time that the forwarder took to send metrics to the Monasca API.
-| monasca.collection_time_sec  | service=monitoring component=monasca-agent | Amount of time that the collector took for this collection run
-
-### Limiting System Metrics
-It is possible to reduce the number of system metrics with certain configuration parameters.
-
-| Config Option  | Values     | Description                                                                                |
-| -------------- | ---------- | ------------------------------------------------------------------------------------------ |
-| net_bytes_only | true/false | Sends bytes/sec metrics only, disabling packets/sec, packets_dropped/sec, and errors/sec.  |
-| cpu_idle_only  | true/false | Sends idle_perc only, disabling wait/stolen/system/user metrics                            |
-| send_io_stats  | true/false | If true, sends I/O metrics for each disk device.  If false, sends only disk space metrics. |
-
-These parameters may added to `instances` in the plugin `.yaml` configuration file, or added via `monasca-setup` like this:
-```
-monasca-setup -d system -a 'cpu_idle_only=true net_bytes_only=true send_io_stats=false' --overwrite
-```
-By default, all metrics are enabled.
-
 # Standard Plugins
-Plugins are the way to extend the Monasca Agent.  Plugins add additional functionality that allow the agent to perform checks on other applications, servers or services.  This section describes the standard plugins that are delivered by default.
+Plugins are the way to extend the Monasca Agent.  Plugins add additional functionality that allow the agent to perform checks on other applications, servers or services.  Some plugins may have corresponding [Detection Plugins](#detection-plugins) to automatically detect, configure, and activate certain Agent plugins. This section describes the standard plugins that are delivered by default.
 
 ** Standard location for plugin YAML config files **
-> /etc/monasca/agent/conf.d
+> /etc/monasca/agent/conf.d/
 
-The following plugins are delivered via setup as part of the standard plugin checks.  If a corresponding service is found on the system where the Monasca Agent is being installed then a plugin configuration will be created.
+The following plugins are delivered via setup as part of the standard plugin checks.  See [Customizations.md](https://github.com/openstack/monasca-agent/blob/master/docs/Customizations.md) for how to write new plugins.
 
 | Setup Plugin Name | Dot File  | Detail                 |
 | ----------------- | --------- | ---------------------- |
 | apache | /root/.apache.cnf | Apache web server |
-| cacti | | |
-| ceilometer | | OpenStack component |
-| cinder | | OpenStack component |
-| couch | | |
-| couchbase | | |
-| cpu | | |
-| crash | | |
-| directory | | |
-| disk | | |
-| docker | | |
-| elastic | | |
-| file_size | | |
-| gearmand | | |
-| glance | | OpenStack component |
-| gunicorn | | |
-| haproxy | | |
-| hdfs | | |
-| host_alive | | |
-| http_check | | |
-| iis | | Microsoft Internet Information Services |
-| jenkins | | |
-| kafka_consumer | | |
-| keystone | | OpenStack component | |
-| kyototycoon | | |
-| libvirt | | |
-| lighttpd | | |
-| load | | |
-| mcache | | |
-| memory | | |
-| mongo | | |
-| mysql | /root/.my.cnf | |
-| vertica | /root/.vertica.cnf | |
-| nagios_wrapper | | |
-| network | | |
-| network_connections | | |
-| neutron | | OpenStack component |
-| nginx | | Ngix proxy web server |
-| nova | | OpenStack component |
-| ntp | | |
-| postfix | | |
-| postgres | | |
-| process | | |
+| cacti |  |  |
+| cert_check |  |  |
+| check_mk_local |  |  |
+| couch |  |  |
+| couchbase |  |  |
+| cpu |  |  |
+| crash |  |  |
+| directory |  |  |
+| disk |  |  |
+| docker |  |  |
+| elastic |  |  |
+| file_size |  |  |
+| gunicorn |  |  |
+| haproxy |  |  |
+| hdfs |  |  |
+| host_alive |  |  |
+| http_check |  |  |
+| http_metrics |  |  |
+| iis |  | Microsoft Internet Information Services |
+| jenkins |  |  |
+| kafka_consumer |  |  |
+| kibana | **kibana_install_dir**/kibana.yml | Integration to Kibana |
+| kyototycoon |  |  |
+| libvirt |  |  |
+| lighttpd |  |  |
+| load |  |  |
+| mcache |  |  |
+| memory |  |  |
+| mk_livestatus |  |  |
+| mongo |  |  |
+| mysql | /root/.my.cnf |  |
+| nagios_wrapper |  |  |
+| network |  |  |
+| nginx |  | Tracks basic nginx metrics via the status module |
+| ntp |  | Uses ntplib to grab a metric for the ntp offset |
+| postfix |  | Provides metrics on the number of messages in a given postfix queue|
+| postgres |  |  |
+| process |  |  |
 | rabbitmq | /root/.rabbitmq.cnf |
-| redisdb | | |
-| riak | | |
-| sqlserver | | |
-| swift | | OpenStack component |
-| tcp_check | | |
-| varnish | | |
-| win32_event_log | | |
-| wmi_check | | |
-| zk | | Apache Zookeeper |
+| redisdb |  |  |
+| riak |  |  |
+| solidfire |  | Track cluster health and use stats |
+| sqlserver |  |  |
+| supervisord |  |  |
+| swift_diags |  |  |
+| tcp_check |  |  |
+| varnish |  |  |
+| vcenter |  |  |
+| vertica | /root/.vertica.cnf |
+| wmi_check |  |  |
+| zk |  | Apache Zookeeper |
 
 
 ## Dot File Configuration
 
-Dot files provide an added level of configuration to the component plugins
+Dot files, as referenced above, provide an added level of configuration to some component plugins.  Here are a few examples:
 
 > **apache**
 ```
+Example for apache process and server-status metrics (secure)
 [client]
 user=root
 password=pass
+url=https://localhost/server-status?auto
+or
+Example for apache process and server-status metrics (non-secure)
+[client]
+url=http://localhost/server-status?auto
+or
+Example for apache process metrics only
+[client]
+use_server_status_metrics=false
 ```
+
 > **mysql**
 ```
 [client]
 user=root
 password=pass
+host=server
+socket=/var/run/mysqld/mysqld.sock
+ssl_ca=/etc/ssl/certs/ca-certificates.crt
 ```
 
 > **rabbitmq**
@@ -231,39 +212,6 @@ nodes=rabbit@devstack
 queues=conductor
 exchanges=nova,cinder,ceilometer,glance,keystone,neutron,heat,ironic,openstack
 ```
-
-
-## Default Plugin Detection
-
-The following plugin groups are detected by setup with the default command line switches.
-
-> monasca_setup.detection.plugins.init
-
-
-| Setup Plugin Group | Cmoponents                             |
-| ------------------ | -------------------------------------- |
-| Apache | |
-| Ceilometer | |
-| Cinder | |
-| Crash | |
-| Glance | |
-| Kafka | |
-| Keystone | |
-| Libvirt | |
-| MonAPI | |
-| MonPersister | |
-| MonThresh | Monasca API, Persister, Threshold Engine |
-| MySQL | |
-| Vertica | |
-| Neutron | |
-| Nova | |
-| Ntp | |
-| Postfix | |
-| RabbitMQ | |
-| Swift | |
-| System | network, disk, load, memory, cpu |
-| Zookeeper | |
-
 
 ## Plugin Configuration
 Each plugin has a corresponding YAML configuration file with the same stem name as the plugin script file.
@@ -288,6 +236,12 @@ instances:
 
 #### init_config
 In the init_config section you can specify an arbitrary number of global name:value pairs that will be available on every run of the check in self.init_config.
+Here you can specify a collection frequency specific to the plugin by setting collect_period.
+The global frequency at which all plugins are run is specified by the variable "check_frequency" defined in https://github.com/openstack/monasca-agent/blob/master/docs/Agent.md.
+Under normal and default conditions when a plugin runs all the metrics are collected and sent. For example, if check_frequency=30, by default the plugin will be run every 30 seconds and the metrics will be sent.
+The variable "collect_period" allows each plugins collect period to be further adjusted to a value greater than the frequency at which the plugin is run specified by "check_frequency", such that when the collection run starts, the plugin might not be called. For example, if check_frequency=30 and collect_period=600, the plugin will be called and metrics sent every 600 seconds. This allows fewer metrics to be sent.
+The "collect_period" should be evenly divisible by the "check_frequency". For example, if you want the plugin to collect and send metrics every 600 seconds (10 minutes), and the global check_frequency=30, then the collect_period should be set to 600.
+If the "collect_period" is not evenly divisible by the "check_frequency" then the "collect_period" will get rounded up to the nearest multiple of the "check_frequency". For example, if the collect_period=45 and the global check_frequency=30, then the "collect_period" will get rounded up to 60 and the plugin will get called and send metrics every 60 seconds.
 
 #### instances
 The instances section is a list of instances that this check will be run against. Your actual check() method is run once per instance. The name:value pairs for each instance specify details about the instance that are necessary for the check.
@@ -298,50 +252,233 @@ The instances section can also contain optional dimensions. These dimensions wil
 #### Plugin Documentation
 Your plugin should include an example YAML configuration file to be placed in /etc/monasca/agent/conf.d/ which has the name of the plugin YAML file plus the extension '.example', so the example configuration file for the process plugin would be at /usr/local/share/monasca/agent/conf.d/process.yaml.example. This file should include a set of example init_config and instances clauses that demonstrate how the plugin can be configured.
 
-## Nagios Checks
-### Nagios Wrapper
-The Agent can run Nagios plugins. A YAML file (nagios_wrapper.yaml) contains the list of Nagios checks to run, including the check name, command name with parameters, and desired interval between iterations. A Python script (nagios_wrapper.py) runs each command in turn, captures the resulting exit code (0 through 3, corresponding to OK, warning, critical and unknown), and sends that information to the Forwarder, which then sends the Monitoring API. Currently, the Agent can only  send the exit code from a Nagios plugin. Any accompanying text is not sent.
+# Detection Plugins
+The `monasca_setup` library contains a number of detection plugins, which are located within the library at
 
- default dimensions:
-    observer_host: fqdn
-    target_host: fqdn | supplied
+> monasca_setup/detection/plugins/
 
- default value_meta
-    0, 1, 2, 3, 4
-    OK, Warning, Critical, Unknown
-    error: error_message
+Some detection plugins activate a specific Agent plugin of the same name, and some leverage other general-purpose Agent plugins to monitor a particular service.  There are three classes in total:
 
-Similar to all plugins, the configuration is done in YAML, and consists of two keys: init_config and instances.
+## Plugin
+The base class of detection plugins requires a separate Agent plugin of the same name.
 
-init_config contains global configuration options:
+## ArgsPlugin
+Any plugins which are configured by passing arguments, rather than relying on detection, may use the ArgsPlugin class.
+
+## ServicePlugin
+This class covers Process, HTTP endpoints, Directory, and File monitoring.  It is primarily used for monitoring OpenStack components.
+Note: There are existing default detection plugins for http_check.py, directory.py, and file_size.py that only require configuration.
+
+A process can be monitored by process_names or by process_username. Pass in the process_names list argument when watching process by name.  Pass in the process_username argument and component_name arguments when watching process by username. Watching by username is useful for groups of processes that
+are owned by a specific user.  For process monitoring by process_username the component_name is required since it is used to initialize the instance name in process.yaml.
+component_name is optional for monitoring by process_name and all other checks.
+
+An http endpoint connection can be checked by passing in the service_api_url and optional search_pattern parameters.
+The http check can be skipped by specifying the argument 'disable_http_check'
+
+Directory size can be checked by passing in a directory_names list.
+
+File size can be checked by passing in a file_dirs_names list where each directory name item includes a list of files.
+example: 'file_dirs_names': [('/var/log/monasca/api', ['monasca-api'])]
+
+Note: service_name and component_name are optional (except component_name is required with process_username) arguments used for metric dimensions by all checks.
+
+## List of Detection Plugins
+These are the detection plugins included with the Monasca Agent.  See [Customizations.md](https://github.com/openstack/monasca-agent/blob/master/docs/Customizations.md) for how to write new detection plugins.
+
+| Detection Plugin Name | Type                 |
+| --------------------- | ---------------------- |
+| apache | Plugin |
+| barbican | ServicePlugin |
+| bind | Plugin |
+| ceilometer | ServicePlugin |
+| ceph | Plugin |
+| cert_check | ArgsPlugin |
+| check_mk_local | Plugin |
+| cinder | ServicePlugin |
+| crash | Plugin |
+| cue | ServicePlugin |
+| designate | ServicePlugin |
+| directory | ServicePlugin |
+| file_size | ServicePlugin |
+| freezer | Plugin (multiple) |
+| glance | ServicePlugin |
+| haproxy | Plugin |
+| heat | ServicePlugin |
+| host_alive | ArgsPlugin |
+| http_check | ArgsPlugin |
+| ironic | ServicePlugin |
+| kafka_consumer | Plugin |
+| keystone | ServicePlugin |
+| libvirt | Plugin |
+| mk_livestatus | Plugin |
+| mon | Plugin (multiple) |
+| mysql | Plugin |
+| neutron | ServicePlugin |
+| nova | ServicePlugin |
+| ntp | Plugin |
+| octavia | ServicePlugin |
+| ovsvapp | ServicePlugin |
+| postfix | Plugin |
+| powerdns | Plugin |
+| process | Plugin |
+| rabbitmq | Plugin |
+| supervisord | Plugin |
+| swift | ServicePlugin |
+| system | Plugin |
+| trove | ServicePlugin |
+| vcenter | Plugin |
+| vertica | Plugin |
+| zookeeper | Plugin |
+| kibana | Plugin |
+
+
+# Agent Plugin Detail
+This section documents all the checks that are supplied by the Agent.
+
+## System Metrics
+This section documents the system metrics that are sent by the Agent.
+
+### CPU
+| Metric Name | Dimensions | Semantics |
+| ----------- | ---------- | --------- |
+| cpu.idle_perc  |  | Percentage of time the CPU is idle when no I/O requests are in progress |
+| cpu.wait_perc |  | Percentage of time the CPU is idle AND there is at least one I/O request in progress |
+| cpu.stolen_perc |  | Percentage of stolen CPU time, i.e. the time spent in other OS contexts when running in a virtualized environment |
+| cpu.system_perc |  | Percentage of time the CPU is used at the system level |
+| cpu.user_perc  |  | Percentage of time the CPU is used at the user level |
+| cpu.total_logical_cores  |  | Total number of logical cores available for an entire node (Includes hyper threading).  **NOTE: This is an optional metric that is only sent when send_rollup_stats is set to true.** |
+| cpu.percent  |  | Percentage of time the CPU is used in total |
+| cpu.idle_time  |  | Time the CPU is idle when no I/O requests are in progress |
+| cpu.wait_time  |  | Time the CPU is idle AND there is at least one I/O request in progress |
+| cpu.user_time  |  | Time the CPU is used at the user level |
+| cpu.system_time  |  | Time the CPU is used at the system level |
+| cpu.frequency_mhz |  | Maximum MHz value for the cpu frequency. **NOTE: This value is dynamic, and driven by CPU governor depending on current resource need .** |
+
+### Load
+| Metric Name | Dimensions | Semantics |
+| ----------- | ---------- | --------- |
+| load.avg_1_min  |  | The normalized (by number of logical cores) average system load over a 1 minute period
+| load.avg_5_min  |  | The normalized (by number of logical cores) average system load over a 5 minute period
+| load.avg_15_min  |  | The normalized (by number of logical cores) average system load over a 15 minute period
+
+### Memory
+| Metric Name | Dimensions | Semantics |
+| ----------- | ---------- | --------- |
+| mem.free_mb |  | Mbytes of free memory
+| mem.swap_free_perc |  | Percentage of free swap memory that is free
+| mem.swap_free_mb |  | Mbytes of free swap memory that is free
+| mem.swap_total_mb |  | Mbytes of total physical swap memory
+| mem.swap_used_mb |  | Mbytes of total swap memory used
+| mem.total_mb |  | Total Mbytes of memory
+| mem.usable_mb |  | Total Mbytes of usable memory
+| mem.usable_perc |  | Percentage of total memory that is usable
+| mem.used_buffers |  | Number of buffers in Mbytes being used by the kernel for block io
+| mem.used_cached |  | Mbytes of memory used for the page cache
+| mem.used_shared  |  | Mbytes of memory shared between separate processes and typically used for inter-process communication
+
+### Disk
+| Metric Name | Dimensions | Semantics |
+| ----------- | ---------- | --------- |
+| disk.inode_used_perc | device, mount_point | The percentage of inodes that are used on a device |
+| disk.space_used_perc | device, mount_point | The percentage of disk space that is being used on a device |
+| disk.total_space_mb |  | The total amount of disk space in Mbytes aggregated across all the disks on a particular node.  **NOTE: This is an optional metric that is only sent when send_rollup_stats is set to true.** |
+| disk.total_used_space_mb |  | The total amount of used disk space in Mbytes aggregated across all the disks on a particular node.  **NOTE: This is an optional metric that is only sent when send_rollup_stats is set to true.** |
+| io.read_kbytes_sec | device | Kbytes/sec read by an io device
+| io.read_req_sec | device   | Number of read requests/sec to an io device
+| io.read_time_sec | device   | Amount of read time in seconds to an io device
+| io.write_kbytes_sec |device | Kbytes/sec written by an io device
+| io.write_req_sec   | device | Number of write requests/sec to an io device
+| io.write_time_sec | device   | Amount of write time in seconds to an io device
+
+### Network
+The network check can be configured to submit its metrics in either bytes/sec or bits/sec.  The default behavior is to submit bytes.  To submit `net.in_bits_sec` and `net.out_bits_sec` rather than `net.in_bytes_sec` and `net.out_bytes_sec`, set the config option `use_bits` to true for the instance you want to configure.
+
+Example configuration:
+```
+init_config: null
+instances:
+- built_by: System
+  excluded_interface_re: lo.*|vnet.*|tun.*|ovs.*|br.*|tap.*|qbr.*|qvb.*|qvo.*
+  name: network_stats
+  send_rollup_stats: true
+  use_bits: false
+```
+
+| Metric Name | Dimensions | Semantics |
+| ----------- | ---------- | --------- |
+| net.in_bytes_sec  | device | Number of network bytes received per second
+| net.out_bytes_sec  | device | Number of network bytes sent per second
+| net.in_packets_sec  | device | Number of network packets received per second
+| net.out_packets_sec  | device | Number of network packets sent per second
+| net.in_errors_sec  | device | Number of network errors on incoming network traffic per second
+| net.out_errors_sec  | device | Number of network errors on outgoing network traffic per second
+| net.in_packets_dropped_sec  | device | Number of inbound network packets dropped per second
+| net.out_packets_dropped_sec  | device | Number of outbound network packets dropped per second
+
+### Monasca Agent
+The Monasca Agent itself generates a small number of metrics.
+
+| Metric Name | Dimensions | Semantics |
+| ----------- | ---------- | --------- |
+| monasca.thread_count  | service=monitoring component=monasca-agent | Number of threads that the collector is consuming for this collection run |
+| monasca.emit_time_sec  | service=monitoring component=monasca-agent | Amount of time that the forwarder took to send metrics to the Monasca API. |
+| monasca.collection_time_sec  | service=monitoring component=monasca-agent | Amount of time that the collector took for this collection run |
+
+### Limiting System Metrics
+It is possible to reduce the number of system metrics with certain configuration parameters.
+
+| Config Option  | Values     | Description                                                                                |
+| -------------- | ---------- | ------------------------------------------------------------------------------------------ |
+| net_bytes_only | true/false | Sends bytes/sec metrics only, disabling packets/sec, packets_dropped/sec, and errors/sec.  |
+| cpu_idle_only  | true/false | Sends idle_perc only, disabling wait/stolen/system/user metrics                            |
+| send_io_stats  | true/false | If true, sends I/O metrics for each disk device.  If false, sends only disk space metrics. |
+
+These parameters may added to `instances` in the plugin `.yaml` configuration file, or added via `monasca-setup` like this:
+
+    $ monasca-setup -d system -a 'cpu_idle_only=true net_bytes_only=true send_io_stats=false' --overwrite
+
+By default, all metrics are enabled.
+
+## Apache
+This section describes the Apache Web Server check that can be performed by the Agent.  The Apache check gathers metrics on the Apache Web Server.  The Apache check requires a configuration file called apache.yaml to be available in the agent conf.d configuration directory.  The config file must contain the server url, username and password (If you are using authentication) that you are interested in monitoring.
+
+Sample config:
 
 ```
 init_config:
-  # Directories where Nagios checks (scripts, programs) may live
-  check_path: /usr/lib/nagios/plugins:/usr/local/bin/nagios
 
-  # Where to store last-run timestamps for each check
-  temp_file_path: /dev/shm/
-```
-
-instances contains the list of checks to run
-
-```
 instances:
-  - service_name: load
-    check_command: check_load -r -w 2,1.5,1 -c 10,5,4
-
-  - service_name: disk
-    check_command: check_disk -w 15\% -c 5\% -A -i /srv/node
-    check_interval: 300
+  - apache_status_url: http://localhost/server-status?auto
+    apache_user: root
+    apache_password: password
 ```
 
-* service_name is the name of the metric
-* check_command is the full command to run.  Specifying the full path is optional if the checks are located somewhere in check_path.  These above examples are a copy-and-paste from existing service checks in /etc/cron.d/servicecheck-* files, so migration is fairly easy.
+If you want the monasca-setup program to detect and auto-configure the plugin for you, you must create the file /root/.apache.cnf with the information needed in the configuration yaml file before running the setup program.  It should look something like this:
 
-* check_interval (optional) If unspecified, the checks will be run at the regular collector interval, which is 60 seconds by default. You may not want to run some checks that frequently, especially if they are resource-intensive, so check_interval lets you force a delay, in seconds, between iterations of that particular check.  The state for these are stored in temp_file_path with file names like nagios_wrapper_19fe42bc7cfdc37a2d88684013e66c7b.pck where the hash is an md5sum of the service_name (to accommodate odd characters that the filesystem may not like).
+```
+[client]
+url=http://localhost/server-status?auto
+user=root
+password=password
+```
 
-### Check_MK_Agent Local
+The Apache checks return the following metrics:
+
+| Metric Name | Dimensions | Semantics |
+| ----------- | ---------- | --------- |
+| apache.performance.idle_worker_count | hostname, service=apache component=apache | The number of idle workers |
+| apache.performance.busy_worker_count | hostname, service=apache component=apache | The number of workers serving requests |
+| apache.performance.cpu_load_perc | hostname, service=apache component=apache | The current percentage of CPU used by each worker and in total by all workers combined |
+| apache.net.total_kbytes | hostname, service=apache component=apache | Total Kbytes |
+| apache.net.hits | hostname, service=apache component=apache | Total accesses |
+| apache.net.kbytes_sec | hostname, service=apache component=apache | Total Kbytes per second |
+| apache.net.requests_sec | hostname, service=apache component=apache | Total accesses per second |
+
+## Cacti
+See [the example configuration](https://github.com/openstack/monasca-agent/blob/master/conf.d/cacti.yaml.example) for how to configure the Cacti plugin.
+
+## Check_MK_Local
 The [Check_MK](http://mathias-kettner.com/check_mk.html) [Agent](http://mathias-kettner.com/checkmk_linuxagent.html) can be extended through a series of [local checks](http://mathias-kettner.com/checkmk_localchecks.html).  This plugin parses the `<<<local>>>` output of `check_mk_agent` and converts them into Monasca metrics.  It is installed by `monasca-setup` automatically when the `check_mk_agent` script is found to be installed on the system.
 
 The default configuration is to submit metrics from all local checks returned by `check_mk_agent`.  One metric will be submitted for the status code, and one additional metric for each performance measurement included in the result.  The basic format of `check_mk_agent` local check output is:
@@ -396,187 +533,302 @@ The `custom` section of `init_config` is optional and may be blank or removed en
 
 Because `check_mk_agent` can only return all local metrics at once, the `check_mk_local` plugin requires no instances to be defined in the configuration.  It runs `check_mk_agent` once and processes all the results.  This way, new `check_mk` local scripts can be added without having to modify the plugin configuration.
 
-### MK Livestatus
-[MK Livestatus](http://mathias-kettner.com/checkmk_livestatus.html) is a Nagios Event Broker, allowing access to Nagios host and service data through a socket query.  The Monasca Agent `mk_livestatus` plugin is a way to access Nagios data and commit it to Monasca.  Possible use cases of this plugin include:
-  * A way to evaluate Monasca with identical metrics to Nagios, providing an apples-to-apples comparison
-  * A gentle migration from Nagios to Monasca, where both monitoring processes can exist simultaneously during Nagios decommissioning
-  * A turnkey solution for rapidly converting an existing Nagios installation to Monasca, where the Nagios infrastructure can remain indefinitely
-
-The `mk_livestatus` plugin will be installed during `monasca-setup` if a Nagios/Icinga configuration is found, the MK Livestatus broker_module is installed, and the livestatus socket can be accessed.  The `monasca-agent` user will need read access to the socket file in order to function, and a message to this effect will be included in `monasca-setup` output if the socket exists but `monasca-agent` cannot read it.
-
-The configuration file (`/etc/monasca/agent/conf.d/mk_livestatus.yaml` by default) allows for a level of customization of both host and service checks.
-  * Service checks
-    * *name* - (Required) Monasca metric name to assign
-    * *check_type* - (Required) "service" (as opposed to "host" below)
-    * *display_name* - (Required) Name of the check as seen in Nagios
-    * *host_name* - (Optional) Limit Monasca metrics of this check to the specified host name (as seen in Nagios).
-    * *dimensions* - (Optional) Extra Monasca dimensions to include, in `{'key': 'value'}` format
-  * Host checks
-    * *name* - (Required) Monasca metric name to assign
-    * *check_type* - (Required) "host" (as opposed to "service" above)
-    * *host_name* - (Optional) Limit Monasca metrics of this check to the specified host name (as seen in Nagios).
-    * *dimensions* - (Optional) Extra Monasca dimensions to include, in `{'key': 'value'}` format
-
-If *host_name* is not specified, metrics for all hosts will be reported.
-
-This configuration example shows several ways to specify instances:
-```
-init_config:
-    # Specify the path to the mk_livestatus socket
-    socket_path: /var/lib/icinga/rw/live
-
-instances:
-
-    # One service on one host
-    - name:           nagios.check_http_status
-      check_type:     service
-      display_name:   HTTP
-      host_name:      web01.example.net
-
-    # One service on all hosts
-    - name:           nagios.process_count_status
-      check_type:     service
-      display_name:   Total Processes
-
-    # One service on all hosts with extra dimensions
-    - name:           nagios.check_http_status
-      check_type:     service
-      display_name:   HTTP
-      dimensions:     { 'group': 'webservers' }
-
-    # All services on all hosts
-    # These will be assigned metric names automatically, based on display_name
-    - check_type:     service
-
-    # One host
-    - name:           nagios.host_status
-      check_type:     host
-      host_name:      web01.example.net
-
-    # All hosts
-    - name:           nagios.host_status
-      check_type:     host
-```
-
-## Host Alive Checks
-An extension to the Agent can provide basic "aliveness" checks of other systems, verifying that the remote host (or device) is online. This check currently provides two methods of determining connectivity:
+## Certificate Expiration (HTTPS)
+An extension to the Agent provides the ability to determine the expiration date of the certificate for the URL. The metric is days until the certificate expires
 
  default dimensions:
-    observer_host: fqdn
-    hostname: fqdn | supplied
-    test_type: ping | ssh | Unrecognized alive_test
+    url: url
 
- default value_meta
-    error: error_message
+A YAML file (cert_check.yaml) contains the list of urls to check. It also contains
 
-* ping (ICMP)
-* SSH (banner test, port 22 by default)
-
-Of the two, the SSH check provides a more comprehensive test of a remote system's availability, since it checks the banner returned by the remote host. A server in the throes of a kernel panic may still respond to ping requests, but would not return an SSH banner. It is suggested, therefore, that the SSH check be used instead of the ping check when possible.
-
-A YAML file (host_alive.yaml) contains the list of remote hosts to check, including the host name and testing method (either 'ping' or 'ssh'). A Python script (host_alive.py) runs checks against each host in turn, returning a 0 on success and a 1 on failure in the result sent through the Forwarder and on the Monitoring API.
-
-Because the Agent itself does not run as root, it relies on the system ping command being suid root in order to function.
-
-The configuration of the host alive check is done in YAML, and consists of two keys:
+The configuration of the certificate expiration check is done in YAML, and consists of two keys:
 
 * init_config
 * instances
 
-The init_config section lists the global configuration settings, such as SSH port, SSH connection timeout (in seconds, floating-point number), and ping timeout (in seconds, integer).
+The init_config section lists the global configuration settings, such as the Certificate Authority Certificate file, the ciphers to use, the period at which to output the metric and the url connection timeout (in seconds, floating-point number)
 
-```
-ls -l `which ping` -rwsr-xr-x 1 root root 35712 Nov 8 2011 /bin/ping
-```
+    $ ls -l `which ping` -rwsr-xr-x 1 root root 35712 Nov 8 2011 /bin/ping
 
 ```
 init_config:
-    ssh_port: 22
-
-    # ssh_timeout is a floating-point number of seconds
-    ssh_timeout: 0.5
-
-    # ping_timeout is an integer number of seconds
-    ping_timeout: 1
+  ca_certs: /etc/ssl/certs/ca-certificates.crt
+  ciphers: HIGH:-aNULL:-eNULL:-PSK:RC4-SHA:RC4-MD5
+  collect_period: 3600
+  timeout: 1.0
 ```
 
-The instances section contains the hostname/IP to check, and the type of check to perform, which is either ssh or ping.
+The instances section contains the urls to check.
 
 ```
-    # alive_test can be either "ssh" for an SSH banner test (port 22)
-    # or "ping" for an ICMP ping test instances:
-  - name: ssh to somehost
-    host_name: somehost.somedomain.net
-    alive_test: ssh
-
-  - name: ping gateway
-    host_name: gateway.somedomain.net
-    alive_test: ping
-
-  - name: ssh to 192.168.0.221
-    host_name: 192.168.0.221
-    alive_test: ssh
+instances:
+- built_by: CertificateCheck
+  url: https://somehost.somedomain.net:8333
+- built_by: CertificateCheck
+  url: https://somehost.somedomain.net:9696
 ```
 
-The host alive checks return the following metrics
+The certicate expiration checks return the following metrics
 
 | Metric Name | Dimensions | Semantics |
 | ----------- | ---------- | --------- |
-| host_alive_status | observer_host=fqdn, hostname=supplied hostname being checked, test_type=ping or ssh | Status of remote host(device) is online or not. (0=online, 1=offline)
-
-Also in the case of an error the value_meta contains an error message.
+| https.cert_expire_days | url=supplied url being checked | The number of days until the certificate expires
 
 
-## Process Checks
-Process checks can be performed to both verify that a set of named processes are running on the local system and collect/send system level metrics on those processes. The YAML file `process.yaml` contains the list of processes that are checked.
+There is a detection plugin that should be used to configure this extension. It is invoked as:
 
-The processes that are monitored can be filtered using a pattern to specify the matching process names or distinctly identified by process name or by the username that owns the process.
+    $ monasca-setup -d CertificateCheck -a urls=https://somehost.somedomain.net:8333,https://somehost.somedomain.net:9696
 
-A Python script `process.py` runs each execution cycle to check that required processes are alive. If the process is running a value of 0 is sent, otherwise a value of 1 is sent to the Monasca API.
+The urls option is a comma separated list of urls to check.
 
-Each process entry consists of one primary key: name. Either search_string or username must be set but you can not set both. Optionally, if an exact match on search_string is required the exact_match boolean can be added to the entry and set to True.
+These options can be set if desired:
+* ca_certs: file containing the certificates for Certificate Authorities. The default is /etc/ssl/certs/ca-certificates.crt
+* ciphers: list of ciphers to use.  default is HIGH:-aNULL:-eNULL:-PSK:RC4-SHA:RC4-MD5
+* collect_period: Integer time in seconds between outputting the metric.  Since the metric is in days, it makes sense to output it at a slower rate. The default is 3600, once per hour
+* timeout: Float time in seconds before timing out the connect to the url.  Increase if needed for very slow servers, but making this too long will increase the time this plugin takes to run if the server for the url is down. The default is 1.0 seconds
 
-To grab more process metrics beside the process.pid_count, which only shows that the process is up and running, the configuration option detailed must be set to true.
+
+## Couch
+See [the example configuration](https://github.com/openstack/monasca-agent/blob/master/conf.d/couch.yaml.example) for how to configure the Couch plugin.
+
+## Couchbase
+See [the example configuration](https://github.com/openstack/monasca-agent/blob/master/conf.d/couchbase.yaml.example) for how to configure the Couchbase plugin.
+
+## Crash
+
+### Overview
+The crash plugin provides metrics for crash dumps present on the system. Currently, it only returns the number of crash dumps found plus the date-/timestamp of the most recent crash in a `value_meta` dictionary.
+
+### Metrics
+Only one metric is provided at the moment with a `hostname` dimension.
+
+| Name             | Description                 | value_meta                       |
+|------------------|-----------------------------|----------------------------------|
+| crash.dump_count | Number of crash dumps found | {'latest': u'<date-/timestamp>'} |
+
+### Configuration
+The `monasca-setup` program will configure the Crash plugin if a crash kernel is loaded. The default directory where the plugin will look for crash dumps is /var/crash.
+
+Sample config:
 
 ```
 init_config:
+  crash_dir: /var/crash
 
 instances:
- - name: ssh
-   search_string: ['ssh', 'sshd']
+  - name: crash_stats
 
- - name: mysql
-   search_string: ['mysql']
-   exact_match: True
-
- - name: kafka
-   search_string: ['kafka']
-   detailed: true
-
- - name: monasca_agent
-   username: mon-agent
-   detailed: true
 ```
-The process checks return the following metrics ( if detailed is set to true, otherwise process.pid_count is only returned ):
+
+
+## Directory Checks
+This section describes the directory check that can be performed by the Agent. Directory checks are used for gathering the total size of all the files under a specific directory. A YAML file (directory.yaml) contains the list of directory names to check. A Python script (directory.py) runs checks each host in turn to gather stats. Note: for sparse file, directory check is using its resident size instead of the actual size.
+
+Similar to other checks, the configuration is done in YAML, and consists of two keys: init_config and instances. The former is not used by directory check, while the later contains one or more sets of directory names to check on. Directory check will sum the size of all the files under the given directory recursively.
+
+Sample config:
+
+```
+init_config: null
+instances:
+- built_by: Directory
+  directory: /var/log/monasca/agent
+- built_by: Directory
+  directory: /etc/monasca/agent
+```
+
+The directory checks return the following metrics:
+
+| Metric Name | Dimensions |
+| ----------- | ---------- |
+| directory.size_bytes  | path, hostname, service |
+| directory.files_count  | path, hostname, service |
+
+## Docker
+This plugin gathers metrics on docker containers.
+
+A YAML file (docker.yaml) contains the url of the docker api to connect to and the root of docker that is used for looking for docker proc metrics.
+
+For this check the user that is running the monasca agent (usually the mon-agent user) must be a part of the docker group
+
+Also if you want to want to attach kubernetes dimensions to each metric you can set add_kubernetes_dimensions to true in the yaml file. This will set the pod_name and namespace.
+
+Sample config:
+
+Without kubernetes dimensions
+
+```
+init_config:
+  docker_root: /
+  socket_timeout: 5
+instances:
+  - url: "unix://var/run/docker.sock"
+```
+
+With kubernetes dimensions
+```
+init_config:
+  docker_root: /
+  socket_timeout: 5
+instances:
+  - url: "unix://var/run/docker.sock"
+    add_kubernetes_dimensions: True
+```
+
+Note this plugin only supports one instance in the config file.
+
+The docker check return the following metrics:
+
+| Metric Name | Metric Type | Dimensions | Optional_dimensions (set if add_kubernetes_dimensions is true and container is running under kubernetes) | Semantics |
+| ----------- | ---------- | --------- |
+| container.containers.running_count | Gauge | hostname | | Number of containers running on the host |
+| container.cpu.system_time  | Gauge| hostname, name, image | kubernetes_pod_name, kubernetes_namespace | The total time the CPU has executed system calls on behalf of the processes in the container |
+| container.cpu.system_time_sec  | Rate | hostname, name, image | kubernetes_pod_name, kubernetes_namespace | The rate the CPU is executing system calls on behalf of the processes in the container |
+| container.cpu.user_time  | Gauge | hostname, name, image | kubernetes_pod_name, kubernetes_namespace | The total time the CPU is under direct control of the processes in this container |
+| container.cpu.user_time_sec  | Rate | hostname, name, image | kubernetes_pod_name, kubernetes_namespace | The rate the CPU is under direct control of the processes in this container |
+| container.cpu.utilization_perc | Gauge | hostname, name, image | kubernetes_pod_name, kubernetes_namespace | The percentage of CPU used by the container |
+| container.io.read_bytes  | Gauge | hostname, name, image | kubernetes_pod_name, kubernetes_namespace | The total amount bytes read from the processes in the container |
+| container.io.read_bytes_sec  | Rate | hostname, name, image | kubernetes_pod_name, kubernetes_namespace | The rate of bytes read from the processes in the container |
+| container.io.write_bytes  | Gauge | hostname, name, image | kubernetes_pod_name, kubernetes_namespace | The total amount bytes written from the processes in the container |
+| container.io.write_bytes_sec  | Rate | hostname, name, image | kubernetes_pod_name, kubernetes_namespace | The rate of bytes written from the processes in the container |
+| container.mem.cache | Gauge | hostname, name, image | kubernetes_pod_name, kubernetes_namespace |The amount of cached memory that belongs to the container's processes |
+| container.mem.rss  | Gauge | hostname, name, image | kubernetes_pod_name, kubernetes_namespace | The amount of non-cached memory used by the container's processes |
+| container.mem.swap  | Gauge | hostname, name, image | kubernetes_pod_name, kubernetes_namespace | The amount of swap memory used by the processes in the container |
+| container.mem.used_perc | Gauge | hostname, name, image | kubernetes_pod_name, kubernetes_namespace | The percentage of memory used out of the given limit of the container |
+| container.net.in_bytes  | Gauge | hostname, name, image, interface | kubernetes_pod_name, kubernetes_namespace | The total amount of bytes received by the container per interface |
+| container.net.in_bytes_sec  | Rate | hostname, name, image, interface | kubernetes_pod_name, kubernetes_namespace | The rate of bytes received by the container per interface |
+| container.net.out_bytes  | Gauge | hostname, name, image, interface | kubernetes_pod_name, kubernetes_namespace | The total amount of bytes sent by the container per interface |
+| container.net.out_bytes_sec  | Rate | hostname, name, image, interface | kubernetes_pod_name, kubernetes_namespace | The rate of bytes sent by the container per interface |
+
+
+## Elasticsearch Checks
+This section describes the Elasticsearch check that can be performed by the Agent.  The Elasticsearch check requires a configuration file called elastic.yaml to be available in the agent conf.d configuration directory.
+
+Sample config:
+
+```
+init_config:
+instances:
+-   url: http://127.0.0.1:9200
+
+```
+
+The Elasticsearch checks return the following metrics:
 
 | Metric Name | Dimensions | Semantics |
 | ----------- | ---------- | --------- |
-| process.mem.rss_mbytes  | process_name, service, component | Amount of physical memory allocated to a process, including memory from shared libraries in Mbytes
-| process.io.read_count  | process_name, service, component | Number of reads by a process
-| process.io.write_count  | process_name, service, component | Number of writes by a process
-| process.io.read_kbytes  | process_name, service, component | Kbytes read by a process
-| process.io.write_kbytes  | process_name, service, component | Kbytes written by a process
-| process.thread_count  | process_name, service, component | Number of threads a process is using
-| process.cpu_perc  | process_name, service, component | Percentage of cpu being consumed by a process
-| process.open_file_descriptors  | process_name, service, component | Number of files being used by a process
-| process.pid_count  | process_name, service, component | Number of processes that exist with this process name
+| elasticsearch.docs.count | url, hostname, service=monitoring | The total number of docs including nested documents. |
+| elasticsearch.docs.deleted | url, hostname, service=monitoring | The number of deleted docs. |
+| elasticsearch.store.size | url, hostname, service=monitoring | The filesystem storage size. |
+| elasticsearch.indexing.index.total | url, hostname, service=monitoring |  |
+| elasticsearch.indexing.index.time | url, hostname, service=monitoring |  |
+| elasticsearch.indexing.index.current | url, hostname, service=monitoring |  |
+| elasticsearch.indexing.delete.total | url, hostname, service=monitoring |  |
+| elasticsearch.indexing.delete.time | url, hostname, service=monitoring |  |
+| elasticsearch.indexing.delete.current | url, hostname, service=monitoring |  |
+| elasticsearch.get.total | url, hostname, service=monitoring |  |
+| elasticsearch.get.time | url, hostname, service=monitoring |  |
+| elasticsearch.get.current | url, hostname, service=monitoring |  |
+| elasticsearch.get.exists.total | url, hostname, service=monitoring |  |
+| elasticsearch.get.exists.time | url, hostname, service=monitoring |  |
+| elasticsearch.get.missing.total | url, hostname, service=monitoring |  |
+| elasticsearch.get.missing.time | url, hostname, service=monitoring |  |
+| elasticsearch.search.query.total | url, hostname, service=monitoring |  |
+| elasticsearch.search.query.time | url, hostname, service=monitoring |  |
+| elasticsearch.search.query.current | url, hostname, service=monitoring |  |
+| elasticsearch.search.fetch.total | url, hostname, service=monitoring |  |
+| elasticsearch.search.fetch.time | url, hostname, service=monitoring |  |
+| elasticsearch.search.fetch.current | url, hostname, service=monitoring |  |
+| elasticsearch.merges.current | url, hostname, service=monitoring |  |
+| elasticsearch.merges.current.docs | url, hostname, service=monitoring |  |
+| elasticsearch.merges.current.size | url, hostname, service=monitoring |  |
+| elasticsearch.merges.total | url, hostname, service=monitoring |  |
+| elasticsearch.merges.total.time | url, hostname, service=monitoring |  |
+| elasticsearch.merges.total.docs | url, hostname, service=monitoring |  |
+| elasticsearch.merges.total.size | url, hostname, service=monitoring |  |
+| elasticsearch.refresh.total | url, hostname, service=monitoring |  |
+| elasticsearch.refresh.total.time | url, hostname, service=monitoring |  |
+| elasticsearch.flush.total | url, hostname, service=monitoring |  |
+| elasticsearch.flush.total.time | url, hostname, service=monitoring | The elasticsearch flush time. |
+| elasticsearch.process.open_fd | url, hostname, service=monitoring | The number of open files descriptors on the machine. |
+| elasticsearch.transport.rx_count | url, hostname, service=monitoring |  |
+| elasticsearch.transport.tx_count | url, hostname, service=monitoring |  |
+| elasticsearch.transport.rx_size | url, hostname, service=monitoring |  |
+| elasticsearch.transport.tx_size | url, hostname, service=monitoring |  |
+| elasticsearch.transport.server_open | url, hostname, service=monitoring |  |
+| elasticsearch.thread_pool.bulk.active | url, hostname, service=monitoring | The number of active threads for bulk operations. |
+| elasticsearch.thread_pool.bulk.threads | url, hostname, service=monitoring | The total number of threads for bulk operations. |
+| elasticsearch.thread_pool.bulk.queue | url, hostname, service=monitoring | The number of tasks in queue of thread pool used for bulk operations. |
+| elasticsearch.thread_pool.bulk.rejected | url, hostname, service=monitoring | The number of rejected tasks of thread pool used for bulk operations. |
+| elasticsearch.thread_pool.flush.active | url, hostname, service=monitoring | The number of active threads for flush operations. |
+| elasticsearch.thread_pool.flush.threads | url, hostname, service=monitoring | The total number of threads for flush operations. |
+| elasticsearch.thread_pool.flush.queue | url, hostname, service=monitoring | The number of tasks in queue of thread pool used for flush operations. |
+| elasticsearch.thread_pool.flush.rejected | url, hostname, service=monitoring |  The number of rejected tasks of thread pool used for flush operations. |
+| elasticsearch.thread_pool.generic.active | url, hostname, service=monitoring | The number of active threads for generic operations (i.e. node discovery). |
+| elasticsearch.thread_pool.generic.threads | url, hostname, service=monitoring | The total number of threads for generic operations (i.e. node discovery). |
+| elasticsearch.thread_pool.generic.queue | url, hostname, service=monitoring | The number of tasks in queue of thread pool used for generic operations. |
+| elasticsearch.thread_pool.generic.rejected | url, hostname, service=monitoring | The number of rejected tasks of thread pool used for generic operations. |
+| elasticsearch.thread_pool.get.active | url, hostname, service=monitoring | The number of active threads for get operations. |
+| elasticsearch.thread_pool.get.threads | url, hostname, service=monitoring | The total number of threads for get operations. |
+| elasticsearch.thread_pool.get.queue | url, hostname, service=monitoring | The number of tasks in queue of thread pool used for get operations. |
+| elasticsearch.thread_pool.get.rejected | url, hostname, service=monitoring | The number of rejected tasks of thread pool used for get operations. |
+| elasticsearch.thread_pool.index.active | url, hostname, service=monitoring | The number of active threads for indexing operations. |
+| elasticsearch.thread_pool.index.threads | url, hostname, service=monitoring | The total number of threads for indexing operations. |
+| elasticsearch.thread_pool.index.queue | url, hostname, service=monitoring | The number of tasks in queue of thread pool used for indexing operations. |
+| elasticsearch.thread_pool.index.rejected | url, hostname, service=monitoring | The number of rejected tasks of thread pool used for indexing operations. |
+| elasticsearch.thread_pool.management.active | url, hostname, service=monitoring | The number of active threads for management operations. |
+| elasticsearch.thread_pool.management.threads | url, hostname, service=monitoring | The total number of threads for management operations. |
+| elasticsearch.thread_pool.management.queue | url, hostname, service=monitoring | The number of tasks in queue of thread pool used for management operations. |
+| elasticsearch.thread_pool.management.rejected | url, hostname, service=monitoring | The number of rejected tasks of thread pool used for management operations. |
+| elasticsearch.thread_pool.merge.active | url, hostname, service=monitoring | The number of active threads for merging operation. |
+| elasticsearch.thread_pool.merge.threads | url, hostname, service=monitoring | The total number of threads for merging operation. |
+| elasticsearch.thread_pool.merge.queue | url, hostname, service=monitoring | The number of tasks in queue of thread pool used for merge operations. |
+| elasticsearch.thread_pool.merge.rejected | url, hostname, service=monitoring | The number of rejected tasks of thread pool used for merge operations. |
+| elasticsearch.thread_pool.percolate.active | url, hostname, service=monitoring | The number of active threads for percolate operations. |
+| elasticsearch.thread_pool.percolate.threads | url, hostname, service=monitoring | The total number of threads for percolate operations. |
+| elasticsearch.thread_pool.percolate.queue | url, hostname, service=monitoring | The number of tasks in queue of thread pool used for percolate operations. |
+| elasticsearch.thread_pool.percolate.rejected | url, hostname, service=monitoring | The number of rejected tasks of thread pool used for percolate operations. |
+| elasticsearch.thread_pool.refresh.active | url, hostname, service=monitoring | The number of active threads for refresh operations. |
+| elasticsearch.thread_pool.refresh.threads | url, hostname, service=monitoring | The total number of threads for refresh operations. |
+| elasticsearch.thread_pool.refresh.queue | url, hostname, service=monitoring | The number of tasks in queue of thread pool used for refresh operations. |
+| elasticsearch.thread_pool.refresh.rejected | url, hostname, service=monitoring | The number of rejected tasks of thread pool used for refresh operations. |
+| elasticsearch.thread_pool.search.active | url, hostname, service=monitoring | The number of active threads for search operations. |
+| elasticsearch.thread_pool.search.threads | url, hostname, service=monitoring | The total number of threads for search operations. |
+| elasticsearch.thread_pool.search.queue | url, hostname, service=monitoring | The number of tasks in queue of thread pool used for search operations. |
+| elasticsearch.thread_pool.search.rejected | url, hostname, service=monitoring | The number of rejected tasks of thread pool used for search operations. |
+| elasticsearch.thread_pool.snapshot.active | url, hostname, service=monitoring | The number of active threads for snapshot operations. |
+| elasticsearch.thread_pool.snapshot.threads | url, hostname, service=monitoring | The total number of threads for snapshot operations. |
+| elasticsearch.thread_pool.snapshot.queue | url, hostname, service=monitoring | The number of tasks in queue of thread pool used for snapshot operations. |
+| elasticsearch.thread_pool.snapshot.rejected | url, hostname, service=monitoring | The number of rejected tasks of thread pool used for snapshot operations. |
+| elasticsearch.http.current_open | url, hostname, service=monitoring | Current number of opened HTTP connections. |
+| elasticsearch.http.total_opened | url, hostname, service=monitoring | Max number of HTTP connections. |
+| jvm.gc.concurrent_mark_sweep.count | url, hostname, service=monitoring |  |
+| jvm.gc.concurrent_mark_sweep.collection_time | url, hostname, service=monitoring |  |
+| jvm.gc.par_new.count | url, hostname, service=monitoring | ParNew count. |
+| jvm.gc.par_new.collection_time | url, hostname, service=monitoring | ParNew pauses time. |
+| jvm.mem.heap_committed | url, hostname, service=monitoring | The allocated amount of heap memory. |
+| jvm.mem.heap_used | url, hostname, service=monitoring | The amount of heap memory which is actually in use. |
+| jvm.mem.non_heap_committed | url, hostname, service=monitoring | The allocated amount of non-heap memory. |
+| jvm.mem.non_heap_used | url, hostname, service=monitoring | The amount of non-heap memory which is actually in use. |
+| jvm.threads.count | url, hostname, service=monitoring | Current number of live daemon and non-daemon threads. |
+| jvm.threads.peak_count | url, hostname, service=monitoring | Peak live thread count since the JVM started or the peak was reset. |
+| elasticsearch.number_of_nodes | url, hostname, service=monitoring | Number of nodes. |
+| elasticsearch.number_of_data_nodes | url, hostname, service=monitoring | Number of data nodes. |
+| elasticsearch.active_primary_shards | url, hostname, service=monitoring | Indicates the number of primary shards in your cluster. This is an aggregate total across all indices. |
+| elasticsearch.active_shards | url, hostname, service=monitoring |  Aggregate total of all shards across all indices, which includes replica shards. |
+| elasticsearch.relocating_shards | url, hostname, service=monitoring | Shows the number of shards that are currently moving from one node to another node. |
+| elasticsearch.initializing_shards | url, hostname, service=monitoring | The count of shards that are being freshly created. |
+| elasticsearch.unassigned_shards | url, hostname, service=monitoring | The number of unassigned shards from the master node. |
+| elasticsearch.cluster_status | url, hostname, service=monitoring | Cluster health status. |
 
-On linux if the agent is not run as root or the owner of the process the io metrics and the open_file_descriptors metric will fail to be reported if the mon-agent user does not have permission to get it for the process.
+### Additional links
 
-## File Size Checks
-This section describes the file size check that can be performed by the Agent. File size checks are used for gathering the size of individual files or the size of each file under a specific directory. The agent supports additional functionality through the use of Python scripts. A YAML file (file_size.yaml) contains the list of file directory names and file names to check. A Python script (file_size.py) runs checks each host in turn to gather stats. 
+* [List of available thread pools](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-threadpool.html)
 
-Similar to other checks, the configuration is done in YAML, and consists of two keys: init_config and instances. The former is not used by file_size, while the later contains one or more sets of file directory name and file names to check, plus optional parameter recursive. When recursive is true and file_name is set to '*', file_size check will take all the files under the given directory recursively. 
+## File Size
+This section describes the file size check that can be performed by the Agent. File size checks are used for gathering the size of individual files or the size of each file under a specific directory. The agent supports additional functionality through the use of Python scripts. A YAML file (file_size.yaml) contains the list of file directory names and file names to check. A Python script (file_size.py) runs checks each host in turn to gather stats.
+
+Similar to other checks, the configuration is done in YAML, and consists of two keys: init_config and instances. The former is not used by file_size, while the later contains one or more sets of file directory name and file names to check, plus optional parameter recursive. When recursive is true and file_name is set to '*', file_size check will take all the files under the given directory recursively.
 
 Sample config:
 
@@ -607,55 +859,107 @@ The file_size checks return the following metrics:
 | ----------- | ---------- |
 | file.size_bytes  | file_name, directory_name, hostname, service |
 
+## GearmanD
+See [the example configuration](https://github.com/openstack/monasca-agent/blob/master/conf.d/gearmand.yaml.example) for how to configure the GearmandD plugin.
 
-## Directory Checks
-This section describes the directory check that can be performed by the Agent. Directory checks are used for gathering the total size of all the files under a specific directory. A YAML file (directory.yaml) contains the list of directory names to check. A Python script (directory.py) runs checks each host in turn to gather stats. Note: for sparse file, directory check is using its resident size instead of the actual size.
+## Gunicorn
+See [the example configuration](https://github.com/openstack/monasca-agent/blob/master/conf.d/gunicorn.yaml.example) for how to configure the Gunicorn plugin.
 
-Similar to other checks, the configuration is done in YAML, and consists of two keys: init_config and instances. The former is not used by directory check, while the later contains one or more sets of directory names to check on. Directory check will sum the size of all the files under the given directory recursively.
+## HAProxy
+See [the example configuration](https://github.com/openstack/monasca-agent/blob/master/conf.d/haproxy.yaml.example) for how to configure the HAProxy plugin.
 
-Sample config:
+## HDFS
+See [the example configuration](https://github.com/openstack/monasca-agent/blob/master/conf.d/hdfs.yaml.example) for how to configure the HDFS plugin.
+
+## Host Alive
+An extension to the Agent can provide basic "aliveness" checks of other systems, verifying that the remote host (or device) is online. This check currently provides two methods of determining connectivity:
+
+* ping (ICMP)
+* SSH (banner test, port 22 by default)
+
+Of the two, the SSH check provides a more comprehensive test of a remote system's availability, since it checks the banner returned by the remote host. A server in the throes of a kernel panic may still respond to ping requests, but would not return an SSH banner. It is suggested, therefore, that the SSH check be used instead of the ping check when possible.
+
+A YAML file (host_alive.yaml) contains the list of remote hosts to check, including the host name and testing method (either 'ping' or 'ssh'). A Python script (host_alive.py) runs checks against each host in turn, returning a 0 on success and a 1 on failure in the result sent through the Forwarder and on the Monitoring API.
+
+Because the Agent itself does not run as root, it relies on the system ping command being suid root in order to function.
+
+The configuration of the host alive check is done in YAML, and consists of two keys:
+
+* init_config
+* instances
+
+The init_config section lists the global configuration settings, such as SSH port, SSH connection timeout (in seconds, floating-point number), and ping timeout (in seconds, integer).
+
+    $ ls -l `which ping` -rwsr-xr-x 1 root root 35712 Nov 8 2011 /bin/ping
 
 ```
-init_config: null
-instances:
-- built_by: Directory
-  directory: /var/log/monasca/agent
-- built_by: Directory
-  directory: /etc/monasca/agent
+init_config:
+    ssh_port: 22
+
+    # ssh_timeout is a floating-point number of seconds
+    ssh_timeout: 0.5
+
+    # ping_timeout is an integer number of seconds
+    ping_timeout: 1
 ```
 
-The directory checks return the following metrics:
-
-| Metric Name | Dimensions |
-| ----------- | ---------- |
-| directory.size_bytes  | path, hostname, service |
-| directory.files_count  | path, hostname, service |
-
-## Network Connection Checks
-
-The system checks include network metrics, but these only measure throughput and count packets. The `network_connections` plugin can be used to track connection counts.
-
-Sample config:
+The instances section contains the hostname/IP to check, and the type of check to perform, which is either ssh or ping.
 
 ```
-init_config: null
+    # alive_test can be either "ssh" for an SSH banner test (port 22)
+    # or "ping" for an ICMP ping test instances:
+  - name: ssh to somehost
+    host_name: somehost.somedomain.net
+    alive_test: ssh
 
-instances:
-- name: network_connections
+  - name: ping gateway
+    host_name: gateway.somedomain.net
+    alive_test: ping
+
+  - name: ssh to 192.168.0.221
+    host_name: 192.168.0.221
+    alive_test: ssh
 ```
 
-Reported metrics: (shown for IPv4, metrics for IPv6 are identical except for `s/4/6/`)
+To handle the case where the target system has multiple IP Addresses and the network name to be used for
+liveness checking is not the same as the usual name used to identify the server in Monasca,
+an additional target_hostname parameter can be configured. It is the network hostname or IP
+Address to check instead of host_name. The hostname dimension will always be set to the value of
+host_name even if target_hostname is specified. A dimension target_hostname will be added
+with the value of target_hostname if it is different from host_name.
+
+To simplify configuring multiple checks, when the host_alive detection plugin is configured, hostname can
+be a comma separated list. Instances will be created for each value. target_hostname can also
+be a comma separated list, however, empty values for an individual entry can be given if there is
+no target_hostname for a given hostname entry.
+
+Here is an example of configuring target_hostname :
+```
+  - name: ping somenode
+    host_name: somenode
+    target_hostname: somenode.mgmt.net
+    alive_test: ssh
+```
+
+The host alive checks return the following metrics
 
 | Metric Name | Dimensions | Semantics |
 | ----------- | ---------- | --------- |
-| net.udp4.connections | | UDP connections |
-| net.tcp4.established | | TCP connections in state "ESTAB" |
-| net.tcp4.opening     | | TCP connections in state "SYN-SENT" or "SYN-RECV" in `ss` |
-| net.tcp4.closing     | | TCP connections in state "CLOSE-WAIT", "CLOSING", "FIN-WAIT-1", "FIN-WAIT-2", "LAST-ACK" or "UNCONN" |
-| net.tcp4.listening   | | TCP connections in state "LISTENING" |
-| net.tcp4.time_wait   | | TCP connections in state "TIME-WAIT" |
+| host_alive_status | observer_host=fqdn of checking host, hostname=supplied hostname being checked, target_hostname=the network hostname or IP Address to check instead of host_name; only added if different than hostname, test_type=ping or ssh | Status of remote host(device) is online or not. (0=online, 1=offline)
 
-## Http Endpoint Checks
+
+Also in the case of an error the value_meta contains an error message.
+
+The default dimensions are:
+   observer_host: fqdn
+   hostname: fqdn | supplied
+   target_hostname: Set to target_hostname only if that is different than host_name
+   test_type: ping | ssh | Unrecognized alive_test
+
+default value_meta
+   error: error_message
+
+## HTTP (endpoint status)
 This section describes the http endpoint check that can be performed by the Agent. Http endpoint checks are checks that perform simple up/down checks on services, such as HTTP/REST APIs. An agent, given a list of URLs, can dispatch an http request and report to the API success/failure as a metric.
 
  default dimensions:
@@ -690,7 +994,7 @@ The http_status checks return the following metrics:
 | http_response_time  | url | The response time in seconds of the http endpoint call
 
 
-## Http Metrics
+## HTTP Metrics
 This section describes the http metrics check that can be performed by the agent. Http metrics checks are checks that retrieve metrics from any url returning a json formatted response. An agent, given a list of URLs, can dispatch an http request and parse the desired metrics from the json response.
 
  default dimensions:
@@ -714,6 +1018,9 @@ instances:
               path: gauges/jvm.memory.total.max/value
               type: gauge
 ```
+
+## IIS
+See [the example configuration](https://github.com/openstack/monasca-agent/blob/master/conf.d/iis.yaml.example) for how to configure the IIS plugin.
 
 ## InfluxDB Checks
 
@@ -878,18 +1185,158 @@ The Monasca metrics follow the naming rule ```influxdb.<series>.<field>```
             total_alloc: {type: gauge, influxdb_name: TotalAlloc}
 ```
 
-## MySQL Checks
-This section describes the mySQL check that can be performed by the Agent.  The mySQL check also supports MariaDB.  The mySQL check requires a configuration file called mysql.yaml to be available in the agent conf.d configuration directory.
+## Jenkins
+See [the example configuration](https://github.com/openstack/monasca-agent/blob/master/conf.d/jenkins.yaml.example) for how to configure the Jenkins plugin.
+
+## Kafka Checks
+This section describes the Kafka check that can be performed by the Agent.  The Kafka check requires a configuration file called kafka.yaml to be available in the agent conf.d configuration directory.
 
 Sample config:
 
-```
+```yml
 init_config:
 
 instances:
-    defaults_file: /root/.my.cnf
-    server: localhost
-    user: root
+- built_by: Kafka
+  consumer_groups:
+    1_metrics:
+      metrics: []
+    thresh-event:
+      events: []
+    thresh-metric:
+      metrics: []
+  kafka_connect_str: 192.168.10.6:9092
+  name: 192.168.10.6:9092
+  per_partition: false
+```
+
+The Kafka checks return the following metrics:
+
+| Metric Name | Dimensions | Semantics |
+| ----------- | ---------- | --------- |
+| kafka.broker_offset | topic, service, component, partition, hostname | broker offset |
+| kafka.consumer_offset | topic, service, component, partition, consumer_group, hostname | consumer offset |
+| kafka.consumer_lag | topic, service, component, partition, consumer_group, hostname | consumer offset lag from broker offset |
+
+## KyotoTycoon
+See [the example configuration](https://github.com/openstack/monasca-agent/blob/master/conf.d/kyototycoon.yaml.example) for how to configure the KyotoTycoon plugin.
+
+## Libvirt VM Monitoring
+
+Complete documentation of the Libvirt VM monitoring plugin can be found in [the Libvirt.md document](https://github.com/openstack/monasca-agent/blob/master/docs/Libvirt.md).
+
+## Open vSwitch Neutron Router Monitoring
+
+Complete documentation of the Open vSwitch Neutron Router monitoring plugin can be found in [the Ovs.md document](https://github.com/openstack/monasca-agent/blob/master/docs/Ovs.md).
+
+## Lighttpd
+See [the example configuration](https://github.com/openstack/monasca-agent/blob/master/conf.d/lighttpd.yaml.example) for how to configure the Lighttpd plugin.
+
+## Mcache
+See [the example configuration](https://github.com/openstack/monasca-agent/blob/master/conf.d/mcache.yaml.example) for how to configure the Mcache plugin.
+
+## MK Livestatus
+[MK Livestatus](http://mathias-kettner.com/checkmk_livestatus.html) is a Nagios Event Broker, allowing access to Nagios host and service data through a socket query.  The Monasca Agent `mk_livestatus` plugin is a way to access Nagios data and commit it to Monasca.  Possible use cases of this plugin include:
+  * A way to evaluate Monasca with identical metrics to Nagios, providing an apples-to-apples comparison
+  * A gentle migration from Nagios to Monasca, where both monitoring processes can exist simultaneously during Nagios decommissioning
+  * A turnkey solution for rapidly converting an existing Nagios installation to Monasca, where the Nagios infrastructure can remain indefinitely
+
+The `mk_livestatus` plugin will be installed during `monasca-setup` if a Nagios/Icinga configuration is found, the MK Livestatus broker_module is installed, and the livestatus socket can be accessed.  The `monasca-agent` user will need read access to the socket file in order to function, and a message to this effect will be included in `monasca-setup` output if the socket exists but `monasca-agent` cannot read it.
+
+The configuration file (`/etc/monasca/agent/conf.d/mk_livestatus.yaml` by default) allows for a level of customization of both host and service checks.
+  * Service checks
+    * *name* - (Required) Monasca metric name to assign
+    * *check_type* - (Required) "service" (as opposed to "host" below)
+    * *display_name* - (Required) Name of the check as seen in Nagios
+    * *host_name* - (Optional) Limit Monasca metrics of this check to the specified host name (as seen in Nagios).
+    * *dimensions* - (Optional) Extra Monasca dimensions to include, in `{'key': 'value'}` format
+  * Host checks
+    * *name* - (Required) Monasca metric name to assign
+    * *check_type* - (Required) "host" (as opposed to "service" above)
+    * *host_name* - (Optional) Limit Monasca metrics of this check to the specified host name (as seen in Nagios).
+    * *dimensions* - (Optional) Extra Monasca dimensions to include, in `{'key': 'value'}` format
+
+If *host_name* is not specified, metrics for all hosts will be reported.
+
+This configuration example shows several ways to specify instances:
+```
+init_config:
+    # Specify the path to the mk_livestatus socket
+    socket_path: /var/lib/icinga/rw/live
+
+instances:
+
+    # One service on one host
+    - name:           nagios.check_http_status
+      check_type:     service
+      display_name:   HTTP
+      host_name:      web01.example.net
+
+    # One service on all hosts
+    - name:           nagios.process_count_status
+      check_type:     service
+      display_name:   Total Processes
+
+    # One service on all hosts with extra dimensions
+    - name:           nagios.check_http_status
+      check_type:     service
+      display_name:   HTTP
+      dimensions:     { 'group': 'webservers' }
+
+    # All services on all hosts
+    # These will be assigned metric names automatically, based on display_name
+    - check_type:     service
+
+    # One host
+    - name:           nagios.host_status
+      check_type:     host
+      host_name:      web01.example.net
+
+    # All hosts
+    - name:           nagios.host_status
+      check_type:     host
+```
+
+## Mongo
+See [the example configuration](https://github.com/openstack/monasca-agent/blob/master/conf.d/mongo.yaml.example) for how to configure the Mongo plugin.
+
+## MySQL Checks
+This section describes the mySQL check that can be performed by the Agent.  The mySQL check also supports MariaDB.  The mySQL check requires a configuration file called mysql.yaml to be available in the agent conf.d configuration directory.
+
+Sample config: defaults_file: /root/.my.cnf
+```
+[client]
+host=padawan-ccp-c1-m1-mgmt
+user=root
+password=pass
+```
+##### Note
+Be assured that the password is set properly. As default monasca-agent expects password without quotation marks. Otherwise monasca-setup returns an error about inability to connect to MySQL with given password.
+
+Instance variables can be passed via command line arguments
+to the monasca-setup -d mysql command.
+The instance config files are built by the detection plugin.
+
+```
+init_config:
+Example clear connect:
+instances:
+- built_by: MySQL
+  name: padawan-ccp-c1-m1-mgmt
+  pass: secretpass
+  port: 3306
+  server: padawan-ccp-c1-m1-mgmt
+  user: root
+
+Example ssl connect:
+instances:
+- built_by: MySQL
+  name: padawan-ccp-c1-m1-mgmt
+  pass: secretpass
+  port: 3306
+  server: padawan-ccp-c1-m1-mgmt
+  ssl_ca: /etc/ssl/certs/ca-certificates.crt
+  user: root
 ```
 
 Almost metrics show the server status variables in MySQL or MariaDB.  The others are calculated by the server status variables of MySQL or MariaDB.  For details of the server status variables, please refer the documents of MySQL or MariaDB.
@@ -932,9 +1379,77 @@ The mySQL checks return the following metrics:
 | mysql.net.max_connections | hostname, mode, service=mysql | Corresponding to "Max_used_connections" of the server status variable. |
 | mysql.net.connections | hostname, mode, service=mysql | Corresponding to "Connections" of the server status variable. |
 
+## Nagios Wrapper
+The Agent can run Nagios plugins. A YAML file (nagios_wrapper.yaml) contains the list of Nagios checks to run, including the check name, command name with parameters, and desired interval between iterations. A Python script (nagios_wrapper.py) runs each command in turn, captures the resulting exit code (0 through 3, corresponding to OK, warning, critical and unknown), and sends that information to the Forwarder, which then sends the Monitoring API. Currently, the Agent can only  send the exit code from a Nagios plugin. Any accompanying text is not sent.
 
-## Vertica Checks
-This section describes the vertica check that can be performed by the Agent.  The vertica check requires a configuration file called vertica.yaml to be available in the agent conf.d configuration directory.
+ default dimensions:
+    observer_host: fqdn
+    target_host: fqdn | supplied
+
+ default value_meta
+    0, 1, 2, 3, 4
+    OK, Warning, Critical, Unknown
+    error: error_message
+
+Similar to all plugins, the configuration is done in YAML, and consists of two keys: init_config and instances.
+
+init_config contains global configuration options:
+
+```
+init_config:
+  # Directories where Nagios checks (scripts, programs) may live
+  check_path: /usr/lib/nagios/plugins:/usr/local/bin/nagios
+
+  # Where to store last-run timestamps for each check
+  temp_file_path: /dev/shm/
+```
+
+instances contains the list of checks to run
+
+```
+instances:
+  - service_name: load
+    check_command: check_load -r -w 2,1.5,1 -c 10,5,4
+
+  - service_name: disk
+    check_command: check_disk -w 15\% -c 5\% -A -i /srv/node
+    check_interval: 300
+```
+
+* service_name is the name of the metric
+* check_command is the full command to run.  Specifying the full path is optional if the checks are located somewhere in check_path.  These above examples are a copy-and-paste from existing service checks in /etc/cron.d/servicecheck-* files, so migration is fairly easy.
+
+* check_interval (optional) If unspecified, the checks will be run at the regular collector interval, which is 60 seconds by default. You may not want to run some checks that frequently, especially if they are resource-intensive, so check_interval lets you force a delay, in seconds, between iterations of that particular check.  The state for these are stored in temp_file_path with file names like nagios_wrapper_19fe42bc7cfdc37a2d88684013e66c7b.pck where the hash is an md5sum of the service_name (to accommodate odd characters that the filesystem may not like).
+
+## Network Connection Checks
+
+The system checks include network metrics, but these only measure throughput and count packets. The `network_connections` plugin can be used to track connection counts.
+
+Sample config:
+
+```
+init_config: null
+
+instances:
+- name: network_connections
+```
+
+Reported metrics: (shown for IPv4, metrics for IPv6 are identical except for `s/4/6/`)
+
+| Metric Name | Dimensions | Semantics |
+| ----------- | ---------- | --------- |
+| net.udp4.connections | | UDP connections |
+| net.tcp4.established | | TCP connections in state "ESTAB" |
+| net.tcp4.opening     | | TCP connections in state "SYN-SENT" or "SYN-RECV" in `ss` |
+| net.tcp4.closing     | | TCP connections in state "CLOSE-WAIT", "CLOSING", "FIN-WAIT-1", "FIN-WAIT-2", "LAST-ACK" or "UNCONN" |
+| net.tcp4.listening   | | TCP connections in state "LISTENING" |
+| net.tcp4.time_wait   | | TCP connections in state "TIME-WAIT" |
+
+## Nginx
+See [the example configuration](https://github.com/openstack/monasca-agent/blob/master/conf.d/nginx.yaml.example) for how to configure the Nginx plugin.
+
+## NTP
+This section describes the Network Time Protocol checks that can be performed by the Agent. The NTP checks monitors time offset between NTP server and your own server. The NTP checks requires a configuration file called ntp.yaml to be available in the agent conf.d configuration directory. The config file must contain the hostname and port number, version information, timeout(These are optional params) that you are interested in monitoring.
 
 Sample config:
 
@@ -942,144 +1457,28 @@ Sample config:
 init_config:
 
 instances:
-	user: mon_api
-	password: password
-	service: monasca (optional, defaults to vertica)
-	timeout: 3 (optional, defaults to 3 seconds)
+  - host: pool.ntp.org
+    port: ntp
+    version: 3
+    timeout: 5
 ```
+
+The NTP checks return the following metrics:
 
 | Metric Name | Dimensions | Semantics |
 | ----------- | ---------- | --------- |
-| vertica.db.connection_status | hostname, service=vertica | Value of DB connection status (0=Healthy).
+| ntp.offset | hostname, ntp_server | Time offset in seconds |
+| ntp.connection_status | hostname, ntp_server | Value of ntp server connection status (0=Healthy) |
 
+## Postfix Checks
+This section describes the Postfix checks that can be performed by the Agent. The Postfix checks gathers metrics on the Postfix. The Postfix checks requires a configuration file called postfix.yaml to be available in the agent conf.d configuration directory. The config file must contain the name, directory and queue that you are interested in monitoring.
 
-## Elasticsearch Checks
-This section describes the Elasticsearch check that can be performed by the Agent.  The Elasticsearch check requires a configuration file called elastic.yaml to be available in the agent conf.d configuration directory.
-
-Sample config:
-
-```
-init_config:
-instances:
--   url: http://127.0.0.1:9200
+NOTE: The user running monasca-agent must have passwordless sudo access for the find command to run the postfix check.  Here's an example:
 
 ```
-
-The Elasticsearch checks return the following metrics:
-
-| Metric Name | Dimensions | Semantics |
-| ----------- | ---------- | --------- |
-| elasticsearch.docs.count | url, hostname, service=monitoring | The total number of docs including nested documents. |
-| elasticsearch.docs.deleted | url, hostname, service=monitoring | The number of deleted docs. |
-| elasticsearch.store.size | url, hostname, service=monitoring | The filesystem storage size. |
-| elasticsearch.indexing.index.total | url, hostname, service=monitoring | |
-| elasticsearch.indexing.index.time | url, hostname, service=monitoring | |
-| elasticsearch.indexing.index.current | url, hostname, service=monitoring | |
-| elasticsearch.indexing.delete.total | url, hostname, service=monitoring | |
-| elasticsearch.indexing.delete.time | url, hostname, service=monitoring | |
-| elasticsearch.indexing.delete.current | url, hostname, service=monitoring | |
-| elasticsearch.get.total | url, hostname, service=monitoring | |
-| elasticsearch.get.time | url, hostname, service=monitoring | |
-| elasticsearch.get.current | url, hostname, service=monitoring | |
-| elasticsearch.get.exists.total | url, hostname, service=monitoring | |
-| elasticsearch.get.exists.time | url, hostname, service=monitoring | |
-| elasticsearch.get.missing.total | url, hostname, service=monitoring | |
-| elasticsearch.get.missing.time | url, hostname, service=monitoring | |
-| elasticsearch.search.query.total | url, hostname, service=monitoring | |
-| elasticsearch.search.query.time | url, hostname, service=monitoring | |
-| elasticsearch.search.query.current | url, hostname, service=monitoring | |
-| elasticsearch.search.fetch.total | url, hostname, service=monitoring | |
-| elasticsearch.search.fetch.time | url, hostname, service=monitoring | |
-| elasticsearch.search.fetch.current | url, hostname, service=monitoring | |
-| elasticsearch.merges.current | url, hostname, service=monitoring | |
-| elasticsearch.merges.current.docs | url, hostname, service=monitoring | |
-| elasticsearch.merges.current.size | url, hostname, service=monitoring | |
-| elasticsearch.merges.total | url, hostname, service=monitoring | |
-| elasticsearch.merges.total.time | url, hostname, service=monitoring | |
-| elasticsearch.merges.total.docs | url, hostname, service=monitoring | |
-| elasticsearch.merges.total.size | url, hostname, service=monitoring | |
-| elasticsearch.refresh.total | url, hostname, service=monitoring | |
-| elasticsearch.refresh.total.time | url, hostname, service=monitoring | |
-| elasticsearch.flush.total | url, hostname, service=monitoring | |
-| elasticsearch.flush.total.time | url, hostname, service=monitoring | The elasticsearch flush time. |
-| elasticsearch.process.open_fd | url, hostname, service=monitoring | The number of open files descriptors on the machine. |
-| elasticsearch.transport.rx_count | url, hostname, service=monitoring | |
-| elasticsearch.transport.tx_count | url, hostname, service=monitoring | |
-| elasticsearch.transport.rx_size | url, hostname, service=monitoring | |
-| elasticsearch.transport.tx_size | url, hostname, service=monitoring | |
-| elasticsearch.transport.server_open | url, hostname, service=monitoring | |
-| elasticsearch.thread_pool.bulk.active | url, hostname, service=monitoring | The number of active threads for bulk operations. |
-| elasticsearch.thread_pool.bulk.threads | url, hostname, service=monitoring | The total number of threads for bulk operations. |
-| elasticsearch.thread_pool.bulk.queue | url, hostname, service=monitoring | The number of tasks in queue of thread pool used for bulk operations. |
-| elasticsearch.thread_pool.bulk.rejected | url, hostname, service=monitoring | The number of rejected tasks of thread pool used for bulk operations. |
-| elasticsearch.thread_pool.flush.active | url, hostname, service=monitoring | The number of active threads for flush operations. |
-| elasticsearch.thread_pool.flush.threads | url, hostname, service=monitoring | The total number of threads for flush operations. |
-| elasticsearch.thread_pool.flush.queue | url, hostname, service=monitoring | The number of tasks in queue of thread pool used for flush operations. |
-| elasticsearch.thread_pool.flush.rejected | url, hostname, service=monitoring |  The number of rejected tasks of thread pool used for flush operations. |
-| elasticsearch.thread_pool.generic.active | url, hostname, service=monitoring | The number of active threads for generic operations (i.e. node discovery). |
-| elasticsearch.thread_pool.generic.threads | url, hostname, service=monitoring | The total number of threads for generic operations (i.e. node discovery). |
-| elasticsearch.thread_pool.generic.queue | url, hostname, service=monitoring | The number of tasks in queue of thread pool used for generic operations. |
-| elasticsearch.thread_pool.generic.rejected | url, hostname, service=monitoring | The number of rejected tasks of thread pool used for generic operations. |
-| elasticsearch.thread_pool.get.active | url, hostname, service=monitoring | The number of active threads for get operations. |
-| elasticsearch.thread_pool.get.threads | url, hostname, service=monitoring | The total number of threads for get operations. |
-| elasticsearch.thread_pool.get.queue | url, hostname, service=monitoring | The number of tasks in queue of thread pool used for get operations. |
-| elasticsearch.thread_pool.get.rejected | url, hostname, service=monitoring | The number of rejected tasks of thread pool used for get operations. |
-| elasticsearch.thread_pool.index.active | url, hostname, service=monitoring | The number of active threads for indexing operations. |
-| elasticsearch.thread_pool.index.threads | url, hostname, service=monitoring | The total number of threads for indexing operations. |
-| elasticsearch.thread_pool.index.queue | url, hostname, service=monitoring | The number of tasks in queue of thread pool used for indexing operations. |
-| elasticsearch.thread_pool.index.rejected | url, hostname, service=monitoring | The number of rejected tasks of thread pool used for indexing operations. |
-| elasticsearch.thread_pool.management.active | url, hostname, service=monitoring | The number of active threads for management operations. |
-| elasticsearch.thread_pool.management.threads | url, hostname, service=monitoring | The total number of threads for management operations. |
-| elasticsearch.thread_pool.management.queue | url, hostname, service=monitoring | The number of tasks in queue of thread pool used for management operations. |
-| elasticsearch.thread_pool.management.rejected | url, hostname, service=monitoring | The number of rejected tasks of thread pool used for management operations. |
-| elasticsearch.thread_pool.merge.active | url, hostname, service=monitoring | The number of active threads for merging operation. |
-| elasticsearch.thread_pool.merge.threads | url, hostname, service=monitoring | The total number of threads for merging operation. |
-| elasticsearch.thread_pool.merge.queue | url, hostname, service=monitoring | The number of tasks in queue of thread pool used for merge operations. |
-| elasticsearch.thread_pool.merge.rejected | url, hostname, service=monitoring | The number of rejected tasks of thread pool used for merge operations. |
-| elasticsearch.thread_pool.percolate.active | url, hostname, service=monitoring | The number of active threads for percolate operations. |
-| elasticsearch.thread_pool.percolate.threads | url, hostname, service=monitoring | The total number of threads for percolate operations. |
-| elasticsearch.thread_pool.percolate.queue | url, hostname, service=monitoring | The number of tasks in queue of thread pool used for percolate operations. |
-| elasticsearch.thread_pool.percolate.rejected | url, hostname, service=monitoring | The number of rejected tasks of thread pool used for percolate operations. |
-| elasticsearch.thread_pool.refresh.active | url, hostname, service=monitoring | The number of active threads for refresh operations. |
-| elasticsearch.thread_pool.refresh.threads | url, hostname, service=monitoring | The total number of threads for refresh operations. |
-| elasticsearch.thread_pool.refresh.queue | url, hostname, service=monitoring | The number of tasks in queue of thread pool used for refresh operations. |
-| elasticsearch.thread_pool.refresh.rejected | url, hostname, service=monitoring | The number of rejected tasks of thread pool used for refresh operations. |
-| elasticsearch.thread_pool.search.active | url, hostname, service=monitoring | The number of active threads for search operations. |
-| elasticsearch.thread_pool.search.threads | url, hostname, service=monitoring | The total number of threads for search operations. |
-| elasticsearch.thread_pool.search.queue | url, hostname, service=monitoring | The number of tasks in queue of thread pool used for search operations. |
-| elasticsearch.thread_pool.search.rejected | url, hostname, service=monitoring | The number of rejected tasks of thread pool used for search operations. |
-| elasticsearch.thread_pool.snapshot.active | url, hostname, service=monitoring | The number of active threads for snapshot operations. |
-| elasticsearch.thread_pool.snapshot.threads | url, hostname, service=monitoring | The total number of threads for snapshot operations. |
-| elasticsearch.thread_pool.snapshot.queue | url, hostname, service=monitoring | The number of tasks in queue of thread pool used for snapshot operations. |
-| elasticsearch.thread_pool.snapshot.rejected | url, hostname, service=monitoring | The number of rejected tasks of thread pool used for snapshot operations. |
-| elasticsearch.http.current_open | url, hostname, service=monitoring | Current number of opened HTTP connections. |
-| elasticsearch.http.total_opened | url, hostname, service=monitoring | Max number of HTTP connections. |
-| jvm.gc.concurrent_mark_sweep.count | url, hostname, service=monitoring | |
-| jvm.gc.concurrent_mark_sweep.collection_time | url, hostname, service=monitoring | |
-| jvm.gc.par_new.count | url, hostname, service=monitoring | ParNew count. |
-| jvm.gc.par_new.collection_time | url, hostname, service=monitoring | ParNew pauses time. |
-| jvm.mem.heap_committed | url, hostname, service=monitoring | The allocated amount of heap memory. |
-| jvm.mem.heap_used | url, hostname, service=monitoring | The amount of heap memory which is actually in use. |
-| jvm.mem.non_heap_committed | url, hostname, service=monitoring | The allocated amount of non-heap memory. |
-| jvm.mem.non_heap_used | url, hostname, service=monitoring | The amount of non-heap memory which is actually in use. |
-| jvm.threads.count | url, hostname, service=monitoring | Current number of live daemon and non-daemon threads. |
-| jvm.threads.peak_count | url, hostname, service=monitoring | Peak live thread count since the JVM started or the peak was reset. |
-| elasticsearch.number_of_nodes | url, hostname, service=monitoring | Number of nodes. |
-| elasticsearch.number_of_data_nodes | url, hostname, service=monitoring | Number of data nodes. |
-| elasticsearch.active_primary_shards | url, hostname, service=monitoring | Indicates the number of primary shards in your cluster. This is an aggregate total across all indices. |
-| elasticsearch.active_shards | url, hostname, service=monitoring |  Aggregate total of all shards across all indices, which includes replica shards. |
-| elasticsearch.relocating_shards | url, hostname, service=monitoring | Shows the number of shards that are currently moving from one node to another node. |
-| elasticsearch.initializing_shards | url, hostname, service=monitoring | The count of shards that are being freshly created. |
-| elasticsearch.unassigned_shards | url, hostname, service=monitoring | The number of unassigned shards from the master node. |
-| elasticsearch.cluster_status | url, hostname, service=monitoring | Cluster health status. |
-
-### Additional links
-
-* [List of available thread pools](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-threadpool.html)
-
-## ZooKeeper Checks
-This section describes the Zookeeper check that can be performed by the Agent.  The Zookeeper check requires a configuration file called zk.yaml to be available in the agent conf.d configuration directory.
-The Zookeeper check parses the result of zookeeper's `stat` admin command.
+ example /etc/sudoers entry:
+          monasca-agent ALL=(ALL) NOPASSWD:/usr/bin/find
+```
 
 Sample config:
 
@@ -1087,29 +1486,22 @@ Sample config:
 init_config:
 
 instances:
-    host: localhost
-    port: 2181
-    timeout: 3
+    - name: /var/spool/postfix
+      directory: /var/spool/postfix
+      queues:
+          - incoming
+          - active
+          - deferred
 ```
 
-The Zookeeper checks return the following metrics:
+The Postfix return the following metrics:
 
 | Metric Name | Dimensions | Semantics |
 | ----------- | ---------- | --------- |
-| zookeeper.max_latency_sec | hostname, mode, service=zookeeper | Maximum latency in second |
-| zookeeper.min_latency_sec | hostname, mode, service=zookeeper | Minimum latency in second |
-| zookeeper.avg_latency_sec | hostname, mode, service=zookeeper | Average latency in second |
-| zookeeper.out_bytes | hostname, mode, service=zookeeper | Sent bytes |
-| zookeeper.outstanding_bytes | hostname, mode, service=zookeeper | Outstanding bytes |
-| zookeeper.in_bytes | hostname, mode, service=zookeeper | Received bytes |
-| zookeeper.connections_count | hostname, mode, service=zookeeper | Number of connections |
-| zookeeper.node_count | hostname, mode, service=zookeeper | Number of nodes |
-| zookeeper.zxid_count | hostname, mode, service=zookeeper | Count number |
-| zookeeper.zxid_epoch | hostname, mode, service=zookeeper | Epoch number |
+| postfix.queue_size | queue | A total number of queues |
 
-
-## Kafka Checks
-This section describes the Kafka check that can be performed by the Agent.  The Kafka check requires a configuration file called kafka.yaml to be available in the agent conf.d configuration directory.
+## PostgreSQL
+This section describes the PostgreSQL checks that can be performed by the Agent.  The PostgreSQL checks requires a configuration file called postgres.yaml to be available in the agent conf.d configuration directory.
 
 Sample config:
 
@@ -1117,29 +1509,158 @@ Sample config:
 init_config:
 
 instances:
-- consumer_groups:
-    '1_alarm-state-transitions':
-        'alarm-state-transitions': ['3', '2', '1', '0']
-    '1_metrics':
-        'metrics': &id001 ['3', '2', '1', '0']
-        'test':
-            'healthcheck': ['1', '0']
-        'thresh-event':
-            'events': ['3', '2', '1', '0']
-        'thresh-metric':
-            'metrics': *id001
-  kafka_connect_str: localhost:9092
-  zk_connect_str: localhost:2181
+   -   host: localhost
+       port: 5432
+       username: my_username
+       password: my_password
+       dbname: db_name
 ```
 
-The Kafka checks return the following metrics:
+If you want to track per-relation (table), you need to add relations keys and specify the list.
+
+```
+       relations:
+            - my_table
+            - my_other_table
+```
+
+Each metrics show statistics collected in PostgreSQL. The PostgreSQL checks return the following metrics:
 
 | Metric Name | Dimensions | Semantics |
 | ----------- | ---------- | --------- |
-| kafka.broker_offset | topic, service, component, partition, hostname | broker offset |
-| kafka.consumer_offset | topic, service, component, partition, consumer_group, hostname | consumer offset |
-| kafka.consumer_lag | topic, service, component, partition, consumer_group, hostname | consumer offset lag from broker offset |
+| postgresql.connections | hostname, db, service=postgres | Value of the "numbackends" of "pg_stat_database". |
+| postgresql.commits | hostname, db, service=postgres | Value of the "xact_commit" of "pg_stat_database". |
+| postgresql.rollbacks | hostname, db, service=postgres | Value of the "xact_rollback" of "pg_stat_database". |
+| postgresql.disk_read | hostname, db, service=postgres | Value of the "blks_read" of "pg_stat_database". |
+| postgresql.buffer_hit | hostname, db, service=postgres | Value of the "blks_hit" of "pg_stat_database". |
+| postgresql.rows_returned | hostname, db, service=postgres | Value of the "tup_returned" of "pg_stat_database". |
+| postgresql.rows_fetched | hostname, db, service=postgres | Value of the "tup_fetched" of "pg_stat_database". |
+| postgresql.deadlocks | hostname, db, service=postgres | Value of the "deadlocks" of "pg_stat_database". This is supported only in PostgreSQL 9.2 or later. |
+| postgresql.temp_bytes | hostname, db, service=postgres | Value of the "temp_bytes" of "pg_stat_database". This is supported only in PostgreSQL 9.2 or later. |
+| postgresql.temp_files | hostname, db, service=postgres | Value of the "temp_files" of "pg_stat_database". This is supported only in PostgreSQL 9.2 or later. |
+| postgresql.seq_scans | hostname, db, service=postgres, table | Value of the "seq_scan" of "pg_stat_user_tables" |
+| postgresql.seq_rows_read | hostname, db, service=postgres, table | Value of the "seq_tup_read" of "pg_stat_user_tables" |
+| postgresql.index_scans | hostname, db, service=postgres, table, index | Value of the "idx_scan" of "pg_stat_user_tables" or "pg_stat_user_indexes" |
+| postgresql.index_rows_fetched | hostname, db, service=postgres, table, index | Value of the "idx_tup_fetch" of "pg_stat_user_tables" or "pg_stat_user_indexes" |
+| postgresql.rows_inserted | hostname, db, service=postgres, table | Value of the "n_tup_ins" of "pg_stat_user_tables" or "pg_stat_database" |
+| postgresql.rows_updated | hostname, db, service=postgres, table | Value of the "n_tup_upd" of "pg_stat_user_tables" or "pg_stat_database" |
+| postgresql.rows_deleted | hostname, db, service=postgres, table | Value of the "n_tup_del" of "pg_stat_user_tables" or "pg_stat_database" |
+| postgresql.rows_hot_updated | hostname, db, service=postgres, table | Value of the "n_tup_hot_upd" of "pg_stat_user_tables"
+| postgresql.live_rows | hostname, db, service=postgres, table | Value of the "n_live_tup" of "pg_stat_user_tables" |
+| postgresql.dead_rows | hostname, db, service=postgres, table | Value of the "n_dead_tup" of "pg_stat_user_tables" |
+| postgresql.index_rows_read | hostname, db, service=postgres, table, index | Value of the "idx_tup_read" of "pg_stat_user_indexes" |
 
+
+## Process Checks
+Process checks can be performed to both verify that a set of named processes are running on the local system and collect/send system level metrics on those processes. The YAML file `process.yaml` contains the list of processes that are checked.
+
+The processes that are monitored can be filtered using a pattern to specify the matching process names or distinctly identified by process name or by the username that owns the process.
+
+A Python script `process.py` runs each execution cycle to check that required processes are alive. If the process is running a value of 0 is sent, otherwise a value of 1 is sent to the Monasca API.
+
+Each process entry consists of one primary key: name. Either search_string or username must be set but you can not set both. Optionally, if an exact match on search_string is required the exact_match boolean can be added to the entry and set to True.
+
+To grab more process metrics beside the process.pid_count, which only shows that the process is up and running, the configuration option detailed must be set to true.
+
+Sample monasca-setup:
+Monitor by process_names:
+```
+monasca-setup -d ProcessCheck -json \
+         '{"process_config":[{"process_names":["monasca-notification","monasca-api"],"dimensions":{"service":"monitoring"}}]}'
+```
+Monitor by process_username:
+```
+monasca-setup -d ProcessCheck -json \
+         '{"process_config":[{"process_username":"dbadmin","dimensions":{"service":"monitoring","component":"vertica"}}]}'
+```
+Multiple entries in one call:
+```
+monasca-setup -d ProcessCheck -json \
+         '{"process_config":[{"process_names":["monasca-notification","monasca-api"],"dimensions":{"service":"monitoring"}},
+                             {"process_names":["elasticsearch"],"dimensions":{"service":"logging"}},
+                             {"process_username":"dbadmin","dimensions":{"service":"monitoring","component":"vertica"}}]}'
+```
+Using a yaml config file:
+```
+monasca-setup -d ProcessCheck -a "conf_file_path=/home/stack/myprocess.yaml"
+```
+Example yaml input file format for process check by process names:
+```
+---
+process_config:
+- process_names:
+  - monasca-notification
+  - monasca-api
+  dimensions:
+    service: monitoring
+```
+Example yaml input file format for multiple process_names entries:
+```
+---
+process_config:
+- process_names:
+  - monasca-notification
+  - monasca-api
+  dimensions:
+    service: monitoring
+- process_names:
+  - elasticsearch
+  dimensions:
+    service: logging
+- process_names:
+  - monasca-thresh
+  exact_match: 'true'
+  dimensions:
+    service: monitoring
+    component: thresh
+```
+Sample successfully built process.yaml:
+```
+init_config: null
+instances:
+- built_by: ProcessCheck
+  detailed: true
+  dimensions:
+    component: monasca-api
+    service: monitoring
+  exact_match: false
+  name: monasca-api
+  search_string:
+  - monasca-api
+
+- built_by: ProcessCheck
+  detailed: true
+  dimensions:
+    component: monasca-notification
+    service: monitoring
+  exact_match: false
+  name: monasca-notification
+  search_string:
+  - monasca-notification
+
+- built_by: ProcessCheck
+  detailed: true
+  dimensions:
+    component: vertica
+    service: monitoring
+  name: vertica
+  username: dbadmin
+```
+The process checks return the following metrics ( if detailed is set to true, otherwise process.pid_count is only returned ):
+
+| Metric Name | Dimensions | Semantics |
+| ----------- | ---------- | --------- |
+| process.mem.rss_mbytes  | process_name, service, component | Amount of physical memory allocated to a process, including memory from shared libraries in Mbytes
+| process.io.read_count  | process_name, service, component | Number of reads by a process
+| process.io.write_count  | process_name, service, component | Number of writes by a process
+| process.io.read_kbytes  | process_name, service, component | Kbytes read by a process
+| process.io.write_kbytes  | process_name, service, component | Kbytes written by a process
+| process.thread_count  | process_name, service, component | Number of threads a process is using
+| process.cpu_perc  | process_name, service, component | Percentage of cpu being consumed by a process
+| process.open_file_descriptors  | process_name, service, component | Number of files being used by a process
+| process.pid_count  | process_name, service, component | Number of processes that exist with this process name
+
+On Linux, if the Agent is not run as root or the owner of the process the io metrics and the open_file_descriptors metric will fail to be reported if the mon-agent user does not have permission to get it for the process.
 
 ## RabbitMQ Checks
 This section describes the RabbitMQ check that can be performed by the Agent.  The RabbitMQ check gathers metrics on Nodes, Exchanges and Queues from the rabbit server.  The RabbitMQ check requires a configuration file called rabbitmq.yaml to be available in the agent conf.d configuration directory.  The config file must contain the names of the Exchanges and Queues that you are interested in monitoring.
@@ -1173,6 +1694,7 @@ queues=conductor
 exchanges=nova,cinder,ceilometer,glance,keystone,neutron,heat
 ```
 
+
 For more details of each metric, please refer the [RabbitMQ documentation](http://www.rabbitmq.com/documentation.html).
 The RabbitMQ checks return the following metrics:
 
@@ -1188,7 +1710,7 @@ The RabbitMQ checks return the following metrics:
 | rabbitmq.exchange.messages.published_rate | hostname, exchange, vhost, type, service=rabbitmq | Exchange | Value of the "rate" field of "message_stats/publish_out_details" object |
 | rabbitmq.queue.consumers | hostname, queue, vhost, service=rabbitmq | Queue | Number of consumers |
 | rabbitmq.queue.memory | hostname, queue, vhost, service=rabbitmq | Queue | Bytes of memory consumed by the Erlang process associated with the queue, including stack, heap and internal structures |
-| rabbitmq.queue.active_consumers | hostname, queue, vhost, service=rabbitmq | Queue | |
+| rabbitmq.queue.active_consumers | hostname, queue, vhost, service=rabbitmq | Queue |  |
 | rabbitmq.queue.messages | hostname, queue, vhost, service=rabbitmq | Queue | Sum of ready and unacknowledged messages (queue depth) |
 | rabbitmq.queue.messages.rate | hostname, queue, vhost, service=rabbitmq | Queue | Value of the "rate" field of "message_details" object |
 | rabbitmq.queue.messages.ready | hostname, queue, vhost, service=rabbitmq | Queue | Number of messages ready to be delivered to clients |
@@ -1203,12 +1725,110 @@ The RabbitMQ checks return the following metrics:
 | rabbitmq.queue.messages.unacknowledged_rate | hostname, queue, vhost, service=rabbitmq | Queue | Value of the "rate" field of "message_stats/messages_unacknowledged_details" object |
 | rabbitmq.queue.messages.deliver_get_count | hostname, queue, vhost, service=rabbitmq | Queue | Value of the "deliver_get" field of "message_stats" object |
 | rabbitmq.queue.messages.deliver_get_rate | hostname, queue, vhost, service=rabbitmq | Queue | Value of the "rate" field of "message_stats/deliver_get_details" object |
-| rabbitmq.queue.messages.ack_count | hostname, queue, vhost, service=rabbitmq | Queue | |
-| rabbitmq.queue.messages.ack_rate | hostname, queue, vhost, service=rabbitmq | Queue | |
+| rabbitmq.queue.messages.ack_count | hostname, queue, vhost, service=rabbitmq | Queue |  |
+| rabbitmq.queue.messages.ack_rate | hostname, queue, vhost, service=rabbitmq | Queue |  |
+
+## RedisDB
+See [the example configuration](https://github.com/openstack/monasca-agent/blob/master/conf.d/.yaml.example) for how to configure the  plugin.
+
+## Riak
+See [the example configuration](https://github.com/openstack/monasca-agent/blob/master/conf.d/riak.yaml.example) for how to configure the Riak plugin.
+
+## SolidFire
+The SolidFire checks require a matching solidfire.yaml to be present. Currently the checks report a mixture of cluster utilization and health metrics. Multiple clusters can be monitored via separate instance stanzas in the config file.
+
+Sample config:
+
+instances:
+    - name: cluster_rack_d
+      username: cluster_admin
+      password: secret_password
+      mvip: 192.168.1.1
+
+The SolidFire checks return the following metrics:
+
+| Metric Name | Dimensions | Semantics |
+| ----------- | ---------- | --------- |
+| solidfire.active_cluster_faults     | service=solidfire, cluster | Amount of active cluster faults, such as failed drives |
+| solidfire.cluster_utilization       | service=solidfire, cluster | Overall cluster IOP utilization |
+| solidfire.num_iscsi_sessions        | service=solidfire, cluster | Amount of active iSCSI sessions connected to the cluster |
+| solidfire.iops.avg_5_sec            | service=solidfire, cluster | Average IOPs over the last 5 seconds |
+| solidfire.iops.avg_utc              | service=solidfire, cluster | Average IOPs since midnight UTC |
+| solidfire.iops.peak_utc             | service=solidfire, cluster | Peak IOPS since midnight UTC |
+| solidfire.iops.max_available        | service=solidfire, cluster | Theoretical maximum amount of IOPs |
+| solidfire.active_block_bytes        | service=solidfire, cluster | Amount of space consumed by the block services, including cruft |
+| solidfire.active_meta_bytes         | service=solidfire, cluster | Amount of space consumed by the metadata services |
+| solidfire.active_snapshot_bytes     | service=solidfire, cluster | Amount of space consumed by the metadata services for snapshots |
+| solidfire.provisioned_bytes         | service=solidfire, cluster | Total number of provisioned bytes |
+| solidfire.unique_blocks_used_bytes  | service=solidfire, cluster | Amount of space the unique blocks take on the block drives |
+| solidfire.max_block_bytes           | service=solidfire, cluster | Maximum amount of bytes allocated to the block services |
+| solidfire.max_meta_bytes            | service=solidfire, cluster | Maximum amount of bytes allocated to the metadata services |
+| solidfire.max_provisioned_bytes     | service=solidfire, cluster | Max provisionable space if 100% metadata space used |
+| solidfire.max_overprovisioned_bytes | service=solidfire, cluster | Max provisionable space * 5, artificial safety limit |
+| solidfire.unique_blocks             | service=solidfire, cluster | Number of blocks(not always 4KiB) stored on block drives |
+| solidfire.non_zero_blocks           | service=solidfire, cluster | Number of 4KiB blocks with data after the last garbage collection |
+| solidfire.zero_blocks               | service=solidfire, cluster | Number of 4KiB blocks without data after the last garbage collection |
+| solidfire.thin_provision_factor     | service=solidfire, cluster | Thin provisioning factor, (nonZeroBlocks + zeroBlocks) / nonZeroBlocks |
+| solidfire.deduplication_factor      | service=solidfire, cluster | Data deduplication factor, nonZeroBlocks / uniqueBlocks |
+| solidfire.compression_factor        | service=solidfire, cluster | Data compression factor, (uniqueBlocks * 4096) / uniqueBlocksUsedSpace |
+| solidfire.data_reduction_factor     | service=solidfire, cluster | Aggregate data reduction efficiency, thin_prov * dedup * compression |
+
+## SQLServer
+See [the example configuration](https://github.com/openstack/monasca-agent/blob/master/conf.d/sqlserver.yaml.example) for how to configure the SQLServer plugin.
+
+## Supervisord
+See [the example configuration](https://github.com/openstack/monasca-agent/blob/master/conf.d/supervisord.yaml.example) for how to configure the Supervisord plugin.
+
+## Swift Diags
+See [the example configuration](https://github.com/openstack/monasca-agent/blob/master/conf.d/swift_diags.yaml.example) for how to configure the Swift Diags plugin.
+
+## TCP Check
+See [the example configuration](https://github.com/openstack/monasca-agent/blob/master/conf.d/tcp_check.yaml.example) for how to configure the TCP Check plugin.
+
+## Varnish
+See [the example configuration](https://github.com/openstack/monasca-agent/blob/master/conf.d/varnish.yaml.example) for how to configure the Varnish plugin.
+
+## VCenter
+This plugin provides metrics for VMware ESX clusters. It connects to vCenter server with its credentials and collects the configured cluster's performance data.
+
+### Sample Config
+```
+init_config: {}
+instances:
+    - vcenter_ip: <vcenter-ip or fqdn>
+        username: <vcenter-user>
+        password: <vcenter-password>
+        clusters: <[cluster-name-list]> # e.g: [cluster-1, cluster-2]
+```
+
+### ESX Cluster Metrics
+Below are the list of metrics collected by this plugin from the configured cluster:
 
 
-## Apache Web Server Checks
-This section describes the Apache Web Server check that can be performed by the Agent.  The Apache check gathers metrics on the Apache Web Server.  The Apache check requires a configuration file called apache.yaml to be available in the agent conf.d configuration directory.  The config file must contain the server url, username and password (If you are using authentication) that you are interested in monitoring.
+| Metric Name | Description |
+| ----------- | ---------- |
+| vcenter.cpu.total_mhz | Total amount of CPU resources of all hosts in the cluster, as measured in megahertz. ESX counter name: cpu.totalmhz.average |
+| vcenter.cpu.used_mhz | Sum of the average CPU usage values, in megahertz, of all virtual machines in the cluster. ESX counter name: cpu.usagemhz.average |
+| vcenter.cpu.used_perc | CPU usage in percent, during the interval |
+| vcenter.cpu.total_logical_cores | Aggregated number of CPU threads. ESX counter name: numCpuThreads |
+| vcenter.mem.total_mb | Total amount of machine memory of all hosts in the cluster that is available for guest memory and guest overhead memory. ESX counter name: mem.consumed.average |
+| vcenter.mem.used_mb | A cluster's consumed memory consists of guest consumed memory and overhead memory. It does not include host-specific overhead memory. ESX counter name: mem.consumed.average |
+| vcenter.mem.used_perc | A cluster's consumed memory in percentage |
+| vcenter.disk.total_space_mb | Aggregation of maximum capacities of datastores connected to the hosts of a cluster, in megabytes. ESX counter name: summary.capacity |
+| vcenter.disk.total_used_space_mb | Aggregation of all available capacities of datastores connected to the hosts of a cluster, in megabytes. ESX counter name: summary.freeSpace |
+| vcenter.disk.total_used_space_perc | Aggregation of all available capacities of datastores connected to the hosts of a cluster, in percent |
+
+### ESX Cluster Dimensions
+```
+    "vcenter_ip": <vcenter-ip or fqdn>,
+    "cluster": <cluster-name>,
+    "host_type": "compute_node",
+    "role": "esx",
+    "id": <cluster-name>-<vcenter-ip or fqdn>
+```
+
+## Vertica Checks
+This section describes the vertica check that can be performed by the Agent.  The vertica check requires a configuration file called vertica.yaml to be available in the agent conf.d configuration directory.
 
 Sample config:
 
@@ -1216,32 +1836,99 @@ Sample config:
 init_config:
 
 instances:
-  - apache_status_url: http://localhost/server-status?auto
-    apache_user: root
-    apache_password: password
+	user: mon_api
+	password: password
+	service: monasca (optional, defaults to vertica)
+	timeout: 3 (optional, defaults to 3 seconds)
 ```
-
-If you want the monasca-setup program to detect and auto-configure the plugin for you, you must create the file /root/.apache.cnf with the information needed in the configuration yaml file before running the setup program.  It should look something like this:
-
-```
-[client]
-url=http://localhost/server-status?auto
-user=root
-password=password
-```
-
-The Apache checks return the following metrics:
 
 | Metric Name | Dimensions | Semantics |
 | ----------- | ---------- | --------- |
-| apache.performance.idle_worker_count | hostname, service=apache component=apache | The number of idle workers |
-| apache.performance.busy_worker_count | hostname, service=apache component=apache | The number of workers serving requests |
-| apache.performance.cpu_load_perc | hostname, service=apache component=apache | The current percentage of CPU used by each worker and in total by all workers combined |
-| apache.net.total_kbytes | hostname, service=apache component=apache | Total Kbytes |
-| apache.net.hits | hostname, service=apache component=apache | Total accesses |
-| apache.net.kbytes_sec | hostname, service=apache component=apache | Total Kbytes per second |
-| apache.net.requests_sec | hostname, service=apache component=apache | Total accesses per second |
+| vertica.license_usage_percent | hostname, service=vertica| Percentage of the license size taken up. |
+| vertica.connection_status | hostname, node_name, service=vertica | Value of DB connection status (0=Healthy). |
+| vertica.node_status | hostname, node_name, service=vertica| Status of node connection (0=UP). |
+| vertica.projection.ros_count | hostname, node_name, projection_name, service=vertica| 	The number of ROS containers in the projection. |
+| vertica.projection.tuple_mover_mergeouts | hostname, node_name, projection_name, service=vertica | Number of current tuple mover mergeouts on this projection. |
+| vertica.projection.tuple_mover_moveouts | hostname, node_name, projection_name, service=vertica | Number of current tuple mover moveout on this projection. |
+| vertica.projection.wos_used_bytes | hostname, node_name, projection_name, service=vertica | The number of WOS bytes in the projection.). |
+| vertica.resource.disk_space_rejections | hostname, node_name, service=vertica | The number of rejected disk write requests. |
+| vertica.resource.pool.memory_inuse_kb | hostname, node_name, resource_pool, service=vertica | Amount of memory, in kilobytes, acquired by requests running against this pool. |
+| vertica.resource.pool.memory_size_actual_kb | hostname, node_name, resource_pool, service=vertica | Current amount of memory, in kilobytes, allocated to the pool by the resource manager. |
+| vertica.resource.pool.rejection_count | hostname, node_name, resource_pool, service=vertica | Number of resource rejections for this pool |
+| vertica.resource.pool.running_query_count | hostname, node_name, resource_pool, service=vertica | Number of queries actually running using this pool. |
+| vertica.resource.request_queue_depth | hostname, node_name, service=vertica | The cumulative number of requests for threads, file handles, and memory. |
+| vertica.resource.resource_rejections | hostname, node_name, service=vertica | The number of rejected plan requests. |
+| vertica.resource.wos_used_bytes | hostname, node_name, service=vertica | The size of the WOS in bytes. |
 
+## WMI Check
+
+## ZooKeeper
+This section describes the Zookeeper check that can be performed by the Agent.  The Zookeeper check requires a configuration file called zk.yaml to be available in the agent conf.d configuration directory.
+The Zookeeper check parses the result of zookeeper's `stat` admin command.
+
+Sample config:
+
+```
+init_config:
+
+instances:
+	host: localhost
+	port: 2181
+	timeout: 3
+```
+
+The Zookeeper checks return the following metrics:
+
+| Metric Name | Dimensions | Semantics |
+| ----------- | ---------- | --------- |
+| zookeeper.max_latency_sec | hostname, mode, service=zookeeper | Maximum latency in second |
+| zookeeper.min_latency_sec | hostname, mode, service=zookeeper | Minimum latency in second |
+| zookeeper.avg_latency_sec | hostname, mode, service=zookeeper | Average latency in second |
+| zookeeper.out_bytes | hostname, mode, service=zookeeper | Sent bytes |
+| zookeeper.outstanding_bytes | hostname, mode, service=zookeeper | Outstanding bytes |
+| zookeeper.in_bytes | hostname, mode, service=zookeeper | Received bytes |
+| zookeeper.connections_count | hostname, mode, service=zookeeper | Number of connections |
+| zookeeper.node_count | hostname, mode, service=zookeeper | Number of nodes |
+| zookeeper.zxid_count | hostname, mode, service=zookeeper | Count number |
+| zookeeper.zxid_epoch | hostname, mode, service=zookeeper | Epoch number |
+
+## Kibana
+This section describes the Kibana check that can be performed by the Agent.
+The Kibana check requires a configuration file containing Kibana configuration
+(it is the same file Kibana is using).
+
+Check is accessing status endpoint (```curl -XGET http://localhost:5601/api/status```)
+of Kibana, which means it can work only with Kibana >= 4.2.x, that was first to introduce
+this capability.
+
+Sample config:
+
+```yaml
+init_config:
+  url: http://localhost:5601/api/status
+instances:
+- built_by: Kibana
+  metrics:
+    - heap_size
+    - heap_used
+    - load
+    - req_sec
+    - resp_time_avg
+    - resp_time_max
+```
+
+The Kibana checks return the following metrics:
+
+| Metric Name | Dimensions | Semantics |
+| ----------- | ---------- | --------- |
+| kibana.load_avg_1m | hostnam, version, service=monitoring | The average kibana load over a 1 minute period, for more details see [here](https://nodejs.org/api/os.html#os_os_loadavg) |
+| kibana.load_avg_5m | hostnam, version, service=monitoring | The average kibana load over a 5 minutes period, for more details see [here](https://nodejs.org/api/os.html#os_os_loadavg) |
+| kibana.load_avg_15m | hostnam, version, service=monitoring | The average kibana load over a 15 minutes period, for more details see [here](https://nodejs.org/api/os.html#os_os_loadavg) |
+| kibana.heap_size_mb | hostnam, version, service=monitoring | Total heap size in MB |
+| kibana.heap_used_mb | hostnam, version, service=monitoring | Used heap size in MB |
+| kibana.req_sec | hostnam, version, service=monitoring | Requests per second to Kibana server |
+| kibana.resp_time_avg_ms | hostnam, version, service=monitoring | The average response time of Kibana server in ms |
+| kibana.resp_time_max_ms | hostnam, version, service=monitoring | The maximum response time of Kibana server in ms |
 
 ## OpenStack Monitoring
 The `monasca-setup` script when run on a system that is running OpenStack services, configures the Agent to send the following list of metrics:
@@ -1307,7 +1994,7 @@ The following swift processes are monitored, if they exist when the monasca-setu
 | swift-proxy-server | processes.process_pid_count | Gauge | Passive | service=swift, component=swift-proxy-server | process | swift-proxy-server process pid count | This is only one of the process checks performed |
 | swift-proxy-server | http_status | Gauge | Active | service=swift, component=swift-proxy-server url=url_to_swift_proxy_server | http_status | swift-proxy-server http endpoint is alive | This check should be executed on multiple systems.|
 
-An exhaustive list can be found in the [Swift Administrator Guide](http://docs.openstack.org/developer/swift/admin_guide.html#reporting-metrics-to-statsd).
+Additional Swift metrics are provided by the built-in statsd instrumentation. An exhaustive list can be found in the [Swift Administrator Guide](http://docs.openstack.org/developer/swift/admin_guide.html#reporting-metrics-to-statsd).
 
 ### Glance Checks
 This section documents a sampling of the metrics generated by the checks setup automatically by the monasca-setup script for the OpenStack Glance service.
@@ -1408,393 +2095,25 @@ The following ceilometer processes are monitored, if they exist when the monasca
 | ceilometer-api | processes.process_pid_count | Gauge | Passive | service=ceilometer, component=ceilometer-api | process | ceilometer-api process pid count | This is only one of the process checks performed |
 | ceilometer-api | http_status | Gauge | Active | service=ceilometer, component=ceilometer-api url=url_to_ceilometer_api | http_status | ceilometer-api http endpoint is alive | This check should be executed on multiple systems.|
 
-## Libvirt VM Monitoring
 
-### Overview
-The Libvirt plugin provides metrics for virtual machines when run on the hypervisor server.  It provides two sets of metrics per measurement: one designed for the owner of the VM, and one intended for the owner of the hypervisor server.
+### Freezer Checks
+This section documents a sampling of the metrics generated by the checks setup automatically by the monasca-setup script for the OpenStack Freezer service.
 
-### Configuration
-The `monasca-setup` program will configure the Libvirt plugin if `nova-compute` is running, its `nova.conf` config file is readable by the Monasca Agent user (default: 'mon-agent'), and `python-novaclient` is installed.
+The following Freezer processes are monitored, if they exist when the monasca-setup script is run:
 
-In order to fetch data on hosted compute instances, the Libvirt plugin needs to be able to talk to the Nova API.  It does this using credentials found in `nova.conf` under `[keystone_authtoken]`, obtained when `monasca-setup` is run, and stored in `/etc/monasca/agent/conf.d/libvirt.yaml` as `admin_user`, `admin_password`, `admin_tenant_name`, and `admin_password`.  These credentials are only used to build and update the [Instance Cache](#instance-cache).
+##### Freezer Processes Monitored
+* freezer-scheduler
+* freezer-api
 
-The Libvirt plugin uses a cache directory to persist data, which is `/dev/shm` by default.  On non-Linux systems (BSD, Mac OSX), `/dev/shm` may not exist, so `cache_dir` would need to be changed accordingly, either in `monasca_setup/detection/plugins/libvirt.py` prior to running `monasca-setup`, or `/etc/monasca/agent/conf.d/libvirt.yaml` afterwards.
+##### Example Freezer Metrics
 
-If the owner of the VM is in a different tenant the Agent Cross-Tenant Metric Submission can be setup. See this [documentation](https://github.com/openstack/monasca-agent/blob/master/docs/MonascaMetrics.md#cross-tenant-metric-submission) for details.
+| Component | Metric Name | Metric Type | Check Type | Dimensions | Plugin | Description | Notes |
+| --------- | ----------- | ----------- | ---------- | ---- | ------ | ----------- | ----- |
+| freezer-api | processes.process_pid_count | Gauge | Passive | service=backup, component=freezer-api | process | freezer-api process pid count | This is only one of the process checks performed |
+| freezer-api | http_status | Gauge | Active | service=backup, component=freezer-api url=url_to_freezer_api | http_status | freezer-api http endpoint is alive | This check should be executed on multiple systems.|
+| freezer-scheduler | processes.process_pid_count | Gauge | Passive | service=backup, component=freezer-scheduler | process | freezer-scheduler process pid count | This is only one of the process checks performed |
 
-`nova_refresh` specifies the number of seconds between calls to the Nova API to refresh the instance cache.  This is helpful for updating VM hostname and pruning deleted instances from the cache.  By default, it is set to 14,400 seconds (four hours).  Set to 0 to refresh every time the Collector runs, or to None to disable regular refreshes entirely (though the instance cache will still be refreshed if a new instance is detected).
-
-'metadata' specifies the list of instance metadata keys to be sent as dimensions. This is helpful to give more information about an instance. By default 'scale_group' metadata is used for supporting auto scaling in Heat.
-
-`vm_probation` specifies a period of time (in seconds) in which to suspend metrics from a newly-created VM.  This is to prevent quickly-obsolete metrics in an environment with a high amount of instance churn (VMs created and destroyed in rapid succession).  The default probation length is 300 seconds (five minutes).  Setting to 0 disables VM probation, and metrics will be recorded as soon as possible after a VM is created.
-
-`ping_check` includes the entire command line (sans the IP address, which is automatically appended) used to perform a ping check against instances, with a keyword `NAMESPACE` automatically replaced with the appropriate network namespace for the VM being monitored.  Set to False (or omit altogether) to disable ping checks.  This is automatically populated during `monasca-setup` from a list of possible `ping` command lines.  Generally, `fping` is preferred over `ping` because it can return a failure with sub-second resolution, but if `fping` does not exist on the system, `ping` will be used instead.
-
-Ping checks require:
-1. Neutron networking in DVR mode (legacy mode is supported on single-node installations, such as devstack)
-2. The `python-neutronclient` library and its dependencies installed and available to the Monasca Agent
-3. A security rule for the guest VM which allows ICMP from the appropriate Neutron router IP address
-
-To limit false negatives, ping checks will not be peformed if the above requirements are not met.
-
-Executing the ping command inside a namespace requires enhanced privileges.  To accomplish this, the `monasca-setup` process will copy `/sbin/ip` to a local directory (`sys.path[0]`), lock down the ownership and permissions, and use `setcap` to apply `cap_sys_admin`, thus letting the 'mon-agent' user execute a ping command within a separate network namespace, without the need for `sudo`.
-
-`alive_only` will suppress all per-VM metrics aside from `host_alive_status` and `vm.host_alive_status`, including all I/O, network, memory, ping, and CPU metrics.  [Aggregate Metrics](#aggregate-metrics), however, would still be enabled if `alive_only` is true.  By default, `alive_only` is false.
-
-Example config:
-```
-init_config:
-    admin_password: pass
-    admin_tenant_name: service
-    admin_user: nova
-    identity_uri: 'http://192.168.10.5:35357/v2.0'
-    region_name: 'region1'
-    cache_dir: /dev/shm
-    nova_refresh: 14400
-    metadata:
-    - scale_group
-    vm_probation: 300
-    ping_check: /opt/stack/venv/monasca_agent-20160224T213950Z/bin/ip netns exec NAMESPACE
-      /bin/ping -n -c1 -w1 -q
-    alive_only: false
-instances:
-    - {}
-```
-`instances` are null in `libvirt.yaml`  because the libvirt plugin detects and runs against all provisioned VM instances; specifying them in `libvirt.yaml` is unnecessary.
-
-Note: If the Nova service login credentials are changed, `monasca-setup` would need to be re-run to use the new credentials.  Alternately, `/etc/monasca/agent/conf.d/libvirt.yaml` could be modified directly.
-
-Example `monasca-setup` usage:
-```
-monasca-setup -d libvirt -a 'ping_check=false alive_only=false' --overwrite
-```
-
-### Instance Cache
-The instance cache (`/dev/shm/libvirt_instances.json` by default) contains data that is not available to libvirt, but queried from Nova.  To limit calls to the Nova API, the cache is only updated if a new instance is detected (libvirt sees an instance not already in the cache), or every `nova_refresh` seconds (see Configuration above).
-
-Example cache:
-```
-{
-   "last_update" : 1450121034,
-   "instance-00000005" : {
-      "created" : "2015-12-14T19:10:07Z",
-      "instance_uuid" : "94b8511c-d4de-40c3-9676-558f28e0c3c1",
-      "network" : [
-         {
-            "ip" : "10.0.0.3",
-            "namespace" : "qrouter-ae714057-4453-48c4-81cb-15f8db9434a8"
-         }
-      ],
-      "disk" : 1,
-      "tenant_id" : "7d8e24a1e0cb4f8c8dedfb2010992b62",
-      "zone" : "nova",
-      "scale_group": "a1207522-c5fb-4621-a839-c00b638cfb47",
-      "vcpus" : 1,
-      "hostname" : "vm01",
-      "ram" : 512
-   }
-}
-```
-
-### Metrics Cache
-The libvirt inspector returns *counters*, but it is much more useful to use *rates* instead.  To convert counters to rates, a metrics cache is used, stored in `/dev/shm/libvirt_metrics.yaml` by default.  For each measurement gathered, the current value and timestamp (UNIX epoch) are recorded in the cache.  The subsequent run of the Monasca Agent Collector compares current values against prior ones, and computes the rate.
-
-Since CPU Time is provided in nanoseconds, the timestamp recorded has nanosecond resolution.  Otherwise, integer seconds are used.
-
-Example cache (excerpt, see next section for complete list of available metrics):
-```
-{"instance-00000005": {"net.rx_packets": {"tap65d5c428-b4": {"timestamp": 1450121045.532205, "value": 63}}, "net.tx_packets": {"tap65d5c428-b4": {"timestamp": 1450121045.532205, "value": 54}}, "io.errors": {"vda": {"timestamp": 1450121045.505127, "value": -1}, "hdd": {"timestamp": 1450121045.517883, "value": -1}}, "io.write_bytes": {"vda": {"timestamp": 1450121045.505127, "value": 230400}, "hdd": {"timestamp": 1450121045.517883, "value": 0}}, "io.read_requests": {"vda": {"timestamp": 1450121045.505127, "value": 512}, "hdd": {"timestamp": 1450121045.517883, "value": 1}}, "net.rx_bytes": {"tap65d5c428-b4": {"timestamp": 1450121045.532205, "value": 6909}}, "io.write_requests": {"vda": {"timestamp": 1450121045.505127, "value": 51}, "hdd": {"timestamp": 1450121045.517883, "value": 0}}, "cpu.time": {"timestamp": 1450121045.478205, "value": 17060000000}, "net.tx_bytes": {"tap65d5c428-b4": {"timestamp": 1450121045.532205, "value": 5178}}, "io.read_bytes": {"vda": {"timestamp": 1450121045.505127, "value": 11591680}, "hdd": {"timestamp": 1450121045.517883, "value": 30}}}}
-```
-### Per-Instance Metrics
-
-| Name                 | Description                            | Associated Dimensions  |
-| -------------------- | -------------------------------------- | ---------------------- |
-| cpu.utilization_perc | Overall CPU utilization (percentage)   |                        |
-| host_alive_status    | See [host_alive_status Codes](#host_alive_status-codes) below | |
-| io.read_ops_sec      | Disk I/O read operations per second    | 'device' (ie, 'hdd')   |
-| io.write_ops_sec     | Disk I/O write operations per second   | 'device' (ie, 'hdd')   |
-| io.read_bytes_sec    | Disk I/O read bytes per second         | 'device' (ie, 'hdd')   |
-| io.write_bytes_sec   | Disk I/O write bytes per second        | 'device' (ie, 'hdd')   |
-| io.errors_sec        | Disk I/O errors per second             | 'device' (ie, 'hdd')   |
-| net.in_packets_sec   | Network received packets per second    | 'device' (ie, 'vnet0') |
-| net.out_packets_sec  | Network transmitted packets per second | 'device' (ie, 'vnet0') |
-| net.in_bytes_sec     | Network received bytes per second      | 'device' (ie, 'vnet0') |
-| net.out_bytes_sec    | Network transmitted bytes per second   | 'device' (ie, 'vnet0') |
-| mem.free_mb          | Free memory in Mbytes                  |                        |
-| mem.total_mb         | Total memory in Mbytes                 |                        |
-| mem.used_mb          | Used memory in Mbytes                  |                        |
-| mem.free_perc        | Percent of memory free                 |                        |
-| mem.swap_used_mb     | Used swap space in Mbytes              |                        |
-| ping_status          | 0 for ping success, 1 for ping failure |                        |
-| cpu.time_ms          | Cumulative CPU time (in ms), an Operations-only metric |        |
-
-#### host_alive_status Codes
-| Code | Description                          | value_meta 'detail'                    |
-| ---- | -------------------------------------|--------------------------------------- |
-| -1   | No state                             | VM has no state                        |
-|  0   | Running / OK                         | None                                   |
-|  1   | Idle / blocked                       | VM is blocked                          |
-|  2   | Paused                               | VM is paused                           |
-|  3   | Shutting down                        | VM is shutting down                    |
-|  4   | Shut off                             | VM has been shut off                   |
-|  4   | Nova suspend                         | VM has been suspended                  |
-|  5   | Crashed                              | VM has crashed                         |
-|  6   | Power management suspend (S3 state)  | VM is in power management (s3) suspend |
-
-
-Memory statistics require a balloon driver on the VM.  For the Linux kernel, this is the `CONFIG_VIRTIO_BALLOON` configuration parameter, active by default in Ubuntu, and enabled by default as a kernel module in Debian, CentOS, and SUSE.
-
-Since separate metrics are sent to the VM's owner as well as Operations, all metric names designed for Operations are prefixed with "vm." to easily distinguish between VM metrics and compute host's metrics.
-
-### VM Dimensions
-All metrics include `resource_id` and `zone` (availability zone) dimensions.  Because there is a separate set of metrics for the two target audiences (VM customers and Operations), other dimensions may differ.
-
-| Dimension Name | Customer Value            | Operations Value        |
-| -------------- | ------------------------- | ----------------------- |
-| hostname       | name of VM as provisioned | hypervisor's hostname   |
-| zone           | availability zone         | availability zone       |
-| resource_id    | resource ID of VM         | resource ID of VM       |
-| service        | "compute"                 | "compute"               |
-| component      | "vm"                      | "vm"                    |
-| device         | name of net or disk dev   | name of net or disk dev |
-| tenant_id      | (N/A)                     | owner of VM             |
-
-### Aggregate Metrics
-
-In addition to per-instance metrics, the Libvirt plugin will publish aggregate metrics across all instances.
-
-| Name                            | Description                                        |
-| ------------------------------- | -------------------------------------------------- |
-| nova.vm.cpu.total_allocated     | Total CPUs allocated across all VMs                |
-| nova.vm.disk.total_allocated_gb | Total Gbytes of disk space allocated to all VMs |
-| nova.vm.mem.total_allocated_mb  | Total Mbytes of memory allocated to all VMs     |
-
-Aggregate dimensions include hostname and component from the Operations Value column above.
-
-## Crash Dump Monitoring
-
-### Overview
-The crash plugin provides metrics for crash dumps present on the system. Currently, it only returns the number of crash dumps found plus the date-/timestamp of the most recent crash in a `value_meta` dictionary.
-
-### Metrics
-Only one metric is provided at the moment with a `hostname` dimension.
-
-| Name             | Description                 | value_meta                       |
-|------------------|-----------------------------|----------------------------------|
-| crash.dump_count | Number of crash dumps found | {'latest': u'<date-/timestamp>'} |
-
-### Configuration
-The `monasca-setup` program will configure the Crash plugin if a crash kernel is loaded. The default directory where the plugin will look for crash dumps is /var/crash.
-
-Sample config:
-
-```
-init_config:
-  crash_dir: /var/crash
-
-instances:
-  - name: crash_stats
-
-```
-
-
-## Network Time Protocol Checks
-This section describes the Network Time Protocol checks that can be performed by the Agent. The NTP checks monitors time offset between NTP server and your own server. The NTP checks requires a configuration file called ntp.yaml to be available in the agent conf.d configuration directory. The config file must contain the hostname and port number, version information, timeout(These are optional params) that you are interested in monitoring.
-
-Sample config:
-
-```
-init_config:
-
-instances:
-  - host: pool.ntp.org
-    port: ntp
-    version: 3
-    timeout: 5
-```
-
-The NTP checks return the following metrics:
-
-| Metric Name | Dimensions | Semantics |
-| ----------- | ---------- | --------- |
-| ntp.offset | hostname | Time offset in seconds |
-
-
-## Postfix Checks
-This section describes the Postfix checks that can be performed by the Agent. The Postfix checks gathers metrics on the Postfix. The Postfix checks requires a configuration file called postfix.yaml to be available in the agent conf.d configuration directory. The config file must contain the name, directory and queue that you are interested in monitoring.
-
-NOTE: The user running monasca-agent must have passwordless sudo access for the find command to run the postfix check.  Here's an example:
-
-```
- example /etc/sudoers entry:
-          monasca-agent ALL=(ALL) NOPASSWD:/usr/bin/find
-```
-
-Sample config:
-
-```
-init_config:
-
-instances:
-    - name: /var/spool/postfix
-      directory: /var/spool/postfix
-      queues:
-          - incoming
-          - active
-          - deferred
-```
-
-The Postfix return the following metrics:
-
-| Metric Name | Dimensions | Semantics |
-| ----------- | ---------- | --------- |
-| postfix.queue_size | queue | A total number of queues |
-
-
-## PostgreSQL Checks
-This section describes the PostgreSQL checks that can be performed by the Agent.  The PostgreSQL checks requires a configuration file called postgres.yaml to be available in the agent conf.d configuration directory.
-
-Sample config:
-
-```
-init_config:
-
-instances:
-   -   host: localhost
-       port: 5432
-       username: my_username
-       password: my_password
-       dbname: db_name
-```
-
-If you want to track per-relation (table), you need to add relations keys and specify the list.
-
-```
-       relations:
-            - my_table
-            - my_other_table
-```
-
-Each metrics show statistics collected in PostgreSQL. The PostgreSQL checks return the following metrics:
-
-| Metric Name | Dimensions | Semantics |
-| ----------- | ---------- | --------- |
-| postgresql.connections | hostname, db, service=postgres | Value of the "numbackends" of "pg_stat_database". |
-| postgresql.commits | hostname, db, service=postgres | Value of the "xact_commit" of "pg_stat_database". |
-| postgresql.rollbacks | hostname, db, service=postgres | Value of the "xact_rollback" of "pg_stat_database". |
-| postgresql.disk_read | hostname, db, service=postgres | Value of the "blks_read" of "pg_stat_database". |
-| postgresql.buffer_hit | hostname, db, service=postgres | Value of the "blks_hit" of "pg_stat_database". |
-| postgresql.rows_returned | hostname, db, service=postgres | Value of the "tup_returned" of "pg_stat_database". |
-| postgresql.rows_fetched | hostname, db, service=postgres | Value of the "tup_fetched" of "pg_stat_database". |
-| postgresql.deadlocks | hostname, db, service=postgres | Value of the "deadlocks" of "pg_stat_database". This is supported only in PostgreSQL 9.2 or later. |
-| postgresql.temp_bytes | hostname, db, service=postgres | Value of the "temp_bytes" of "pg_stat_database". This is supported only in PostgreSQL 9.2 or later. |
-| postgresql.temp_files | hostname, db, service=postgres | Value of the "temp_files" of "pg_stat_database". This is supported only in PostgreSQL 9.2 or later. |
-| postgresql.seq_scans | hostname, db, service=postgres, table | Value of the "seq_scan" of "pg_stat_user_tables" |
-| postgresql.seq_rows_read | hostname, db, service=postgres, table | Value of the "seq_tup_read" of "pg_stat_user_tables" |
-| postgresql.index_scans | hostname, db, service=postgres, table, index | Value of the "idx_scan" of "pg_stat_user_tables" or "pg_stat_user_indexes" |
-| postgresql.index_rows_fetched | hostname, db, service=postgres, table, index | Value of the "idx_tup_fetch" of "pg_stat_user_tables" or "pg_stat_user_indexes" |
-| postgresql.rows_inserted | hostname, db, service=postgres, table | Value of the "n_tup_ins" of "pg_stat_user_tables" or "pg_stat_database" |
-| postgresql.rows_updated | hostname, db, service=postgres, table | Value of the "n_tup_upd" of "pg_stat_user_tables" or "pg_stat_database" |
-| postgresql.rows_deleted | hostname, db, service=postgres, table | Value of the "n_tup_del" of "pg_stat_user_tables" or "pg_stat_database" |
-| postgresql.rows_hot_updated | hostname, db, service=postgres, table | Value of the "n_tup_hot_upd" of "pg_stat_user_tables"
-| postgresql.live_rows | hostname, db, service=postgres, table | Value of the "n_live_tup" of "pg_stat_user_tables" |
-| postgresql.dead_rows | hostname, db, service=postgres, table | Value of the "n_dead_tup" of "pg_stat_user_tables" |
-| postgresql.index_rows_read | hostname, db, service=postgres, table, index | Value of the "idx_tup_read" of "pg_stat_user_indexes" |
-
-
-# VCenter Cluster Monitoring
-This plugin provides metrics for VMware ESX clusters. It connects to vCenter server with its credentials and collects the configured cluster's performance data.
-
-## Sample Config
-```
-init_config: {}
-instances:
-    - vcenter_ip: <vcenter-ip or fqdn>
-        username: <vcenter-user>
-        password: <vcenter-password>
-        clusters: <[cluster-name-list]> # e.g: [cluster-1, cluster-2]
-```
-
-## ESX Cluster Metrics
-Below are the list of metrics collected by this plugin from the configured cluster
-| Metric Name | Description |
-| ----------- | ---------- |
-| vcenter.cpu.total_mhz | Total amount of CPU resources of all hosts in the cluster, as measured in megahertz. ESX counter name: cpu.totalmhz.average |
-| vcenter.cpu.used_mhz | Sum of the average CPU usage values, in megahertz, of all virtual machines in the cluster. ESX counter name: cpu.usagemhz.average |
-| vcenter.cpu.used_perc | CPU usage in percent, during the interval |
-| vcenter.cpu.total_logical_cores | Aggregated number of CPU threads. ESX counter name: numCpuThreads |
-| vcenter.mem.total_mb | Total amount of machine memory of all hosts in the cluster that is available for guest memory and guest overhead memory. ESX counter name: mem.consumed.average |
-| vcenter.mem.used_mb | A cluster's consumed memory consists of guest consumed memory and overhead memory. It does not include host-specific overhead memory. ESX counter name: mem.consumed.average |
-| vcenter.mem.used_perc | A cluster's consumed memory in percentage |
-| vcenter.disk.total_space_mb | Aggregation of maximum capacities of datastores connected to the hosts of a cluster, in megabytes. ESX counter name: summary.capacity |
-| vcenter.disk.total_used_space_mb | Aggregation of all available capacities of datastores connected to the hosts of a cluster, in megabytes. ESX counter name: summary.freeSpace |
-| vcenter.disk.total_used_space_perc | Aggregation of all available capacities of datastores connected to the hosts of a cluster, in percent |
-
-## ESX Cluster Dimensions
-```
-    "vcenter_ip": <vcenter-ip or fqdn>,
-    "cluster": <cluster-name>,
-    "host_type": "compute_node",
-    "role": "esx",
-    "id": <cluster-name>-<vcenter-ip or fqdn>
-```
-
-
-## HTTPS Certificate Expiration
-An extension to the Agent provides the ability to determine the expiration date of the certificate for the URL. The metric is days until the certificate expires
-
- default dimensions:
-    url: url
-
-A YAML file (cert_check.yaml) contains the list of urls to check. It also contains
-
-The configuration of the certicate expiration check is done in YAML, and consists of two keys:
-
-* init_config
-* instances
-
-The init_config section lists the global configuration settings, such as the Certificate Authority Certificate file, the ciphers to use, the period at which to output the metric and the url connection timeout (in seconds, floating-point number)
-
-```
-ls -l `which ping` -rwsr-xr-x 1 root root 35712 Nov 8 2011 /bin/ping
-```
-
-```
-init_config:
-  ca_certs: /etc/ssl/certs/ca-certificates.crt
-  ciphers: HIGH:-aNULL:-eNULL:-PSK:RC4-SHA:RC4-MD5
-  collect_period: 3600
-  timeout: 1.0
-```
-
-The instances section contains the urls to check.
-
-```
-instances:
-- built_by: CertificateCheck
-  url: https://somehost.somedomain.net:8333
-- built_by: CertificateCheck
-  url: https://somehost.somedomain.net:9696
-```
-
-The certicate expiration checks return the following metrics
-
-| Metric Name | Dimensions | Semantics |
-| ----------- | ---------- | --------- |
-| https.cert_expire_days | url=supplied url being checked | The number of days until the certificate expires
-
-
-There is a detection plugin that should be used to configure this extension. It is invoked as:
-
-monasca-setup -d CertificateCheck -a urls=https://somehost.somedomain.net:8333,https://somehost.somedomain.net:9696
-
-The urls option is a comma separated list of urls to check.
-
-These options can be set if desired:
-* ca_certs: file containing the certificates for Certificate Authorities. The default is /etc/ssl/certs/ca-certificates.crt
-* ciphers: list of ciphers to use.  default is HIGH:-aNULL:-eNULL:-PSK:RC4-SHA:RC4-MD5
-* collect_period: Integer time in seconds between outputting the metric.  Since the metric is in days, it makes sense to output it at a slower rate. The default is 3600, once per hour
-* timeout: Float time in seconds before timing out the connect to the url.  Increase if needed for very slow servers, but making this too long will increase the time this plugin takes to run if the server for the url is down. The default is 1.0 seconds
+=======
 
 # License
-(C) Copyright 2015-2016 Hewlett Packard Enterprise Development Company LP
+(C) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
