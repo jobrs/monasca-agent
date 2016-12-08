@@ -22,7 +22,6 @@ class NodeNotFound(Exception):
 
 
 class ElasticSearch(AgentCheck):
-
     METRICS = {  # Metrics that are common to all Elasticsearch versions
         "elasticsearch.docs.count": ("gauge", "indices.docs.count"),
         "elasticsearch.docs.deleted": ("gauge", "indices.docs.deleted"),
