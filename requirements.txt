@@ -22,4 +22,4 @@ stevedore>=1.17.1 # Apache-2.0
 tornado>=4.3
 
 # added to fix debian packaging
-lxml
+lxml==3.6.1
