@@ -110,6 +110,7 @@ class MySql(checks.AgentCheck):
         try:
             import pymysql
         except ImportError:
+            self.log.exception("PyMysql module could not be imported")
             raise Exception(
                 "Cannot import PyMySQl module. Check the instructions "
                 "to install this module at https://pypi.python.org/pypi/PyMySQL")

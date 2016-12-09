@@ -5,7 +5,6 @@ import logging
 import re
 from numbers import Number
 
-from monasca_agent.collector.checks.check import Check
 from monasca_agent.common.exceptions import CheckException
 
 log = logging.getLogger(__name__)
