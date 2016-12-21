@@ -581,5 +581,3 @@ class ElasticSearch(AgentCheck):
                 "source_type_name": "elasticsearch",
                 "event_object": hostname
                 }
-=======
->>>>>>> c170af038da8826bb47bb1196387aa7fef36b5c1
