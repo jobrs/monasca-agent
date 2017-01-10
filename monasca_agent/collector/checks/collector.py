@@ -98,11 +98,11 @@ class Collector(util.Dimensions):
 
     def collector_stats(self, num_metrics, collection_time):
         thread_count = threading.active_count()
-        self.add_collection_metric('monasca.thread_count', thread_count)
+        self.add_collection_metric('monasca.agent.thread_count', thread_count)
         if thread_count > MAX_THREADS_COUNT:
             log.warn("Collector thread count is high: %d" % thread_count)
 
-        self.add_collection_metric('monasca.collection_time_sec', collection_time)
+        self.add_collection_metric('monasca.agent.collection_time', collection_time)
 
     def run(self, check_frequency):
         """Collect data from each check and submit their data.
@@ -170,6 +170,7 @@ class Collector(util.Dimensions):
         if sub_collect_duration > util.get_sub_collection_warn():
             log.warn("Collection time for check %s is high: %.2fs." % (
                      check.name, round(sub_collect_duration, 2)))
+
         return count, sub_collect_duration_mills
 
     def wait_for_results(self, check_frequency, start_time):
@@ -245,7 +246,7 @@ class Collector(util.Dimensions):
             # Output a metric that can be used for Alarming. This metric is only
             # emitted when there are checks running too long so a deterministic
             # Alarm Definition should be created when monitoring it
-            self.add_collection_metric('monasca.checks_running_too_long',
+            self.add_collection_metric('monasca.agent.checks_running_too_long',
                                        len(self.collection_results))
             for check_name in self.collection_results:
                 run_time = time.time() - self.collection_results[check_name]['start_time']

@@ -203,6 +203,7 @@ class AgentCheck(util.Dimensions):
                 self.check(instance)
             except Exception:
                 self.log.exception("Check '%s' instance #%s failed" % (self.name, i))
+                self.rate("monasca.agent.check_errors", 1, { "agent_check": self.name })
 
     def check(self, instance):
         """Overriden by the check class. This will be called to run the check.

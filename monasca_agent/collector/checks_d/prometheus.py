@@ -143,15 +143,15 @@ class Prometheus(services_checks.ServicesCheck):
             if collect_response_time:
                 # Stop the timer as early as possible
                 running_time = timer.total()
-                self.gauge('monasca.agent.collect_time', running_time, dimensions={'agent_check': 'influxdb',
-                                                                                   'instance': instance_name})
+                self.gauge('monasca.agent.check_collect_time', running_time, dimensions={'agent_check': 'prometheus',
+                                                                                         'instance': instance_name})
 
             response.raise_for_status()
             body = response.text
         except RequestException:
             self.log.exception("Retrieving metrics from endpoint %s failed", url)
-            self.rate('monasca.agent.collect_errors', 1, dimensions={'agent_check': 'prometheus',
-                                                                     'instance': instance_name})
+            self.rate('monasca.agent.check_collect_errors', 1, dimensions={'agent_check': 'prometheus',
+                                                                           'instance': instance_name})
             return []
 
         metric_families = prometheus_client_parser.text_string_to_metric_families(body)

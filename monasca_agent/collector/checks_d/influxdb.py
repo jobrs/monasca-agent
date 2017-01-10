@@ -96,8 +96,8 @@ class InfluxDB(services_checks.ServicesCheck):
     def _push_error(self, error_string, instance_name):
         self.log.error(error_string)
         self.warning(error_string)
-        self.rate('monasca.agent.collect_errors', 1, dimensions={'agent_check': 'influxdb',
-                                                                 'instance': instance_name})
+        self.rate('monasca.agent.check_collect_errors', 1, dimensions={'agent_check': 'influxdb',
+                                                                       'instance': instance_name})
 
     def _rate_or_gauge_statuses(self, content, dimensions, whitelist, metricdef):
 
@@ -170,8 +170,8 @@ class InfluxDB(services_checks.ServicesCheck):
             if collect_response_time:
                 # Stop the timer as early as possible
                 running_time = timer.total()
-                self.gauge('monasca.agent.collect_time', running_time, dimensions={'agent_check': 'influxdb',
-                                                                                   'instance': instance_name})
+                self.gauge('monasca.agent.check_collect_time', running_time, dimensions={'agent_check': 'influxdb',
+                                                                                         'instance': instance_name})
 
             # check HTTP errors
             if int(resp.status_code) >= 500:
