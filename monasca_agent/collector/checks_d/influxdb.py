@@ -95,7 +95,6 @@ class InfluxDB(services_checks.ServicesCheck):
 
     def _push_error(self, error_string, instance_name):
         self.log.error(error_string)
-        self.warning(error_string)
         self.rate('monasca.agent.check_collect_errors', 1, dimensions={'agent_check': 'influxdb',
                                                                        'instance': instance_name})
 
@@ -182,7 +181,6 @@ class InfluxDB(services_checks.ServicesCheck):
             elif int(resp.status_code) >= 400:
                 error_string = "InfluxDB check {0} causes HTTP errors when accessing {1}, error code: {2}".format(
                     instance.get('name'), endpoint, resp.status_code)
-                self.warning(error_string)
                 self.log.error(error_string)
                 return services_checks.Status.DOWN, error_string
 
@@ -208,7 +206,6 @@ class InfluxDB(services_checks.ServicesCheck):
         except requests.exceptions.RequestException as e:
             error_string = 'Unhandled exception {0}'.format(repr(e))
             self.log.exception(error_string)
-            self.warning(error_string)
             return services_checks.Status.DOWN, error_string
 
         except (KeyError, TypeError) as e:
