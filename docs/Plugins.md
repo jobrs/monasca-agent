@@ -419,11 +419,16 @@ instances:
 ### Monasca Agent
 The Monasca Agent itself generates a small number of metrics.
 
-| Metric Name | Dimensions | Semantics |
+| Metric Name | Dimensions\* | Semantics |
 | ----------- | ---------- | --------- |
-| monasca.thread_count  | service=monitoring component=monasca-agent | Number of threads that the collector is consuming for this collection run |
-| monasca.emit_time_sec  | service=monitoring component=monasca-agent | Amount of time that the forwarder took to send metrics to the Monasca API. |
-| monasca.collection_time_sec  | service=monitoring component=monasca-agent | Amount of time that the collector took for this collection run |
+| monasca.agent.thread_count  |  | Number of threads that the collector is consuming for this collection run |
+| monasca.agent.emit_time_sec  |  | Amount of time that the forwarder took to send metrics to the Monasca API. |
+| monasca.agent.collection_time_sec  | | Amount of time that the collector took for this collection run |
+| monasca.agent.check_collect_errors | agent_check | number of errors occuring when performing data collection for plugin _agent_check_ (e.g. connection errors) |
+| monasca.agent.check_collect_time | agent_check | time that the collection of data by the specific _agent_check_ took |
+| monasca.agent.mapping_errors | agent_check | errors when mapping source data to Monasca metrics, e.g. caused by errors in the _mapping_ configuration of the _agent_check_ |
+
+\* All metrics are decorated with the agent's default dimensions `service=monitoring, component=monasca-agent`
 
 ### Limiting System Metrics
 It is possible to reduce the number of system metrics with certain configuration parameters.
