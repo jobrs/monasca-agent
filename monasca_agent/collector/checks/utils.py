@@ -114,7 +114,9 @@ class DynamicCheckHelper:
             """
             transform source value into target dimension value
             :param source_value: label value to transform
-            :return: transformed dimension value or None if the regular expression did not match
+            :return: transformed dimension value or None if the regular expression did not match. An empty
+            result (caused by the regex having no match-groups) indicates that the label is used for filtering
+            but not mapped to a dimension.
             """
             if self.cregex:
                 match_groups = self.cregex.match(source_value)
@@ -596,7 +598,9 @@ class DynamicCheckHelper:
                         if mapped_value is None:
                             # None means: filter it out based on dimension value
                             return None
-                        dims[target_dim] = mapped_value
+                        elif mapped_value != '':
+                            dims[target_dim] = mapped_value
+                        # else the dimension will not map
                 except (IndexError, AttributeError):  # probably the regex was faulty
                     log.exception(
                         'dimension %s value could not be mapped from %s: regex for mapped dimension %s '

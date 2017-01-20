@@ -22,3 +22,5 @@ tornado>=4.3
 
 # fix debian package build
 lxml==3.6.1
+
+# prometheus_client
