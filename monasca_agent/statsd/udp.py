@@ -16,6 +16,7 @@ metric_class = {
     'g': metrics_pkg.Gauge,
     'c': metrics_pkg.Counter,
     'r': metrics_pkg.Rate,
+    'ms': metrics_pkg.Gauge,
 }
 
 
