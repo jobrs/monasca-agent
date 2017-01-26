@@ -113,10 +113,10 @@ class Rate(Metric):
         try:
             rate = delta_v / float(delta_t)
         except ZeroDivisionError as e:
-            log.exception('Error in sampling metric {0}, time difference '
+            log.exception('Error in sampling metric {0} with dimensions {1}, time difference '
                           'between current time and last_update time is '
-                          '0, returned {1}'.
-                          format(self.metric['name'], e))
+                          '0, returned {2}'.
+                          format(self.metric['name'], self.metric['dimensions'], e))
         return rate
 
     def flush(self):
