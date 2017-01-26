@@ -171,8 +171,8 @@ class Prometheus(services_checks.ServicesCheck):
             except Exception as e:
                 self.log.warning("Unable to collect metric: {0} for container: {1} . - {2} ".format(
                     metric_family.name, container[1].get('name'), repr(e)))
-                self.rate('monasca.agent.collect_errors', 1, dimensions={'agent_check': 'prometheus',
-                                                                         'instance': instance['name']})
+                self.rate('monasca.agent.check_collect_errors', 1, dimensions={'agent_check': 'prometheus',
+                                                                               'instance': instance['name']})
 
     def _update_last_ts(self, instance_name):
         utc_now = datetime.utcnow()
