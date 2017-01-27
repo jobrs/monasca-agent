@@ -1,0 +1,6 @@
+# TYPE apiserver_request_latencies_bucket untyped
+apiserver_request_latencies_bucket{instance="kubernetes.default:443",job="kubernetes-cluster",resource="configmaps",verb="GET",le="250000",kubernetes_role="apiserver"} 443394 1467808372702
+# TYPE apiserver_request_count untyped
+apiserver_request_count{job="kubernetes-cluster",client="hyperkube/v1.2.0 (linux/amd64) kubernetes/5cb86ee/node-controller",code="200",resource="pods",verb="WATCHLIST",kubernetes_role="apiserver",instance="kubernetes.default:443"} 403 1467808372702
+# TYPE apiserver_request_latencies_summary_sum untyped
+apiserver_request_latencies_summary_sum{instance="kubernetes.default:443",job="kubernetes-cluster",resource="limitranges",verb="LIST",kubernetes_role="apiserver"} 147167 1467808372702

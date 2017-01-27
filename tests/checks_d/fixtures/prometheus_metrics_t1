@@ -1,0 +1,16 @@
+# TYPE datapath_nslookup_common_status untyped
+datapath_nslookup_common_status{kubernetes_name="blackbox-datapath",instance="100.69.0.5:9101",job="kubernetes-service-endpoints",kubernetes_role="endpoint",kubernetes_namespace="monitoring"} 0 1472641131820
+# TYPE datapath_nslookup_kvm_instance_status untyped
+datapath_nslookup_kvm_instance_status{instance="100.69.0.5:9101",job="kubernetes-service-endpoints",kubernetes_role="endpoint",kubernetes_namespace="monitoring",kubernetes_name="blackbox-datapath"} 0 1472641131820
+# TYPE openstack_requests_total_counter untyped
+openstack_requests_total_counter{kubernetes_role="endpoint",instance="100.64.0.11:9102",kubernetes_name="glance",system="openstack",job="kubernetes-service-endpoints",
+# TYPE openstack_latency_by_api_timer untyped
+openstack_latency_by_api_timer{kubernetes_namespace="monsoon3",system="openstack",instance="100.64.0.13:9102",kubernetes_role="endpoint",api="/v3/projects/id/users/id/roles/id",component="keystone",job="kubernetes-service-endpoints",method="GET",quantile="0.99",kubernetes_name="keystone"} NaN 1472641122860
+# TYPE container_start_time_seconds untyped
+container_start_time_seconds{instance="minion4.europe.sap.corp",kubernetes_role="node",kubernetes_io_hostname="minion4.europe.sap.corp",id="/system.slice/docker-f11ae1490decc46ded0c615040d05b03356b2dda14554d0ee35de387d7957050.scope",zone="farm",job="kubernetes-cluster"} 1.472376868e+09 1472641110350
+# TYPE container_start_time_seconds untyped
+container_start_time_seconds{kubernetes_role="node",kubernetes_io_hostname="minion2.europe.sap.corp",instance="minion2.europe.sap.corp",io_kubernetes_pod_uid="41148c09-6ebf-11e6-8a1d-c25b04485085",io_kubernetes_container_name="unbound1",zone="farm",io_kubernetes_pod_name="unbound1-1412226338-c5s3c",job="kubernetes-cluster",id="/init.scope/system.slice/docker-9b2191daa41b4e2d1d0110fa37443c72647552fc6ee64f75d4022ae14e59e20c.scope",io_kubernetes_container_restartCount="0",io_kubernetes_pod_namespace="dns",image="hub.global.cloud.sap/monsoon/unbound:20160830041301",io_kubernetes_container_hash="4ea6a0f3",name="k8s_unbound1.4ea6a0f3_unbound1-1412226338-c5s3c_dns_41148c09-6ebf-11e6-8a1d-c25b04485085_0c9207bf",io_kubernetes_container_terminationMessagePath="/dev/termination-log",kubernetes_container_name="unbound1",io_kubernetes_pod_terminationGracePeriod="30",kubernetes_pod_name="unbound1-1412226338-c5s3c",kubernetes_namespace="dns"} 1.472567846e+09 1472641162079
+# TYPE container_memory_usage_bytes untyped
+container_memory_usage_bytes{kubernetes_io_hostname="minion4.europe.sap.corp",id="/init.scope/system.slice/docker-f11ae1490decc46ded0c615040d05b03356b2dda14554d0ee35de387d7957050.scope",zone="farm",job="kubernetes-cluster",instance="minion4.europe.sap.corp",kubernetes_role="node"} 0 1472641110350
+# TYPE container_memory_usage_bytes untyped
+container_memory_usage_bytes{id="/init.scope/system.slice/docker-72a3776e6e47e025ef62a53c8bac90432285a801baa40e485f92f5b995aead17.scope",zone="farm",kubernetes_role="node",instance="master0.europe.sap.corp",job="kubernetes-cluster",kubernetes_io_hostname="master0.europe.sap.corp"} 0 1472641124548
