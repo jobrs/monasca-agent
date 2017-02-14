@@ -69,7 +69,7 @@ class MetricsAggregator(object):
             try:
                 metrics.extend(metric.flush())
             except Exception:
-                log.exception('Error flushing {0} {1} metrics.'.format(metric.name, metric.dimensions))
+                log.exception('Error flushing {0} {1} metrics.'.format(metric.metric['name'], metric.metric['dimensions']))
 
         # Log a warning regarding metrics with old timestamps being submitted
         if self.num_discarded_old_points > 0:
@@ -193,6 +193,7 @@ class MetricsAggregator(object):
             timestamp = cur_time
         self.metrics[context].value_meta = value_meta
         self.metrics[context].sample(value, sample_rate, timestamp)
+        self.count += 1
 
 
 def get_value_meta_overage(value_meta):

@@ -127,10 +127,9 @@ class Server(object):
 
             if packet.startswith('_e'):
                 # Monasca api doesnt support events
+                log.warn("events not supported.")
                 continue
 
-            # todo it seems like this count should be done in the submit_metric method
-            self.aggregator.count += 1
             name, value, mtype, dimensions, sample_rate = self._parse_metric_packet(packet)
 
             if mtype not in metric_class:

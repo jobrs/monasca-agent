@@ -4,7 +4,6 @@ oslo.concurrency>=3.8.0 # Apache-2.0
 oslo.config>=3.14.0,!=3.18.0 # Apache-2.0
 oslo.i18n>=2.1.0 # Apache-2.0
 oslo.utils>=3.18.0 # Apache-2.0
-oslo.vmware>=2.11.0 # Apache-2.0
 
 PyYAML>=3.10.0 # MIT
 gevent>=1.1.1
@@ -12,10 +11,8 @@ httplib2>=0.7.5 # MIT
 netaddr>=0.7.13,!=0.7.16 # BSD
 ntplib>=0.3.2,<0.4
 psutil<3.1.0
-pymongo>=3.0.2,<=3.2.2,!=3.1 
 python-memcached>=1.56 # PSF
 python-monascaclient>=1.1.0 # Apache-2.0
-redis>=2.10.0 # MIT
 supervisor>=3.1.3,<3.2
 stevedore>=1.17.1 # Apache-2.0
 tornado>=4.3
@@ -23,4 +20,7 @@ tornado>=4.3
 # fix debian package build
 lxml==3.6.1
 
-# prometheus_client
+#pymongo>=3.0.2,<=3.2.2,!=3.1
+#redis>=2.10.0 # MIT
+#oslo.vmware>=2.11.0 # Apache-2.0
+#prometheus_client
