@@ -1,12 +1,13 @@
-# (C) Copyright 2016 Hewlett Packard Enterprise Development LP
+# (C) Copyright 2016-2017 Hewlett Packard Enterprise Development LP
 
 import ConfigParser
 import logging
-import psutil
 
+from monasca_agent.common.psutil_wrapper import psutil
 import monasca_setup.agent_config
 from monasca_setup.detection import Plugin
 from monasca_setup.detection.utils import find_process_name
+
 
 log = logging.getLogger(__name__)
 
@@ -40,7 +41,7 @@ class VCenter(Plugin):
         nova_conf = None
         for proc in psutil.process_iter():
             try:
-                cmd = proc.cmdline()
+                cmd = proc.as_dict(['cmdline'])['cmdline']
                 if len(cmd) > 2 and 'python' in cmd[0] and 'nova-compute' in cmd[1]:
                     params = [cmd.index(y) for y in cmd if 'hypervisor.conf' in y]
                     if not params:
@@ -91,7 +92,7 @@ class VCenter(Plugin):
                     instance = {
                         'vcenter_ip': nova_cfg.get(cfg_section, 'host_ip'),
                         'username': nova_cfg.get(cfg_section, 'host_username'),
-                        'password': nova_cfg.get(cfg_section, 'host_password'),
+                        'password': nova_cfg.get(cfg_section, 'host_password', raw=True),
                         'port': int(nova_cfg.get(cfg_section, 'host_port')),
                         'clusters': [nova_cfg.get(cfg_section, 'cluster_name')]
                     }

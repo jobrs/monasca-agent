@@ -50,10 +50,11 @@ class InvalidValueMeta(Exception):
 class MetricsAggregator(object):
     """A metric aggregator class."""
 
-    def __init__(self, hostname, recent_point_threshold=None):
+    def __init__(self, hostname, recent_point_threshold=None, tenant_id=None):
         self.total_count = 0
         self.count = 0
         self.hostname = hostname
+        self.global_delegated_tenant = tenant_id
 
         recent_point_threshold = recent_point_threshold or RECENT_POINT_THRESHOLD_DEFAULT
         self.recent_point_threshold = int(recent_point_threshold)
@@ -166,23 +167,27 @@ class MetricsAggregator(object):
 
         hostname_to_post = self.get_hostname_to_post(hostname)
 
-        if 'hostname' not in dimensions and hostname_to_post:
-            dimensions.update({'hostname': hostname_to_post})
+        tenant_to_post = delegated_tenant or self.global_delegated_tenant
+
+        dimensions_copy = dimensions.copy()
+
+        if 'hostname' not in dimensions_copy and hostname_to_post:
+            dimensions_copy.update({'hostname': hostname_to_post})
 
         # TODO(joe): Shouldn't device_name be added to dimensions in the check
         #            plugin?  Why is it special cased through so many layers?
         if device_name:
-            dimensions.update({'device': device_name})
+            dimensions_copy.update({'device': device_name})
 
         # TODO(joe): Decide if hostname_to_post and device_name are necessary
         #            for the context tuple
-        context = (name, tuple(dimensions.items()), delegated_tenant,
+        context = (name, tuple(dimensions_copy.items()), tenant_to_post,
                    hostname_to_post, device_name)
 
         if context not in self.metrics:
             self.metrics[context] = metric_class(name,
-                                                 dimensions,
-                                                 tenant=delegated_tenant)
+                                                 dimensions_copy,
+                                                 tenant=tenant_to_post)
         cur_time = time()
         if timestamp is not None:
             if cur_time - int(timestamp) > self.recent_point_threshold:
