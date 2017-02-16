@@ -114,7 +114,7 @@ class MetricsAggregator(object):
                 log.error(msg.format(VALUE_META_VALUE_MAX_LENGTH, name, dimensions, value_meta))
                 return False
         except Exception:
-                log.error("Unable to serialize valueMeta into JSON: {2} -> {3}".format(name, dimensions))
+                log.exception("Unable to serialize valueMeta into JSON: %s -> %s", name, dimensions)
                 return False
 
         return True
