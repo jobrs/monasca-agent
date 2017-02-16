@@ -100,7 +100,7 @@ class Rate(Metric):
     def flush(self):
         # need at least two timestamps to determine rate
         # is the second one is missing then the first is kept as start value for the subsequent interval
-        if self.start_timestamp is None or self.timestamp is None:
+        if self.start_timestamp is None or self.timestamp is None or self.start_timestamp == self.timestamp:
             return []
 
         delta_t = self.timestamp - self.start_timestamp
@@ -118,4 +118,7 @@ class Rate(Metric):
         self.start_value = self.value
         self.start_timestamp = self.timestamp
 
-        return [self.measurement(rate, self.timestamp)]
+        envelope = self.measurement(rate, self.timestamp)
+        self.timestamp = None
+        self.value = None
+        return [envelope]
