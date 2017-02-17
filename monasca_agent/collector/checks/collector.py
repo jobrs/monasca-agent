@@ -102,7 +102,7 @@ class Collector(util.Dimensions):
         if thread_count > MAX_THREADS_COUNT:
             log.warn("Collector thread count is high: %d" % thread_count)
 
-        self.add_collection_metric('monasca.agent.collection_time', collection_time)
+        self.add_collection_metric('monasca.agent.collection_time_sec', collection_time)
 
     def run(self, check_frequency):
         """Collect data from each check and submit their data.
