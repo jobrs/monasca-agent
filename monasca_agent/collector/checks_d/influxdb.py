@@ -169,7 +169,9 @@ class InfluxDB(services_checks.ServicesCheck):
             if collect_response_time:
                 # Stop the timer as early as possible
                 running_time = timer.total()
-                self.gauge('monasca.agent.check_collect_time', running_time, dimensions={'agent_check': 'influxdb',
+                self.gauge('monasca.agent.check_collect_time', running_time, dimensions={'service': 'monitoring',
+                                                                                         'component': 'monasca-agent',
+                                                                                         'agent_check': 'influxdb',
                                                                                          'instance': instance_name})
 
             # check HTTP errors
