@@ -107,8 +107,13 @@ class Server(object):
                 key=s
                 s=''
             elif c == ',':
-                if len(s) > 0 and len(key) > 0:
-                  dimensions[key] = s
+                if len(key) > 0:
+                    if len(s) > 0:
+                        dimensions[key] = s
+                    else:
+                        dimensions[key] = '?'
+                elif len(s) > 0:
+                    dimensions[s] = "True"
                 key=None
                 s=''
             else:
