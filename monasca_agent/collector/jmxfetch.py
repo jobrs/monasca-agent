@@ -299,7 +299,8 @@ class JMXFetch(object):
     @classmethod
     def start(cls, confd_path, agent_config, path_to_java, java_run_opts,
               default_check_frequency, jmx_checks, command, reporter=None):
-        statsd_port = agent_config.get('monasca_statsd_port', "8125")
+        jmx_config = agent_config.get_config(['Main', 'Logging'])
+        statsd_port = jmx_config.get('monasca_statsd_port', "8125")
 
         if reporter is None:
             reporter = "statsd:%s" % str(statsd_port)
@@ -321,9 +322,9 @@ class JMXFetch(object):
                 # Path of the conf.d directory that will be read by jmxfetch,
                 '--conf_directory', r"%s" % confd_path,
                 # Log Level: Mapping from Python log level to log4j log levels
-                '--log_level', JAVA_LOGGING_LEVEL.get(agent_config.get("log_level"), "INFO"),
+                '--log_level', JAVA_LOGGING_LEVEL.get(jmx_config.get("log_level"), "INFO"),
                 # Path of the log file
-                '--log_location', r"%s" % agent_config.get('jmxfetch_log_file'),
+                '--log_location', r"%s" % jmx_config.get('jmxfetch_log_file'),
                 '--reporter', reporter,  # Reporter to use
                 # Path to the status file to write
                 '--status_location', r"%s" % path_to_status_file,
