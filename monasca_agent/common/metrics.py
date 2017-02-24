@@ -67,15 +67,23 @@ class Counter(Metric):
 
     def sample(self, value, sample_rate, timestamp):
         try:
-            inc = value * int(1 / sample_rate)
+            inc = int(value) / sample_rate
             if self.timestamp is None:
                 self.value = inc
             else:
                 self.value += inc
             self.timestamp = timestamp
-        except TypeError:
+        except (TypeError, ValueError):
             log.exception("illegal metric {} value {} sample_rate {}".
                           format(self.metric['name'], value, sample_rate))
+
+    # redefine flush method to make counter an integer when sample rates <> 1.0 used
+    def flush(self):
+        if self.timestamp:
+            self.value = int(self.value)
+            return super(Counter, self).flush()
+        else:
+            return []
 
 
 class Rate(Metric):
@@ -100,18 +108,19 @@ class Rate(Metric):
     def flush(self):
         # need at least two timestamps to determine rate
         # is the second one is missing then the first is kept as start value for the subsequent interval
-        if self.start_timestamp is None or self.timestamp is None or self.start_timestamp == self.timestamp:
+        if self.start_timestamp is None or self.timestamp is None:
             return []
 
         delta_t = self.timestamp - self.start_timestamp
         delta_v = self.value - self.start_value
         try:
             rate = delta_v / float(delta_t)
-        except ZeroDivisionError as e:
-            log.exception('Error in sampling metric {0} with dimensions {1}, time difference '
-                          'between current time and last_update time is '
-                          '0, returned {2}'.
-                          format(self.metric['name'], self.metric['dimensions'], e))
+        except ZeroDivisionError:
+            log.warning('Conflicting values reported for metric %s with dimensions %s at time %d: (%f, %f)', self.metric['name'],
+                        self.metric['dimensions'], self.timestamp, self.start_value, self.value)
+
+            # skip this measurement, but keep value for next cycle
+            self.start_value = self.value
             return []
 
         # make it start value for next interval (even if it is None!)
