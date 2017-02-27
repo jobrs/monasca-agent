@@ -293,12 +293,12 @@ class JMXFetch(object):
     def start(cls, confd_path, agent_config, path_to_java, java_run_opts,
               default_check_frequency, jmx_checks, command, reporter=None):
         jmx_config = agent_config.get_config(['Main', 'Logging'])
-        statsd_port = jmx_config.get('monasca_statsd_port', "8125")
 
         if reporter is None:
+            statsd_port = jmx_config.get('monasca_statsd_port', "8125")
             reporter = "statsd:%s" % str(statsd_port)
 
-        log.info("Starting jmxfetch:")
+        log.info("Starting jmxfetch")
         jmx_connector_pid = None
         try:
             path_to_java = path_to_java or "java"
