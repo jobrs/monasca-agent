@@ -39,7 +39,6 @@ log = logging.getLogger('collector')
 # todo the collector has daemon code but is always run in foreground mode
 # from the supervisor, is there a reason for the daemon code then?
 class CollectorDaemon(monasca_agent.common.daemon.Daemon):
-
     """The agent class is a daemon that runs the collector in a background process.
 
     """
@@ -49,6 +48,7 @@ class CollectorDaemon(monasca_agent.common.daemon.Daemon):
         self.run_forever = True
         self.collector = None
         self.start_event = start_event
+        self.jmx_configured = True
 
     def _handle_sigterm(self, signum, frame):
         log.debug("Caught sigterm. Stopping run loop.")
@@ -84,7 +84,10 @@ class CollectorDaemon(monasca_agent.common.daemon.Daemon):
         # Load the checks_d checks
         checksd = util.load_check_directory()
 
+        # initialize check orchestrator
         self.collector = checks.collector.Collector(config, monasca_agent.common.emitter.http_emitter, checksd)
+        # start external process for collecting JMX metrics.
+        self.jmx_configured = self.start_jmx(config)
 
         check_frequency = int(config['check_freq'])
 
@@ -109,6 +112,9 @@ class CollectorDaemon(monasca_agent.common.daemon.Daemon):
 
             # Do the work.
             self.collector.run(check_frequency)
+            # check that JMX collector is still up
+            if self.jmx_configured and not jmxfetch.JMXFetch.is_running():
+                self.jmx_configured = self.start_jmx(config)
 
             # disable profiler and printout stats to stdout
             if config.get('profile', False) and config.get('profile').lower() == 'yes' and profiled:
@@ -153,6 +159,27 @@ class CollectorDaemon(monasca_agent.common.daemon.Daemon):
         if self.collector:
             self.collector.stop()
         sys.exit(monasca_agent.common.daemon.AgentSupervisor.RESTART_EXIT_STATUS)
+
+    def start_jmx(self, config, jmx_command=None, checks_list=None, reporter=None):
+        """Start the external JMX reporter
+
+        :param config: agent configuration
+        :param jmx_command: jmxfetch command (default: 'collect')
+        :param checks_list: list of JMX checks to run (default: all configured)
+        :param reporter: target to send metrics to (default: statsd at localhost:8125)
+        :return: True if jmxfetch process has been started successfully. False if not JMX
+        data collection is configured or prerequisites are not met.
+        """
+
+        paths = util.Paths()
+        confd_path = paths.get_confd_path()
+        # Start JMXFetch if needed
+        return jmxfetch.JMXFetch.init(confd_path,
+                                      config,
+                                      int(config['check_freq']),
+                                      jmx_command,
+                                      checks_list,
+                                      reporter)
 
 
 def main():
@@ -280,24 +307,16 @@ def main():
         else:
             jmx_command = args[1]
             checks_list = args[2:]
-            paths = util.Paths()
-            confd_path = paths.get_confd_path()
-            # Start JMXFetch if needed
-            should_run = jmxfetch.JMXFetch.init(confd_path,
-                                                config,
-                                                15,
-                                                jmx_command,
-                                                checks_list,
-                                                reporter="console")
-            if not should_run:
-                print("Couldn't find any valid JMX configuration in your conf.d directory: %s" % confd_path)
+            if not agent.start_jmx(config, jmx_command, checks_list, "console"):
+                print(
+                    "Couldn't find any valid JMX configuration in your conf.d directory: {}".format(
+                        util.Paths().get_confd_path()))
                 print("Have you enabled any JMX checks ?")
 
     return 0
 
 
 def run_check(check):
-
     is_multi_threaded = False
     if isinstance(check, status_checks.ServicesCheck):
         is_multi_threaded = True
@@ -314,6 +333,7 @@ def run_check(check):
     print("Metrics: ")
     check.get_metrics(prettyprint=True)
     print("#" * 80 + "\n\n")
+
 
 if __name__ == '__main__':
     try:

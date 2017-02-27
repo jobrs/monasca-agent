@@ -64,6 +64,7 @@ class JMXFetch(object):
                 confd_path, checks_list)
             if len(invalid_checks) > 0:
                 try:
+                    log.error("Invalid JMXFetch configurations for %s. Checks will be skipped.", invalid_checks)
                     JMXFetch.write_status_file(invalid_checks)
                 except Exception:
                     log.exception("Error while writing JMX status file")
@@ -77,18 +78,13 @@ class JMXFetch(object):
                                java_options, default_check_frequency,
                                jmx_checks, command, reporter)
                 return True
+            else:
+                log.info("No JMX checks configured (jmxfetch will not be started).")
         except Exception:
             log.exception("Error while initiating JMXFetch")
 
-    @classmethod
-    def write_status_file(cls, invalid_checks):
-        data = {
-            'timestamp': time.time(),
-            'invalid_checks': invalid_checks
-        }
-        stream = file(os.path.join(tempfile.gettempdir(), PYTHON_JMX_STATUS_FILE), 'w')
-        yaml.dump(data, stream)
-        stream.close()
+        return False
+
 
     @classmethod
     def should_run(cls, confd_path, checks_list):
