@@ -23,5 +23,5 @@ class NaN(CheckException):
     pass
 
 
-class PathNotFound(AgentException):
+class PathNotFound(Exception):
     pass
