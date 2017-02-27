@@ -63,17 +63,14 @@ class JMXFetch(object):
             jmx_checks, invalid_checks, java_bin_path, java_options = JMXFetch.should_run(
                 confd_path, checks_list)
             if len(invalid_checks) > 0:
-                try:
-                    log.error("Invalid JMXFetch configurations for %s. Checks will be skipped.", invalid_checks)
-                    JMXFetch.write_status_file(invalid_checks)
-                except Exception:
-                    log.exception("Error while writing JMX status file")
+                log.error("Invalid JMXFetch configurations for %s. Checks will be skipped.", invalid_checks)
 
             if len(jmx_checks) > 0:
                 if JMXFetch.is_running() and command == JMX_COLLECT_COMMAND:
                     log.warning("JMXFetch is already running, restarting it.")
                     JMXFetch.stop()
 
+                log.info("JMX fetch starting with checks: %s", jmx_checks)
                 JMXFetch.start(confd_path, agent_config, java_bin_path,
                                java_options, default_check_frequency,
                                jmx_checks, command, reporter)
