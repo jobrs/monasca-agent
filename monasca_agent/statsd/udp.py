@@ -104,8 +104,8 @@ class Server(object):
         key = ''
         for c in statsd_msg[1:]:
             if c == ':':
-                key=s
-                s=''
+                key = s
+                s = ''
             elif c == ',':
                 if len(key) > 0:
                     if len(s) > 0:
@@ -114,8 +114,8 @@ class Server(object):
                         dimensions[key] = '?'
                 elif len(s) > 0:
                     dimensions[s] = "True"
-                key=None
-                s=''
+                key = None
+                s = ''
             else:
                 s += c
         if len(s) > 0 and len(key) > 0:
