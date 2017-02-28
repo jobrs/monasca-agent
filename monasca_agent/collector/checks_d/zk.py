@@ -72,7 +72,9 @@ class Zookeeper(AgentCheck):
 
         if buf is not None:
             # Parse the response
-            metrics, new_dimensions = self.parse_stat(buf)
+            online, metrics, new_dimensions = self.parse_stat(buf)
+            if not online:
+                self.increment('zookeeper.offline', dimensions=dimensions)
             if new_dimensions is not None:
                 dimensions.update(new_dimensions.copy())
 
@@ -98,7 +100,10 @@ class Zookeeper(AgentCheck):
         start_line = buf.readline()
         match = cls.version_pattern.match(start_line)
         if match is None:
-            raise Exception("Could not parse version from stat command output: %s" % start_line)
+            if start_line == "This ZooKeeper instance is not currently serving requests":
+                return False, [], {}
+            else:
+                raise Exception("Could not output from stat command output: %s" % start_line)
         else:
             version_tuple = match.groups()
         has_connections_val = version_tuple >= ('3', '4', '4')
@@ -164,4 +169,4 @@ class Zookeeper(AgentCheck):
         _, value = buf.readline().split(':')
         metrics.append(('zookeeper.node_count', long(value.strip())))
 
-        return metrics, dimensions
+        return True, metrics, dimensions
