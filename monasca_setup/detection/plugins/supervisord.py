@@ -142,7 +142,7 @@ class Supervisord(monasca_setup.detection.Plugin):
         config = monasca_setup.agent_config.Plugins()
         # First watch the process
         config.merge(monasca_setup.detection.watch_process(['supervisord'],
-                                                           'supervisord',
+                                                           component='supervisord',
                                                            exact_match=False))
         log.info("\tWatching the supervisord process.")
 

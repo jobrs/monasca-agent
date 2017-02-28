@@ -129,9 +129,9 @@ class RabbitMQ(monasca_setup.detection.Plugin):
         """
         config = monasca_setup.agent_config.Plugins()
         # First watch the process
-        config.merge(monasca_setup.detection.watch_process(['epmd'], 'rabbitmq', detailed=False))
+        config.merge(monasca_setup.detection.watch_process(['epmd'], component='rabbitmq', detailed=False))
         log.info("\tWatching the rabbitmq-server process.")
-        config.merge(monasca_setup.detection.watch_process_by_username('rabbitmq', 'rabbitmq', 'rabbitmq'))
+        config.merge(monasca_setup.detection.watch_process_by_username('rabbitmq', 'rabbitmq', component='rabbitmq'))
         log.info("\tWatching all processes owned by the rabbitmq user.")
 
         if not self._watch_api:

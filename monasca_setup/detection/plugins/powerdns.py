@@ -42,7 +42,7 @@ class PowerDNS(monasca_setup.detection.Plugin):
         """
         log.info("\tWatching the pdns_server process.")
         return monasca_setup.detection.watch_process(
-            ['pdns_server'], 'powerdns', exact_match=False)
+            ['pdns_server'], component='powerdns', exact_match=False)
 
     def dependencies_installed(self):
         return True

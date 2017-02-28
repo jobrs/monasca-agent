@@ -42,7 +42,7 @@ class Bind(monasca_setup.detection.Plugin):
         """
         log.info("\tWatching the named process.")
         return monasca_setup.detection.watch_process(
-            ['named'], 'bind', exact_match=False)
+            ['named'], component='bind', exact_match=False)
 
     def dependencies_installed(self):
         return True
