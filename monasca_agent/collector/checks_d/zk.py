@@ -100,10 +100,10 @@ class Zookeeper(AgentCheck):
         start_line = buf.readline()
         match = cls.version_pattern.match(start_line)
         if match is None:
-            if start_line == "This ZooKeeper instance is not currently serving requests":
+            if unicode(start_line).strip == u"This ZooKeeper instance is not currently serving requests":
                 return False, [], {}
             else:
-                raise Exception("Could not output from stat command output: %s" % start_line)
+                raise Exception("Could not parse output from stat command: '%s'" % start_line)
         else:
             version_tuple = match.groups()
         has_connections_val = version_tuple >= ('3', '4', '4')
