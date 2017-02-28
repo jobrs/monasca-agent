@@ -140,6 +140,9 @@ Logging:
   collector_log_file: /var/log/monasca/agent/collector.log
   forwarder_log_file: /var/log/monasca/agent/forwarder.log
   statsd_log_file: /var/log/monasca/agent/statsd.log
+  jmxfetch_log_file: /var/log/monasca/agent/jmxfetch.log
+  # uncomment for diagnosis of jmxfetch issues
+  # jmxfetch_status_file: /var/log/monasca/agent/jmxfetch_status.yaml
 
   # if syslog is enabled but a host and port are not set, a local domain socket
   # connection will be attempted

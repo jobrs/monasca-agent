@@ -319,14 +319,15 @@ class JMXFetch(object):
                 # Path of the log file
                 '--log_location', r"%s" % jmx_config.get('jmxfetch_log_file'),
                 '--reporter', reporter,  # Reporter to use
-                # Path to the status file to write
-                '--status_location', r"%s" % path_to_status_file,
                 command,  # Name of the command
             ]
-
             subprocess_args.insert(3, '--check')
             for check in jmx_checks:
                 subprocess_args.insert(4, check)
+            # Path to the status file to write
+            if 'jmxfetch_status_file' in jmx_config:
+                subprocess_args.insert(3, '--status_location')
+                subprocess_args.insert(4, jmx_config['jmxfetch_status_file'])
 
             if java_run_opts:
                 for opt in java_run_opts.split():
