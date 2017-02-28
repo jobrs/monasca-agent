@@ -50,6 +50,18 @@ class Server(object):
                 log.exception("Error while setting up connection to external statsd server")
 
     @staticmethod
+    def _parse_service_check_packet(packet):
+        parts = packet.split('|')
+        name = parts[1]
+        status = int(parts[2])
+        dimensions = {}
+        for metadata in parts[3:]:
+            if metadata.startswith('#'):
+                dimensions = Server._parse_dogstatsd_tags(metadata)
+
+        return name, status, dimensions
+
+    @staticmethod
     def _parse_metric_packet(packet):
         name_and_metadata = packet.split(':', 1)
 
@@ -104,24 +116,26 @@ class Server(object):
         key = ''
         for c in statsd_msg[1:]:
             if c == ':':
-                key = s
+                key = s.strip()
                 s = ''
             elif c == ',':
+                s = s.strip()
                 if len(key) > 0:
                     if len(s) > 0:
                         dimensions[key] = s
                     else:
                         dimensions[key] = '?'
                 elif len(s) > 0:
+                    # handle tags w/o value
                     dimensions[s] = "True"
-                key = None
+                key = ''
                 s = ''
             else:
                 s += c
+        s = s.strip()
         if len(s) > 0 and len(key) > 0:
             dimensions[key] = s
 
-        # dimensions = {k: v for k, v in [tuple(tag.split(u':')) for tag in statsd_msg[1:].split(u',')]}
         return dimensions
 
     def submit_packets(self, packets):
@@ -134,8 +148,12 @@ class Server(object):
                 # Monasca api doesnt support events
                 log.warn("events not supported.")
                 continue
-
-            name, value, mtype, dimensions, sample_rate = self._parse_metric_packet(packet)
+            elif packet.startswith('_sc'):
+                sample_rate = 1.0
+                mtype = 'g'
+                name, value, dimensions = self._parse_service_check_packet(packet)
+            else:
+                name, value, mtype, dimensions, sample_rate = self._parse_metric_packet(packet)
 
             if mtype not in metric_class:
                 log.warn("metric type {} not supported.".format(mtype))
