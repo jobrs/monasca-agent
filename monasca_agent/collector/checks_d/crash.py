@@ -48,7 +48,7 @@ class Crash(checks.AgentCheck):
         """
         dimensions = self._set_dimensions(None, instance)
         dump_count = 0
-        value_meta = {'latest': unicode(datetime.now())}
+        value_meta = None
 
         # Parse the crash directory
         if os.path.isdir(self.crash_dir):
