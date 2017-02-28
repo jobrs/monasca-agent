@@ -66,8 +66,9 @@ class CollectorDaemon(monasca_agent.common.daemon.Daemon):
         self._handle_sigterm(signum, frame)
         self._do_restart()
 
-    def run(self, config):
+    def run(self, agent_config):
         """Main loop of the collector.
+        :param agent_config: agent config
 
         """
         # Gracefully exit on sigterm.
@@ -85,11 +86,12 @@ class CollectorDaemon(monasca_agent.common.daemon.Daemon):
         checksd = util.load_check_directory()
 
         # initialize check orchestrator
-        self.collector = checks.collector.Collector(config, monasca_agent.common.emitter.http_emitter, checksd)
+        collector_config = agent_config.get_config(['Main', 'Api', 'Logging'])
+        self.collector = checks.collector.Collector(collector_config, monasca_agent.common.emitter.http_emitter, checksd)
         # start external process for collecting JMX metrics.
-        self.jmx_configured = self.start_jmx(config)
+        self.jmx_configured = self.start_jmx(agent_config)
 
-        check_frequency = int(config['check_freq'])
+        check_frequency = int(collector_config['check_freq'])
 
         # Initialize the auto-restarter
         self.restart_interval = int(util.get_collector_restart_interval())
@@ -100,7 +102,7 @@ class CollectorDaemon(monasca_agent.common.daemon.Daemon):
             collection_start = time.time()
             # enable profiler if needed
             profiled = False
-            if config.get('profile', False) and config.get('profile').lower() == 'yes':
+            if collector_config.get('profile', False) and collector_config.get('profile').lower() == 'yes':
                 try:
                     import cProfile
                     profiler = cProfile.Profile()
@@ -114,10 +116,10 @@ class CollectorDaemon(monasca_agent.common.daemon.Daemon):
             self.collector.run(check_frequency)
             # check that JMX collector is still up
             if self.jmx_configured and not jmxfetch.JMXFetch.is_running():
-                self.jmx_configured = self.start_jmx(config)
+                self.jmx_configured = self.start_jmx(agent_config)
 
             # disable profiler and printout stats to stdout
-            if config.get('profile', False) and config.get('profile').lower() == 'yes' and profiled:
+            if collector_config.get('profile', False) and collector_config.get('profile').lower() == 'yes' and profiled:
                 try:
                     profiler.disable()
                     import cStringIO
@@ -160,10 +162,10 @@ class CollectorDaemon(monasca_agent.common.daemon.Daemon):
             self.collector.stop()
         sys.exit(monasca_agent.common.daemon.AgentSupervisor.RESTART_EXIT_STATUS)
 
-    def start_jmx(self, config, jmx_command=None, checks_list=None, reporter=None):
+    def start_jmx(self, agent_config, jmx_command=None, checks_list=None, reporter=None):
         """Start the external JMX reporter
 
-        :param config: agent configuration
+        :param agent_config: agent configuration
         :param jmx_command: jmxfetch command (default: 'collect')
         :param checks_list: list of JMX checks to run (default: all configured)
         :param reporter: target to send metrics to (default: statsd at localhost:8125)
@@ -175,8 +177,8 @@ class CollectorDaemon(monasca_agent.common.daemon.Daemon):
         confd_path = paths.get_confd_path()
         # Start JMXFetch if needed
         return jmxfetch.JMXFetch.init(confd_path,
-                                      config,
-                                      int(config['check_freq']),
+                                      agent_config,
+                                      int(agent_config.get_config(['Main'])['check_freq']),
                                       jmx_command,
                                       checks_list,
                                       reporter)
@@ -253,7 +255,7 @@ def main():
             # Set-up the supervisor callbacks and fork it.
             logging.info('Running Agent with auto-restart ON')
         # Run in the standard foreground.
-        agent.run(collector_config)
+        agent.run(config)
 
     elif 'check' == command:
         check_name = args[1]
