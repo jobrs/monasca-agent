@@ -13,8 +13,8 @@ log = logging.getLogger(__name__)
 
 class Cpu(checks.AgentCheck):
 
-    def __init__(self, name, init_config, agent_config):
-        super(Cpu, self).__init__(name, init_config, agent_config)
+    def __init__(self, name, init_config, agent_config, instances):
+        super(Cpu, self).__init__(name, init_config, agent_config, instances=instances)
         # psutil.cpu_percent and psutil.cpu_times_percent are called in
         # __init__ because the first time these two functions are called with
         # interval = 0.0 or None, it will return a meaningless 0.0 value

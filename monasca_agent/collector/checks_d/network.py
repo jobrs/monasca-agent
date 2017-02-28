@@ -12,8 +12,8 @@ log = logging.getLogger(__name__)
 
 class Network(checks.AgentCheck):
 
-    def __init__(self, name, init_config, agent_config):
-        super(Network, self).__init__(name, init_config, agent_config)
+    def __init__(self, name, init_config, agent_config, instances):
+        super(Network, self).__init__(name, init_config, agent_config, instances=instances)
 
     def check(self, instance):
         """Capture network metrics

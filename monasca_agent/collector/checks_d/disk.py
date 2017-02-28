@@ -12,10 +12,10 @@ import monasca_agent.collector.checks as checks
 
 class Disk(checks.AgentCheck):
 
-    def __init__(self, name, init_config, agent_config):
+    def __init__(self, name, init_config, agent_config, instances):
         self._partition_error = set()
 
-        super(Disk, self).__init__(name, init_config, agent_config)
+        super(Disk, self).__init__(name, init_config, agent_config, instances=instances)
 
     def _log_once_per_day(self, message):
         if message in self._partition_error:

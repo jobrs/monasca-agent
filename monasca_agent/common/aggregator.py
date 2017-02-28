@@ -163,6 +163,7 @@ class MetricsAggregator(object):
 
         if value_meta:
             if not self._valid_value_meta(value_meta, name, dimensions):
+                log.error("invalid value_meta {0} for metric {1}".format(value, name))
                 raise InvalidValueMeta
 
         hostname_to_post = self.get_hostname_to_post(hostname)

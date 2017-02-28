@@ -62,9 +62,9 @@ PARAMS = {'q': DEFAULT_QUERY}
 
 
 class InfluxDB(services_checks.ServicesCheck):
-    def __init__(self, name, init_config, agent_config, instances=None):
+    def __init__(self, name, init_config, agent_config, instances):
         super(InfluxDB, self).__init__(name, init_config,
-                                       agent_config, instances)
+                                       agent_config, instances=instances)
 
     def _load_conf(self, instance):
         # Fetches the conf

@@ -21,9 +21,9 @@ class ProcessCheck(checks.AgentCheck):
                      'process.io.read_kbytes',
                      'process.io.write_kbytes')
 
-    def __init__(self, name, init_config, agent_config, instances=None):
+    def __init__(self, name, init_config, agent_config, instances):
         super(ProcessCheck, self).__init__(name, init_config, agent_config,
-                                           instances)
+                                           instances=instances)
         self._cached_processes = defaultdict(dict)
         self._current_process_list = None
 
@@ -110,10 +110,10 @@ class ProcessCheck(checks.AgentCheck):
                         total_read_kbytes = self._safely_increment_var(total_read_kbytes, float(io_counters.read_bytes / 1024))
                         total_write_kbytes = self._safely_increment_var(total_write_kbytes, float(io_counters.write_bytes / 1024))
                     except psutil.AccessDenied:
-                        self.log.debug('monasca-agent user does not have ' +
-                                       'access to I/O counters for process' +
-                                       ' %d: %s'
-                                       % (pid, p.as_dict(['name'])['name']))
+                        self.log.warning('monasca-agent user does not have ' +
+                                         'access to I/O counters for process' +
+                                         ' %d: %s'
+                                         % (pid, p.as_dict(['name'])['name']))
                         io_permission = False
                         total_read_count = None
                         total_write_count = None
@@ -126,8 +126,8 @@ class ProcessCheck(checks.AgentCheck):
                 pass
 
         if got_denied:
-            self.log.debug("The Monitoring Agent was denied access " +
-                           "when trying to get the number of file descriptors")
+            self.log.warning("The Monitoring Agent was denied access " +
+                             "when trying to get the number of file descriptors")
 
         return dict(zip(ProcessCheck.PROCESS_GAUGE,
                         (total_thr, total_cpu, total_rss, total_open_file_descriptors, total_read_count,
