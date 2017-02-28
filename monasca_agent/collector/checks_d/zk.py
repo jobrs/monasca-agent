@@ -100,7 +100,7 @@ class Zookeeper(AgentCheck):
         start_line = buf.readline()
         match = cls.version_pattern.match(start_line)
         if match is None:
-            if unicode(start_line).strip == u"This ZooKeeper instance is not currently serving requests":
+            if start_line.find("This ZooKeeper instance is not currently serving requests") >= 0:
                 return False, [], {}
             else:
                 raise Exception("Could not parse output from stat command: '%s'" % start_line)
