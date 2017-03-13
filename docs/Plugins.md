@@ -2266,9 +2266,9 @@ The following Freezer processes are monitored, if they exist when the monasca-se
 
 ## JMX Checks
 
-Although not implemented as Python plugin, monitoring for JMX-enabled software can be configured in the same way.
+Although not implemented as Python plugin, monitoring for JMX-enabled software can be configured in the same way. Most of the configuration is concerned with the _mapping_ of JMX attributes to Monasca metrics.
 
-The `init_config` section is used to filter and map the metrics to report:
+The `init_config` section is used to configure Java access and provide an instance-independent mapping configuration.
 
 | Attribute | Description | Default |
 |-----------|-------------|---------|
@@ -2276,7 +2276,8 @@ The `init_config` section is used to filter and map the metrics to report:
 | java_options | additional options to pass to _java_ | none |
 | conf | default mapping configuration | see instances |
 
-The `instances` section is used to enumerate to the JMX endpoints:
+The `instances` section is used to configure the checks as usual. If multiple JMX-enabled applications
+with different metrics are residing on the same host, it might be useful to configure the mapping configuration on instance-level:
 
 | Attribute | Description | Default |
 |-----------|-------------|---------|
