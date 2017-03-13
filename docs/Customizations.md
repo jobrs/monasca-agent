@@ -37,7 +37,12 @@ This README describes how to customize the Monasca agent.
 
 ## Overview
 
-The Collector component of the Agent runs at a configurable interval, generating a standard set of Monasca metrics. The Collector also executes a configurable set of Python check plugins. In addition to the plugins shipped with the agent, additional custom check plugins can be added.
+The Collector component of the Agent runs configurable set of checks at a fixed interval. Those checks are implemented as
+Python classes, with many of them already built into the agent. In addition to the plugins shipped with the agent, additional custom check plugins can be added.
+
+In addition to check plugins, metrics can be provided via
+* StatsD
+* JMX
 
 Although check plugins can be configured manually, the `monasca-setup` tool is provided to help with this. When run, `monasca-setup` configures the check plugins based on auto-detection of the configuration and status of components and subsystems present on the local system. To accomplish this, the setup script runs a configurable set of Python detection plugins, each of which performs a subset of this auto-detection. Custom detection plugins can be added to do detection and configuration for custom check plugins.
 
@@ -58,6 +63,10 @@ Config files for the plugin scripts can be added directly to the standard plugin
 
 See [Plugin Checks](#https://github.com/openstack/monasca-agent/blob/master/docs/Plugins.md#standard-plugins) for a description of the configuration and output of the built-in check plugins.
 
+### JMX Checks
+
+JMX-checks are configured like regular Python checks, but handled by a separate Java process (jmxfetch) that is started and stopped on demand by the collector. JMX check configurations are marked with a special attribute `is_jmx: true` in the `init_config` section. This flag is optional only for `activemq, activemq_58, cassandra, jmx, solr, tomcat`.
+
 ### Adding Custom Check Plugins
 
 Adding custom check plugins to the Agent is easy:
@@ -65,7 +74,7 @@ Adding custom check plugins to the Agent is easy:
 - Ensure that directory `/usr/lib/monasca/agent/custom_checks.d` is present (e.g. with `mkdir -p` on a linux system)
 - Add your custom Python check plugin scripts to that directory. Make sure they are readable by the agent user.
 
-That's it! Each plugin is now available to the Collector once they are enabled. To enable a custom plugin, an appropriate `yaml` configuration file with the same stem name as the plugin must be added to `/usr/lib/monasca/agent/conf.d`. This can be done manually or via `monasca-setup` using a 
+That's it! Each plugin is now available to the Collector once they are enabled. To enable a custom plugin, an appropriate `yaml` configuration file with the same stem name as the plugin must be added to `/usr/lib/monasca/agent/conf.d`. This can be done manually or via `monasca-setup` using a
 [custom detection plugin](#creating-a-custom-detection-plugin).
 
 Developers of custom plugins are encouraged to upstream them if they would be useful to the larger Monasca community.

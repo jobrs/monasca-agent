@@ -19,13 +19,13 @@
 # Architecture
 The Monasca Agent is the component of the [Monasca](https://wiki.openstack.org/wiki/Monasca) monitoring system that collects metrics from the system it is running on and sends them to the Monasca API.
 
-A metric is identified by a name and dimensions.  The fields required in a metric are name, timestamp, and value.  A metric can also have 0..n dimensions.  Some standard dimensions are sent with all metrics that are sent by the agent.
+A metric is identified by a name and dimensions.  The fields required in a metric are name, timestamp, and value.  A metric can also have 0..n dimensions. Some standard dimensions are sent with all metrics that are sent by the agent.
 
 <img src="https://github.com/openstack/monasca-agent/raw/master/docs/monasca-agent_arch.png" alt="Monasca Agent Diagram">
 
 The flow of the agent application goes like this:
 
-* The collector runs based on a configurable interval and collects system metrics such as cpu or disk utilization as well as any metrics from additional configured plugins such as mySQL or Kafka.
+* The collector runs based on a configurable interval and collects system metrics such as cpu or disk utilization as well as any metrics from additional configured plugins such as MySQL, Kafka or any JMX-enabled Java application.
 * The statsd daemon allows users to send statsd type messages to the agent at any time.  These messages are flushed periodically to the forwarder.
 * The forwarder takes the metrics from the collector and statsd daemon and forwards them on to the Monasca-API.
 * Once sent to the Monasca-API, the metrics continue through the Monasca pipeline and end up in the Metrics Database.
@@ -36,10 +36,11 @@ The Agent is composed of the following components:
 | Component Name | Process Name | Description |
 | -------------- | ------------ | ----------- |
 | Supervisor | supervisord | Runs as root, launches all other processes as the user configured to run monasca-agent.  This process manages the lifecycle of the Collector, Forwarder and Statsd Daemon.  It allows Start, Stop and Restart of all the agent processes together. |
-| Collector | monasca-collector | Gathers system & application metrics on a configurable interval and sends them to the Forwarder process. The collector runs various plugins for collection of different plugins.| 
-| Forwarder | monasca-forwarder | Gathers data from the collector and statsd and submits it to Monasca API over SSL (tcp/17123) | 
-| Statsd Daemon | monasca-statsd | Statsd engine capable of handling dimensions associated with metrics submitted by a client that supports them. Also supports metrics from the standard statsd client. (udp/8125) | 
-| Monasca Setup | monasca-setup | The monasca-setup script configures the agent.  The Monasca Setup program can also auto-detect and configure certain agent plugins | 
+| Collector | monasca-collector | Gathers system & application metrics on a configurable interval and sends them to the Forwarder process. The collector runs various plugins for collection of metrics from variaous applications. When JMX checks have been configured, a
+separate Java subprocess ([jmxfetch|https://github.com/DataDog/jmxfetch]) is spawned. |
+| Forwarder | monasca-forwarder | Gathers data from the collector and statsd and submits it to Monasca API over SSL (tcp/17123) |
+| Statsd Daemon | monasca-statsd | Statsd engine capable of handling dimensions associated with metrics submitted by a client that supports them. Also supports metrics from the standard statsd client. (udp/8125) |
+| Monasca Setup | monasca-setup | The monasca-setup script configures the agent.  The Monasca Setup program can also auto-detect and configure certain agent plugins |
 
 # Installing
 The Agent (monasca-agent) is available for installation from the Python Package Index (PyPI). To install it, you first need `pip` installed on the node to be monitored. Instructions on installing pip may be found at https://pip.pypa.io/en/latest/installing.html.  The Agent will NOT run under any flavor of Windows or Mac OS at this time but has been tested thoroughly on Ubuntu and should work under most flavors of Linux.  Support may be added for Mac OS and Windows in the future.  Example of an Ubuntu or Debian based install:
@@ -120,7 +121,8 @@ For example, `monasca-setup -d httpcheck -a 'url=http://ip:port/ dimensions=serv
 
 ## Manual Configuration of the Agent
 
-This is not the recommended way to configure the agent but if you are having trouble running the monasca-setup program, you can manually configure the agent using the steps below:
+With `monasca-setup`, many common system and software configurations can be identified, saving a lot of manual work for writing
+config files. Still, automatic detection has limitations, so that sometimes configuration files have to be modified or created from scratch.
 
 Start by creating an agent.yaml file.  An example configuration file can be found in <install_dir>/share/monasca/agent/.
 
@@ -197,42 +199,41 @@ and then edit the file as needed for your configuration.
 
     $ sudo nano /etc/monasca/agent/conf.d/http_check.yaml
 
-The plugins are annotated and include the possible configuration parameters. In general, though, configuration files are split into two sections:
-init_config
-   and
-instances
-The init_config section contains global configuration parameters for the plugin. The instances section contains one or more check to run. For example, multiple API servers can be checked from one http_check.yaml configuration by listing YAML-compatible stanzas in the instances section.
+The plugins are annotated and include the possible configuration parameters. In general, though, configuration files are split into two sections: `init_config` and 'instances`.
+
+The `init_config` section contains global configuration parameters for the plugin. The instances section contains one or more check to run. For example, multiple API servers can be checked from one http_check.yaml configuration by listing YAML-compatible stanzas in the instances section.
 
 A plugin config is specified something like this:
 
-    init_config:
-        is_jmx: true
+```
+init_config:
 
-        # Metrics collected by this check. You should not have to modify this.
-        conf:
-            #
-            # Aggregate cluster stats
-            #
-            - include:
-              domain: '"kafka.server"'
-              bean: '"kafka.server":type="BrokerTopicMetrics",name="AllTopicsBytesOutPerSec"'
-              attribute:
-                  MeanRate:
-                      metric_type: counter
-                      alias: kafka.net.bytes_out
-
-    instances:
-        - host: localhost
-          port: 9999
-          name: jmx_instance
-          user: username
-          password: password
-          #java_bin_path: /path/to/java #Optional, should be set if the agent cannot find your java executable
-          #trust_store_path: /path/to/trustStore.jks # Optional, should be set if ssl is enabled
-          #trust_store_password: password
-          dimensions:
-              env: stage
-              newDim: test
+instances:
+  -   name: kafka
+      dimensions:
+        service: monitoring
+        component: kafka
+      kafka_connect_str: kafka:9092
+      per_partition: False
+      full_output: True
+      consumer_groups:
+        persister:
+          - alarm-state-transitions
+          - metrics
+        notification:
+          - retry-notifications
+          - alarm-state-transitions
+          - 60-seconds-notifications
+        thresh:
+          - metrics
+          - events
+        logstash-persister:
+          - transformed-log
+        logstash-metrics:
+          - transformed-log
+        logstash-transformer:
+          - log
+```
 
 monasca-collector service can receive a `--config-file` argument, which represents an alternate agent configuration file, instead of the default /etc/monasca/agent.yaml.
 

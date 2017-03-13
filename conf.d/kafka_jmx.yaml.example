@@ -1,8 +1,3 @@
-instances:
-  - name: kafka_jmx
-    host: localhost
-    port: 9920
-
 init_config:
   is_jmx: true
 
@@ -143,3 +138,9 @@ init_config:
         MeanRate:
           metric_type: counter
           alias: kafka.log.flush_rate
+
+instances:
+  - name: kafka_jmx
+    host: localhost
+    port: 9920
+
