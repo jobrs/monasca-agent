@@ -241,7 +241,7 @@ In the init_config section you can specify an arbitrary number of global name:va
 
 | Attribute | Description | Remarks |
 |-----------|----------------|--------|
-| collect_period | Interval in which _this specific check_ is executed. By default all the metrics are collected and sent using the  `check_frequency` internal defined in the global agent.yaml (see[Agent.md|https://github.com/openstack/monasca-agent/blob/master/docs/Agent.md]). | Multiple of global `check_frequency`; unsupported for JMX. |
+| collect_period | Interval in which _this specific check_ is executed. By default all the metrics are collected and sent using the  `check_frequency` internal defined in the global agent.yaml (see [Agent.md](https://github.com/openstack/monasca-agent/blob/master/docs/Agent.md)). | Multiple of global `check_frequency`; unsupported for JMX. |
 | is_jmx | `true` for JMX check configurations (default: `false`) | JMX only |
 
 *Note:* The variable `collect_period` allows each plugins collect period to be further adjusted to a value greater than the frequency at which the plugin is run specified by `check_frequency`, such that when the collection run starts, the plugin might not be called. For example, if `check_frequency: 30` and `collect_period: 600`, the plugin will be called and metrics sent every 600 seconds. This allows fewer metrics to be sent. The `collect_period` should be evenly divisible by the `check_frequency`. For example, if you want the plugin to collect and send metrics every 600 seconds (10 minutes), and the global `check_frequency: 30`, then the collect_period should be set to 600.
@@ -2301,7 +2301,7 @@ Attributes can be selected using subsections:
 * `domain_regex`: [regular expression](http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html) for matching multiple domains
 * `bean`: bean providing the attribute
 * `bean_regex`: regular expression for matching multiple beans
-* _<bean-attribute>_: specify any other bean property to select relevant beans (e.g. `type`)
+* _\<bean-attribute\>_: specify any other bean property to select relevant beans (e.g. `type`)
 
 
 ```
