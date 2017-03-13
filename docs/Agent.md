@@ -37,7 +37,7 @@ The Agent is composed of the following components:
 | -------------- | ------------ | ----------- |
 | Supervisor | supervisord | Runs as root, launches all other processes as the user configured to run monasca-agent.  This process manages the lifecycle of the Collector, Forwarder and Statsd Daemon.  It allows Start, Stop and Restart of all the agent processes together. |
 | Collector | monasca-collector | Gathers system & application metrics on a configurable interval and sends them to the Forwarder process. The collector runs various plugins for collection of metrics from variaous applications. When JMX checks have been configured, a
-separate Java subprocess ([jmxfetch|https://github.com/DataDog/jmxfetch]) is spawned. |
+separate Java subprocess ([jmxfetch](https://github.com/DataDog/jmxfetch) is spawned. |
 | Forwarder | monasca-forwarder | Gathers data from the collector and statsd and submits it to Monasca API over SSL (tcp/17123) |
 | Statsd Daemon | monasca-statsd | Statsd engine capable of handling dimensions associated with metrics submitted by a client that supports them. Also supports metrics from the standard statsd client. (udp/8125) |
 | Monasca Setup | monasca-setup | The monasca-setup script configures the agent.  The Monasca Setup program can also auto-detect and configure certain agent plugins |

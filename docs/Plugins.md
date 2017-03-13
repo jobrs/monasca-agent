@@ -2277,7 +2277,7 @@ The `init_config` section is used to configure Java access and provide an instan
 | conf | default mapping configuration | see instances |
 
 The `instances` section is used to configure the checks as usual. If multiple JMX-enabled applications
-with different metrics are residing on the same host, it might be useful to configure the mapping configuration on instance-level:
+with different metrics are residing on the same host, it might be useful to specify the mapping configuration on instance-level:
 
 | Attribute | Description | Default |
 |-----------|-------------|---------|
@@ -2298,7 +2298,7 @@ criteria for attributes.
 Attributes can be selected using subsections:
 * `attribute`: either a list of attribute names to include/exclude or another subsection specifying the _metric\_type_ (gauge, counter) and _alias_ (Monasca metric name) of the attribute
 * `domain`: name of the attribute's domain
-* `domain_regex`: [regular expression|http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html] for matching multiple domains
+* `domain_regex`: [regular expression](http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html) for matching multiple domains
 * `bean`: bean providing the attribute
 * `bean_regex`: regular expression for matching multiple beans
 * _<bean-attribute>_: specify any other bean property to select relevant beans (e.g. `type`)
@@ -2336,7 +2336,7 @@ It offers the following commands:
 * list_limited_attributes: List attributes that do match one of your instances configuration but that are not being collected because it would exceed the number of metrics that can be collected
 * collect: Start a test collection of metrics based on your current configuration, displaying the metrics on the console instead of sending to Monasca
 
-See also [DataDog's valuable documentation|http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html] on jmxfetch.
+See also [DataDog's valuable documentation](http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html) on jmxfetch.
 
 =======
 
