@@ -24,7 +24,7 @@ JAVA_LOGGING_LEVEL = {
     logging.WARNING: "WARN",
 }
 
-JMX_FETCH_JAR_NAME = "jmxfetch-0.12.0-jar-with-dependencies.jar"
+JMX_FETCH_JAR_NAME = "jmxfetch-0.13.0-jar-with-dependencies.jar"
 JMX_CHECKS = [
     'activemq',
     'activemq_58',
