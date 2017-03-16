@@ -329,8 +329,16 @@ class ElasticSearch(AgentCheck):
             additional_metrics = self.ADDITIONAL_METRICS_PRE_0_90_5
 
         self.METRICS.update(additional_metrics)
+        
+        if version <= [0, 90, 0]:
+            # ES version 0.90.9 and below
+            self.HEALTH_URL = "/_cluster/health?pretty=true"
+            self.STATS_URL = "/_cluster/nodes/stats?all=true"
+            self.NODES_URL = "/_cluster/nodes?network=true"
 
-        if version >= [0, 90, 10]:
+            additional_metrics = self.JVM_METRICS_PRE_0_90_10
+
+        if version < [5, 0, 0]:
             # ES versions 0.90.10 and above
             # Metrics architecture changed starting with version 0.90.10
             self.HEALTH_URL = "/_cluster/health?pretty=true"
@@ -341,12 +349,14 @@ class ElasticSearch(AgentCheck):
             additional_metrics = self.JVM_METRICS_POST_0_90_10
 
         else:
-            # ES version 0.90.9 and below
+            # ES versions 5.0.0 and above
+            # Metrics architecture changed starting with version 0.90.10
             self.HEALTH_URL = "/_cluster/health?pretty=true"
-            self.STATS_URL = "/_cluster/nodes/stats?all=true"
-            self.NODES_URL = "/_cluster/nodes?network=true"
+            self.STATS_URL = "/_nodes/stats"
+            self.NODES_URL = "/_nodes?network=true"
+            self.TASK_URL = "/_cluster/pending_tasks?pretty=true"
 
-            additional_metrics = self.JVM_METRICS_PRE_0_90_10
+            additional_metrics = self.JVM_METRICS_POST_0_90_10
 
         self.METRICS.update(additional_metrics)
 
