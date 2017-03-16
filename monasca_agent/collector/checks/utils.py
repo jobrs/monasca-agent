@@ -1,13 +1,18 @@
-# (C) Copyright 2015 Hewlett Packard Enterprise Development Company LP
+# (C) Copyright 2015,2017 Hewlett Packard Enterprise Development LP
 
 import base64
 import logging
-import re
+import math
 from numbers import Number
+import os
+import re
+import requests
 
-from monasca_agent.common.exceptions import CheckException
+from monasca_agent.common import exceptions
 
 log = logging.getLogger(__name__)
+
+DEFAULT_TIMEOUT = 20
 
 
 def add_basic_auth(request, username, password):
@@ -56,9 +61,123 @@ def get_tenant_list(config, log):
     return tenants
 
 
-class DynamicCheckHelper:
+def convert_memory_string_to_bytes(memory_string):
+    """Conversion from memory represented in string format to bytes"""
+    if "m" in memory_string:
+        memory = float(memory_string.split('m')[0])
+        return memory / 1000
+    elif "K" in memory_string:
+        memory = float(memory_string.split('K')[0])
+        return _compute_memory_bytes(memory_string, memory, 1)
+    elif "M" in memory_string:
+        memory = float(memory_string.split('M')[0])
+        return _compute_memory_bytes(memory_string, memory, 2)
+    elif "G" in memory_string:
+        memory = float(memory_string.split('G')[0])
+        return _compute_memory_bytes(memory_string, memory, 3)
+    elif "T" in memory_string:
+        memory = float(memory_string.split('T')[0])
+        return _compute_memory_bytes(memory_string, memory, 4)
+    else:
+        return float(memory_string)
+
+
+def _compute_memory_bytes(memory_string, memory, power):
+    if "i" in memory_string:
+        return memory * math.pow(1024, power)
+    return memory * math.pow(1000, power)
+
+
+class KubernetesConnector(object):
+    """Class for connecting to Kubernetes API from within a container running
+    in a Kubernetes environment
     """
-    Supplements existing check class with reusable functionality to transform third-party metrics into Monasca ones
+    CACERT_PATH = '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
+    TOKEN_PATH = '/var/run/secrets/kubernetes.io/serviceaccount/token'
+
+    def __init__(self, connection_timeout):
+        self.api_url = None
+        self.api_verify = None
+        self.api_request_header = None
+        if connection_timeout is None:
+            self.connection_timeout = DEFAULT_TIMEOUT
+        else:
+            self.connection_timeout = connection_timeout
+        self._set_kubernetes_api_connection_info()
+        self._set_kubernetes_service_account_info()
+
+    def _set_kubernetes_api_connection_info(self):
+        """Set kubernetes API string from default container environment
+        variables
+        """
+        api_host = os.environ.get('KUBERNETES_SERVICE_HOST', "kubernetes")
+        api_port = os.environ.get('KUBERNETES_SERVICE_PORT', "443")
+        self.api_url = "https://{}:{}".format(api_host, api_port)
+
+    def _set_kubernetes_service_account_info(self):
+        """Set cert and token info to included on requests to the API"""
+        try:
+            with open(self.TOKEN_PATH) as token_file:
+                token = token_file.read()
+        except Exception as e:
+            log.error("Unable to read token - {}. Defaulting to using no token".format(e))
+            token = None
+        self.api_request_header = {'Authorization': 'Bearer {}'.format(token)} if token else None
+        self.api_verify = self.CACERT_PATH if os.path.exists(self.CACERT_PATH) else False
+
+    def get_agent_pod_host(self, return_host_name=False):
+        """Obtain host the agent is running on in Kubernetes.
+        Used when trying to connect to services running on the node (Kubelet, cAdvisor)
+        """
+        # Get pod name and namespace from environment variables
+        pod_name = os.environ.get("AGENT_POD_NAME")
+        pod_namespace = os.environ.get("AGENT_POD_NAMESPACE")
+        if not pod_name:
+            raise exceptions.MissingEnvironmentVariables(
+                "pod_name is not set as environment variables cannot derive"
+                " host from Kubernetes API")
+        if not pod_namespace:
+            raise exceptions.MissingEnvironmentVariables(
+                "pod_namespace is not set as environment variables cannot "
+                "derive host from Kubernetes API")
+        pod_url = "/api/v1/namespaces/{}/pods/{}".format(pod_namespace, pod_name)
+        try:
+            agent_pod = self.get_request(pod_url)
+        except Exception as e:
+            exception_message = "Could not get agent pod from Kubernetes API" \
+                                " to get host IP with error - {}".format(e)
+            log.exception(exception_message)
+            raise exceptions.KubernetesAPIConnectionError(exception_message)
+        if not return_host_name:
+            return agent_pod['status']['hostIP']
+        else:
+            return agent_pod['spec']['nodeName']
+
+    def get_request(self, request_endpoint, as_json=True, retried=False):
+        """Sends request to Kubernetes API with given endpoint.
+        Will retry the request once, with updated token/cert, if unauthorized.
+        """
+        request_url = "{}/{}".format(self.api_url, request_endpoint)
+        result = requests.get(request_url,
+                              timeout=self.connection_timeout,
+                              headers=self.api_request_header,
+                              verify=self.api_verify)
+        if result.status_code >= 300:
+            if result.status_code == 401 and not retried:
+                log.info("Could not authenticate with Kubernetes API at the"
+                         " first time. Rereading in cert and token.")
+                self._set_kubernetes_service_account_info()
+                return self.get_request(request_endpoint, as_json=as_json,
+                                        retried=True)
+            exception_message = "Could not obtain data from {} with the " \
+                                "given status code {} and return text {}".\
+                format(request_url, result.status_code, result.text)
+            raise exceptions.KubernetesAPIConnectionError(exception_message)
+        return result.json() if as_json else result
+
+
+class DynamicCheckHelper(object):
+    """Supplements existing check class with reusable functionality to transform third-party metrics into Monasca ones
     in a configurable way
     """
 
@@ -75,13 +194,12 @@ class DynamicCheckHelper:
 
     DEFAULT_GROUP = ""
 
-    class MetricSpec:
-        """
-        Describes how to filter and map input metrics to Monasca metrics
+    class MetricSpec(object):
+        """Describes how to filter and map input metrics to Monasca metrics
         """
 
         def __init__(self, metric_type, metric_name):
-            """
+            """Construct a metric-specification
             :param metric_type: one of GAUGE, RATE, COUNTER, SKIP
             :param metric_name: normalized name of the metric as reported to Monasca
             """
@@ -90,28 +208,29 @@ class DynamicCheckHelper:
 
     @staticmethod
     def _normalize_dim_value(value):
-        """
-        :param value:
-        :return:
-        Replace \\x?? values with _
-        Replace illegal characters
-         - according to ANTLR grammar: ( '}' | '{' | '&' | '|' | '>' | '<' | '=' | ',' | ')' | '(' | ' ' | '"' )
-         - according to Python API validation: "<>={}(),\"\\\\|;&"
-        Truncate to 255 chars
+        """Normalize an input value
+
+        * Replace \\x?? values with _
+        * Replace illegal characters
+          - according to ANTLR grammar: ( '}' | '{' | '&' | '|' | '>' | '<' | '=' | ',' | ')' | '(' | ' ' | '"' )
+          - according to Python API validation: "<>={}(),\"\\\\|;&"
+        * Truncate to 255 chars
+        :param value: input value
+        :return: valid dimension value
         """
 
         return re.sub(r'[|\\;,&=\']', '-', re.sub(r'[(}>]', ']', re.sub(r'[({<]', '[', value.replace(r'\x2d', '-').
                                                                         replace(r'\x7e', '~'))))[:255]
 
-    class DimMapping:
-        """
-        Describes how to transform dictionary like metadata attached to a metric into Monasca dimensions
+    class DimMapping(object):
+        """Describes how to transform dictionary like metadata attached to a metric into Monasca dimensions
         """
 
         def __init__(self, dimension, regex='(.*)', separator=None):
-            """
+            """C'tor
             :param dimension to be mapped to
             :param regex: regular expression used to extract value from source value
+            :param separator: used to concatenate match-groups
             """
             self.dimension = dimension
             self.regex = regex
@@ -119,8 +238,7 @@ class DynamicCheckHelper:
             self.cregex = re.compile(regex) if regex != '(.*)' else None
 
         def map_value(self, source_value):
-            """
-            transform source value into target dimension value
+            """Transform source value into target dimension value
             :param source_value: label value to transform
             :return: transformed dimension value or None if the regular expression did not match. An empty
             result (caused by the regex having no match-groups) indicates that the label is used for filtering
@@ -137,8 +255,7 @@ class DynamicCheckHelper:
 
     @staticmethod
     def _build_dimension_map(config):
-        """
-        Builds dimension mappings for the given configuration element
+        """Builds dimension mappings for the given configuration element
         :param config: 'mappings' element of config
         :return: dictionary mapping source labels to applicable DimMapping objects
         """
@@ -162,86 +279,8 @@ class DynamicCheckHelper:
         return result
 
     def __init__(self, check, prefix=None, default_mapping=None):
-        """
-        :param check: Target check instance to filter and map metrics from a separate data source. The mapping
-        procedure involves a filtering, renaming and classification of metrics and as part of this also filtering
-        and mapping of the labels attached to the input metrics.
-
-        To support all these capabilities, an element 'mapping' needs to be added to the instance config or a
-        default_mapping has to be supplied.
-
-        Filtering and renaming of input metrics is performed through regular expressions. Metrics not matching
-        the regular expression are ignored.
-         with zero or more match groups.
-        If match groups are specified, the match group values are
-        concatenated with '_'. If no match group is specified, the name is taken as is. The resulting name is
-        normalized according to Monasca naming standards for metrics. This implies that dots are replaced by
-        underscores and *CamelCase* is transformed into *lower_case*. Special characters are eliminated, too.
-
-        a) Simple mapping:
-
-           # map metric 'FileystemUsage' to 'filesystem_usage'
-           rates: [ 'FilesystemUsage' ]
-
-        b) Mapping with simple regular expression
-
-           # map metrics ending with 'Usage' to '..._usage'
-           rates: [ '.*Usage' ]
-
-        b) Mapping with regular expression and match-groups
-
-           # map metrics ending with 'Usage.stats.total' to '..._usage_total'
-           counters: [ '(.*Usage)\.stats\.(total)' ]
-
-        Mapping of labels to dimensions is a little more complex. For each dimension, an
-        entry of the following format is required:
-
-        a) Simple mapping
-
-            # map key <source_key> to dimension <dimension>
-            <dimension>: <source_key>
-
-        b) Complex mapping:
-
-            <dimension>:
-               source_key: <source_key>             # key as provided by metric source (default: <dimension>)
-               regex: <mapping_pattern>             # regular expression (default: '(.*)' = identity)
-               separator: <match_group_separator>   # concatenate match-groups \1, \2, ... in regex with separator
-               (default: '-')
-
-
-            The regex is applied to the dimension value. If the regular expression does not match, then the metric
-            is ignored. If match-groups are part of the regular expression then the regex is used for value
-            transformation: The resulting dimension value is created by concatenating all match groups (in braces),
-            using the specified separator (default: '-'). If not match-group is specified, then the value is passed
-            through unchanged.
-
-        Both metrics and dimension can be defined globally or as part of a group. When a metric is specified in a group,
-        then the group name is used as a prefix to the metric and the group-specific dimension mappings take precedence
-        over the global ones. When several groups or the global mapping refer to the same input metric, then the caller
-        needs to specify which groups to select for mapping.
-
-        Example:
-
-        instances:
-            - name: kubernetes
-              mapping
-                dimensions:
-                    pod_name: io.kubernetes.pod.name    # simple mapping
-                    pod_basename:
-                        source_key: label_name
-                        regex: 'k8s_.*_.*\._(.*)_[0-9a-z\-]*'
-                rates:
-                - io.*
-                counters
-                - req.*_count
-                gauges:
-                - .*_avg
-                - .*_max
-                groups:
-                    engine:
-                        dimensions:
-
+        """C'tor
+        :param check: Target check instance
         """
         self._check = check
         self._prefix = prefix
@@ -282,11 +321,10 @@ class DynamicCheckHelper:
                     self._grp_dimension_map[iname][DynamicCheckHelper.DEFAULT_GROUP] = self._dimension_map[iname]
 
             else:
-                raise CheckException('instance %s is not supported: no element "mapping" found!', iname)
+                raise exceptions.CheckException('instance %s is not supported: no element "mapping" found!', iname)
 
     def _get_group(self, instance, metric):
-        """
-        Search the group for a metric. Can be used only when metric names unambiguous across groups.
+        """Search the group for a metric. Can be used only when metric names unambiguous across groups.
 
         :param metric: input metric
         :return: group name or None (if no group matches)
@@ -303,8 +341,7 @@ class DynamicCheckHelper:
         return group
 
     def _fetch_metric_spec(self, instance, metric, group=None):
-        """
-        check whether a metric is enabled by the instance configuration
+        """Checks whether a metric is enabled by the instance configuration
 
         :param instance: instance containing the check configuration
         :param metric: metric as reported from metric data source (before mapping)
@@ -329,8 +366,7 @@ class DynamicCheckHelper:
 
     def push_metric_dict(self, instance, metric_dict, labels=None, group=None, timestamp=None, fixed_dimensions=None,
                          default_dimensions=None, max_depth=0, curr_depth=0, prefix='', index=-1):
-        """
-        This will extract metrics and dimensions from a dictionary.
+        """This will extract metrics and dimensions from a dictionary.
 
         The following mappings are applied:
 
@@ -429,8 +465,8 @@ class DynamicCheckHelper:
                 server_requests{server_no=2} = 500.0
 
 
-        :param instance:
-        :param metric_dict:
+        :param instance: Instance to submit to
+        :param metric_dict: input data as dictionary
         :param labels: labels to be mapped to dimensions
         :param group: group to use for mapping labels and prefixing
         :param timestamp: timestamp to report for the measurement
@@ -440,7 +476,6 @@ class DynamicCheckHelper:
         :param curr_depth: depth of recursion
         :param prefix: prefix to prepend to any metric
         :param index: current index when traversing through a list
-        :return:
         """
 
         # when traversing through an array, each element must be distinguished with dimensions
@@ -495,8 +530,7 @@ class DynamicCheckHelper:
                         log.debug('nested arrays are not supported for configurable extraction of element %s', element)
 
     def extract_dist_labels(self, instance_name, group, metric_dict, labels, index):
-        """
-        Extract additional distinguishing labels from metric dictionary. All top-level attributes which are
+        """Extract additional distinguishing labels from metric dictionary. All top-level attributes which are
         strings and for which a dimension mapping is available will be transformed into dimensions.
         :param instance_name: instance to be used
         :param group: metric group or None for root/unspecified group
@@ -523,8 +557,7 @@ class DynamicCheckHelper:
 
     def push_metric(self, instance, metric, value, labels=None, group=None, timestamp=None, fixed_dimensions=None,
                     default_dimensions=None):
-        """
-        push a meter using the configured mapping information to determine metric_type and map the name and dimensions
+        """Pushes a meter using the configured mapping information to determine metric_type and map the name and dimensions
 
         :param instance: instance containing the check configuration
         :param value: metric value (float)
@@ -582,8 +615,7 @@ class DynamicCheckHelper:
         return True
 
     def get_mapped_metrics(self, instance):
-        """
-        Return input metric names or regex for which a mapping has been defined
+        """Returns input metric names or regex for which a mapping has been defined
         :param instance: instance to consider
         :return: array of metrics
         """
@@ -604,8 +636,7 @@ class DynamicCheckHelper:
         return metric_list
 
     def _map_dimensions(self, instance_name, labels, group, default_dimensions):
-        """
-        Transform labels attached to input metrics into Monasca dimensions
+        """Transforms labels attached to input metrics into Monasca dimensions
         :param default_dimensions:
         :param group:
         :param instance_name:
