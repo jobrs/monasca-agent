@@ -88,7 +88,7 @@ class CollectorDaemon(monasca_agent.common.daemon.Daemon):
         # initialize check orchestrator
         collector_config = agent_config.get_config(['Main', 'Api', 'Logging'])
         self.collector = checks.collector.Collector(collector_config, monasca_agent.common.emitter.http_emitter, checksd)
-        # start external process for collecting JMX metrics.
+        # start external process for collecting JMX metrics (if needed).
         self.jmx_configured = self.start_jmx(agent_config)
 
         check_frequency = int(collector_config['check_freq'])
@@ -163,7 +163,7 @@ class CollectorDaemon(monasca_agent.common.daemon.Daemon):
         sys.exit(monasca_agent.common.daemon.AgentSupervisor.RESTART_EXIT_STATUS)
 
     def start_jmx(self, agent_config, jmx_command=None, checks_list=None, reporter=None):
-        """Start the external JMX reporter
+        """Start the external JMX reporter if needed
 
         :param agent_config: agent configuration
         :param jmx_command: jmxfetch command (default: 'collect')

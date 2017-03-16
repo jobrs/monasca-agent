@@ -19,6 +19,7 @@ def add_basic_auth(request, username, password):
     request.add_header('Authorization', 'Basic %s' % auth_str)
     return request
 
+
 def get_keystone_client(config):
     import keystoneclient.v2_0.client as kc
     kwargs = {
@@ -61,6 +62,17 @@ class DynamicCheckHelper:
     in a configurable way
     """
 
+    COUNTERS_KEY = 'counters'
+    RATES_KEY = 'rates'
+    GAUGES_KEY = 'gauges'
+    CONFIG_SECTIONS = [GAUGES_KEY, RATES_KEY, COUNTERS_KEY]
+
+    GAUGE = 0
+    RATE = 1
+    COUNTER = 2
+    SKIP = 3
+    METRIC_TYPES = [GAUGE, RATE, COUNTER]
+
     DEFAULT_GROUP = ""
 
     class MetricSpec:
@@ -68,13 +80,9 @@ class DynamicCheckHelper:
         Describes how to filter and map input metrics to Monasca metrics
         """
 
-        GAUGE = 1
-        RATE = 2
-        SKIP = 0
-
         def __init__(self, metric_type, metric_name):
             """
-            :param metric_type: one of GAUGE, RATE, SKIP
+            :param metric_type: one of GAUGE, RATE, COUNTER, SKIP
             :param metric_name: normalized name of the metric as reported to Monasca
             """
             self.metric_type = metric_type
@@ -172,22 +180,26 @@ class DynamicCheckHelper:
 
         a) Simple mapping:
 
-           rates: [ 'FilesystemUsage' ]             # map metric 'FileystemUsage' to 'filesystem_usage'
+           # map metric 'FileystemUsage' to 'filesystem_usage'
+           rates: [ 'FilesystemUsage' ]
 
         b) Mapping with simple regular expression
 
-           rates: [ '.*Usage' ]                     # map metrics ending with 'Usage' to '..._usage'
+           # map metrics ending with 'Usage' to '..._usage'
+           rates: [ '.*Usage' ]
 
         b) Mapping with regular expression and match-groups
 
-           rates: [ '(.*Usage)\.stats\.(total)' ]   # map metrics ending with 'Usage.stats.total' to '..._usage_total'
+           # map metrics ending with 'Usage.stats.total' to '..._usage_total'
+           counters: [ '(.*Usage)\.stats\.(total)' ]
 
         Mapping of labels to dimensions is a little more complex. For each dimension, an
         entry of the following format is required:
 
         a) Simple mapping
 
-            <dimension>: <source_key>                # map key <source_key> to dimension <dimension>
+            # map key <source_key> to dimension <dimension>
+            <dimension>: <source_key>
 
         b) Complex mapping:
 
@@ -221,6 +233,8 @@ class DynamicCheckHelper:
                         regex: 'k8s_.*_.*\._(.*)_[0-9a-z\-]*'
                 rates:
                 - io.*
+                counters
+                - req.*_count
                 gauges:
                 - .*_avg
                 - .*_max
@@ -282,7 +296,7 @@ class DynamicCheckHelper:
         if group is None:
             for g in self._groups[iname]:
                 spec = self._fetch_metric_spec(instance, metric, g)
-                if spec and spec.metric_type != DynamicCheckHelper.MetricSpec.SKIP:
+                if spec and spec.metric_type != DynamicCheckHelper.SKIP:
                     self._metric_to_group[iname][metric] = g
                     return g
 
@@ -311,10 +325,10 @@ class DynamicCheckHelper:
             return DynamicCheckHelper._lookup_metric(metric, metric_cache, metric_map)
 
     def is_enabled_metric(self, instance, metric, group=None):
-        return self._fetch_metric_spec(instance, metric, group).metric_type != DynamicCheckHelper.MetricSpec.SKIP
+        return self._fetch_metric_spec(instance, metric, group).metric_type != DynamicCheckHelper.SKIP
 
-    def push_metric_dict(self, instance, metric_dict, labels={}, group=None, timestamp=None, fixed_dimensions={},
-                         default_dimensions={}, max_depth=0, curr_depth=0, prefix='', index=-1):
+    def push_metric_dict(self, instance, metric_dict, labels=None, group=None, timestamp=None, fixed_dimensions=None,
+                         default_dimensions=None, max_depth=0, curr_depth=0, prefix='', index=-1):
         """
         This will extract metrics and dimensions from a dictionary.
 
@@ -333,7 +347,7 @@ class DynamicCheckHelper:
             Configuration:
 
                 mapping:
-                    rates:
+                    counters:
                         - server_requests
 
             Output:
@@ -405,7 +419,7 @@ class DynamicCheckHelper:
                 mapping:
                     dimensions:
                         server_no: index          # index is a predefined label
-                    rates:
+                    counters:
                         - server_requests
 
             Result:
@@ -431,8 +445,14 @@ class DynamicCheckHelper:
 
         # when traversing through an array, each element must be distinguished with dimensions
         # therefore additional dimensions need to be calculated from the siblings of the actual number valued fields
+        if default_dimensions is None:
+            default_dimensions = {}
+        if fixed_dimensions is None:
+            fixed_dimensions = {}
+        if labels is None:
+            labels = {}
         if index != -1:
-            ext_labels = self.extract_dist_labels(instance['name'], group, metric_dict, labels, index)
+            ext_labels = self.extract_dist_labels(instance['name'], group, metric_dict, labels.copy(), index)
             if not ext_labels:
                 log.debug(
                     "skipping array due to lack of mapped dimensions for group %s "
@@ -441,7 +461,7 @@ class DynamicCheckHelper:
                 return
 
         else:
-            ext_labels = labels
+            ext_labels = labels.copy()
 
         for element, child in metric_dict.iteritems():
             # if child is a dictionary, then recurse
@@ -501,8 +521,8 @@ class DynamicCheckHelper:
 
         return ext_labels
 
-    def push_metric(self, instance, metric, value, labels={}, group=None, timestamp=None, fixed_dimensions={},
-                    default_dimensions={}):
+    def push_metric(self, instance, metric, value, labels=None, group=None, timestamp=None, fixed_dimensions=None,
+                    default_dimensions=None):
         """
         push a meter using the configured mapping information to determine metric_type and map the name and dimensions
 
@@ -517,11 +537,17 @@ class DynamicCheckHelper:
         """
 
         # determine group automatically if not specified
+        if fixed_dimensions is None:
+            fixed_dimensions = {}
+        if labels is None:
+            labels = {}
+        if default_dimensions is None:
+            default_dimensions = {}
         if group is None:
             group = self._get_group(instance, metric)
 
         metric_entry = self._fetch_metric_spec(instance, metric, group)
-        if metric_entry.metric_type == DynamicCheckHelper.MetricSpec.SKIP:
+        if metric_entry.metric_type == DynamicCheckHelper.SKIP:
             return False
 
         if self._prefix:
@@ -546,10 +572,12 @@ class DynamicCheckHelper:
 
         log.debug('push %s %s = %s {%s}', metric_entry.metric_type, metric_entry.metric_name, value, dims)
 
-        if metric_entry.metric_type == DynamicCheckHelper.MetricSpec.RATE:
+        if metric_entry.metric_type == DynamicCheckHelper.RATE:
             self._check.rate(metric_name, float(value), dimensions=dims)
-        elif metric_entry.metric_type == DynamicCheckHelper.MetricSpec.GAUGE:
+        elif metric_entry.metric_type == DynamicCheckHelper.GAUGE:
             self._check.gauge(metric_name, float(value), timestamp=timestamp, dimensions=dims)
+        elif metric_entry.metric_type == DynamicCheckHelper.COUNTER:
+            self._check.increment(metric_name, float(value), dimensions=dims)
 
         return True
 
@@ -563,13 +591,15 @@ class DynamicCheckHelper:
         iname = instance['name']
         # collect level-0 metrics
         metric_map = self._metric_map[iname]
-        metric_list.extend(metric_map.get('gauges', []))
-        metric_list.extend(metric_map.get('rates', []))
+        metric_list.extend(metric_map.get(DynamicCheckHelper.GAUGES_KEY, []))
+        metric_list.extend(metric_map.get(DynamicCheckHelper.RATES_KEY, []))
+        metric_list.extend(metric_map.get(DynamicCheckHelper.COUNTERS_KEY, []))
         # collect group specific metrics
         grp_metric_map = self._grp_metric_map.get(iname, {})
         for gname, gmmap in grp_metric_map.iteritems():
-            metric_list.extend(gmmap.get('gauges', []))
-            metric_list.extend(gmmap.get('rates', []))
+            metric_list.extend(gmmap.get(DynamicCheckHelper.GAUGES_KEY, []))
+            metric_list.extend(gmmap.get(DynamicCheckHelper.RATES_KEY, []))
+            metric_list.extend(gmmap.get(DynamicCheckHelper.COUNTERS_KEY, []))
 
         return metric_list
 
@@ -600,7 +630,7 @@ class DynamicCheckHelper:
                             return None
                         elif mapped_value != '':
                             dims[target_dim] = mapped_value
-                        # else the dimension will not map
+                            # else the dimension will not map
                 except (IndexError, AttributeError):  # probably the regex was faulty
                     log.exception(
                         'dimension %s value could not be mapped from %s: regex for mapped dimension %s '
@@ -622,40 +652,47 @@ class DynamicCheckHelper:
         return mapping_arr
 
     @staticmethod
-    def _lookup_metric(metric, metric_cache, metric_map):
+    def _create_metric_spec(metric, metric_type, metric_map):
+        """Get or create MetricSpec if metric is in list for metric_type
+
+        :param metric: incoming metric name
+        :param metric_type: GAUGE, RATE, COUNTER
+        :param metric_map: dictionary with mapping configuration for a metric group or the entire instance
+        :return: new MetricSpec entry or None if metric is not listed as metric_type
         """
-        Search cache for a MetricSpec and create if missing
+        re_list = metric_map.get(DynamicCheckHelper.CONFIG_SECTIONS[metric_type], [])
+        for rx in re_list:
+            match_groups = re.match(rx, metric)
+            if match_groups:
+                metric_entry = DynamicCheckHelper.MetricSpec(metric_type=metric_type,
+                                                             metric_name=DynamicCheckHelper._normalize_metricname(
+                                                                 metric,
+                                                                 match_groups))
+                return metric_entry
+
+        return None
+
+    @staticmethod
+    def _lookup_metric(metric, metric_cache, metric_map):
+        """Search cache for a MetricSpec and create if missing
         :param metric: input metric name
         :param metric_cache: cache to use
         :param metric_map: mapping config element to consider
         :return: MetricSpec for the output metric
         """
-        metric_entry = metric_cache.get(metric)
-        if metric_entry is None:
-            re_list = metric_map.get('gauges', [])
-            for rx in re_list:
-                match_groups = re.match(rx, metric)
-                if match_groups:
-                    metric_entry = DynamicCheckHelper.MetricSpec(metric_type=DynamicCheckHelper.MetricSpec.GAUGE,
-                                                                 metric_name=DynamicCheckHelper._normalize_metricname(
-                                                                     metric,
-                                                                     match_groups))
-                    metric_cache[metric] = metric_entry
-                    return metric_entry
-            re_list = metric_map.get('rates', [])
-            for rx in re_list:
-                match_groups = re.match(rx, metric)
-                if match_groups:
-                    metric_entry = DynamicCheckHelper.MetricSpec(metric_type=DynamicCheckHelper.MetricSpec.RATE,
-                                                                 metric_name=DynamicCheckHelper._normalize_metricname(
-                                                                     metric,
-                                                                     match_groups))
-                    metric_cache[metric] = metric_entry
-                    return metric_entry
+        i = DynamicCheckHelper.GAUGE
+        metric_entry = metric_cache.get(metric, None)
+        while not metric_entry and i < len(DynamicCheckHelper.METRIC_TYPES):
+            metric_entry = DynamicCheckHelper._create_metric_spec(metric, DynamicCheckHelper.METRIC_TYPES[i],
+                                                                  metric_map)
+            i += 1
+
+        if not metric_entry:
             # fall-through
-            metric_entry = DynamicCheckHelper.MetricSpec(metric_type=DynamicCheckHelper.MetricSpec.SKIP,
+            metric_entry = DynamicCheckHelper.MetricSpec(metric_type=DynamicCheckHelper.SKIP,
                                                          metric_name=DynamicCheckHelper._normalize_metricname(metric))
-            metric_cache[metric] = metric_entry
+
+        metric_cache[metric] = metric_entry
 
         return metric_entry
 
@@ -666,7 +703,7 @@ class DynamicCheckHelper:
             metric = '_'.join(match_groups.groups())
 
         metric = re.sub('(?!^)([A-Z]+)', r'_\1', metric.replace('.', '_')).replace('__', '_').lower()
-        metric = re.sub(r"[,\+\*\-/()\[\]{}]", "_", metric)
+        metric = re.sub(r"[,+*\-/()\[\]{}]", "_", metric)
         # Eliminate multiple _
         metric = re.sub(r"__+", "_", metric)
         # Don't start/end with _

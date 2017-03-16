@@ -2,8 +2,8 @@
 
 
 class AgentException(Exception):
-    def __init__(self, metric=None):
-        super(AgentException, self).__init__()
+    def __init__(self, metric=None, *args, **kwargs):
+        super(AgentException, self).__init__(metric=metric, *args, **kwargs)
         self.metric = metric
 
 

@@ -1,21 +1,25 @@
 # stdlib
 import os
-import unittest
 import time
+import unittest
 
-# project
+import requests
+import six
+from mock import mock
+
 from monasca_agent.collector.checks_d.prometheus import Prometheus
 
 dir = os.getcwd()
-prometheus_metrics_t0 = "file://" + os.path.join(dir, 'prometheus_metrics_t0')
-prometheus_metrics_t1 = "file://" + os.path.join(dir, 'prometheus_metrics_t1')
-#prometheus_metrics_t1 = "https://prometheus.eu-de-1.cloud.sap/federate"
+prometheus_metrics_t0 = "file://" + os.path.dirname(
+    os.path.abspath(__file__)) + '/fixtures/prometheus_metrics_t0'
+prometheus_metrics_t1 = "file://" + os.path.dirname(
+    os.path.abspath(__file__)) + '/fixtures/prometheus_metrics_t1'
 
 LOCAL_CONFIG = {'name': 'prometheus-federate',
                 'url': prometheus_metrics_t0,  # pass in sample prometheus metrics via file
                 'mapping': {
-                    'gauges': ['apiserver_request_count',
-                               'apiserver_request_latencies_summary_sum',
+                    'counters': ['apiserver_request_count'],
+                    'gauges': ['apiserver_request_latencies_summary_sum',
                                'apiserver_request_latencies_bucket',
                                'apiserver_sample_rate'],
                     'rates': ['apiserver_sample_rate'],
@@ -31,8 +35,8 @@ LOCAL_CONFIG = {'name': 'prometheus-federate',
 FEDERATE_CONFIG = {'name': 'Prometheus',
                    'url': prometheus_metrics_t1,  # pass in sample prometheus metrics via file
                    'match_labels': {
-                     'job': ['kubernetes-cluster', 'test' ],
-                     'kubernetes_io_hostname': 'minion2.cc.eu-de-1.cloud.sap'
+                       'job': ['kubernetes-cluster', 'test'],
+                       'kubernetes_io_hostname': 'minion2.cc.eu-de-1.cloud.sap'
                    },
                    'mapping': {
                        'dimensions': {
@@ -46,7 +50,7 @@ FEDERATE_CONFIG = {'name': 'Prometheus',
                        'groups': {
                            'dns.bind': {
                                'gauges': ['bind_(up)'],
-                               'rates': ['bind_(incoming_queries)_total', 'bind_(responses)_total'],
+                               'counters': ['bind_(incoming_queries)_total', 'bind_(responses)_total'],
                                'dimensions': {
                                    "kubernetes.container_name": "kubernetes_name",
                                    "dns.bind_result": "result",
@@ -54,7 +58,7 @@ FEDERATE_CONFIG = {'name': 'Prometheus',
                                },
                            },
                            'datapath': {
-                               'gauges': [ 'datapath_(.*_status)'],
+                               'gauges': ['datapath_(.*_status)'],
                                'dimensions': {
                                    'status': 'status',
                                    'instance_port': {
@@ -106,6 +110,26 @@ METRICS_FAMILIES = ["container_cpu_system_seconds_total",
 CONFIG = {'init_config': {}, 'instances': [LOCAL_CONFIG, FEDERATE_CONFIG]}
 
 
+class FileResponse:
+    def __init__(self, filename, mode):
+        self._file = open(filename, mode)
+
+    def raise_for_status(self):
+        self.text = ""
+        for line in self._file.readlines():
+            self.text += line
+
+
+def local_get(url, params=None, **kwargs):
+    "Fetch a stream from local files."
+    p_url = six.moves.urllib.parse.urlparse(url)
+    if p_url.scheme != 'file':
+        return requests.get(url, params, **kwargs)
+
+    filename = six.moves.urllib.request.url2pathname(p_url.path)
+    return FileResponse(filename, 'rb')
+
+
 class TestPrometheusClientScraping(unittest.TestCase):
     def setUp(self):
         self.check = Prometheus('prometheus', CONFIG['init_config'], {}, instances=CONFIG['instances'])
@@ -116,40 +140,41 @@ class TestPrometheusClientScraping(unittest.TestCase):
     def run_check(self):
         self.setUp()
 
+    @mock.patch('requests.get', local_get)
     def testEndpointScraping(self):
         # check parsing and pushing metrics works
         self.check.run()
         time.sleep(65)
-        self.check.run()
-        time.sleep(65)
         metrics = self.check.get_metrics()
 
-        metric_family_names = set([m.name for m in metrics])
+        print metrics
+        metric_family_names = set([m['measurement']['name'] for m in metrics])
 
         # check parsed metrics
         self.assertTrue(metrics)
         self.assertTrue('apiserver_request_count' in metric_family_names)
-        self.assertEqual([i.value for i in metrics if i.name == 'apiserver_request_count'][0], 403)
         self.assertEqual(
-            [i.dimensions['instance'] for i in metrics if i.name == 'apiserver_request_count'][0],
+            [i['measurement']['value'] for i in metrics if i['measurement']['name'] == 'apiserver_request_count'][0],
+            403)
+        self.assertEqual(
+            [i['measurement']['dimensions']['instance'] for i in metrics if i['measurement']['name'] == 'apiserver_request_count'][0],
             u'kubernetes.default:443')
 
         self.assertTrue('apiserver_request_latencies_bucket' in metric_family_names)
-        self.assertEqual([i.value for i in metrics if i.name == 'apiserver_request_latencies_bucket'][0],
+        self.assertEqual([i['measurement']['value'] for i in metrics if
+                          i['measurement']['name'] == 'apiserver_request_latencies_bucket'][0],
                          443394)
         self.assertEqual(
-            [i.dimensions['component'] for i in metrics if i.name == 'apiserver_request_latencies_bucket'][
+            [i['measurement']['dimensions']['component'] for i in metrics if
+             i['measurement']['name'] == 'apiserver_request_latencies_bucket'][
                 0],
             'apiserver')
 
         self.assertTrue('datapath.nslookup_common_status' in metric_family_names)
-        self.assertTrue('datapath.nslookup_vmware_instance_status' in metric_family_names)
-        self.assertTrue('datapath.tcp_connect_to_kvm_instance_status' in metric_family_names)
-        self.assertTrue('datapath.tcp_connect_to_vmware_instance_status' in metric_family_names)
         self.assertTrue('datapath.nslookup_kvm_instance_status' in metric_family_names)
         self.assertTrue('kubernetes.container_start_time_sec' in metric_family_names)
         self.assertTrue('kubernetes.container_memory_usage_bytes' in metric_family_names)
-        self.assertTrue('wsgi.latency' in metric_family_names)
+
 
 if __name__ == '__main__':
     t = TestPrometheusClientScraping()

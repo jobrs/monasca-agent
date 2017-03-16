@@ -67,7 +67,7 @@ class Counter(Metric):
 
     def sample(self, value, sample_rate, timestamp):
         try:
-            inc = int(value) / sample_rate
+            inc = float(value) / sample_rate
             if self.timestamp is None:
                 self.value = inc
             else:

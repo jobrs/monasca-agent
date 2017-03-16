@@ -103,11 +103,16 @@ class Server(object):
             # Parse dimensions, supporting both Monasca and DogStatsd extensions
             elif m[0] == '#' and len(m) > 2:
                 if m[1] == '{':
-                    dimensions = ast.literal_eval(m[1:])
+                    dimensions = Server._parse_monasca_statsd_dims(m)
                 else:
-                    dimensions = Server._parse_dogstatsd_tags(m)
+                    dimensions = Server._parse_dogstatsd_tags(m[1:])
 
         return name, value, metric_type, dimensions, sample_rate
+
+    @staticmethod
+    def _parse_monasca_statsd_dims(dimensions):
+        dimensions = ast.literal_eval(dimensions)
+        return dimensions
 
     @staticmethod
     def _parse_dogstatsd_tags(statsd_msg):

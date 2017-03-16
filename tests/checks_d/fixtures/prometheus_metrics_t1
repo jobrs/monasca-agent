@@ -3,7 +3,7 @@ datapath_nslookup_common_status{kubernetes_name="blackbox-datapath",instance="10
 # TYPE datapath_nslookup_kvm_instance_status untyped
 datapath_nslookup_kvm_instance_status{instance="100.69.0.5:9101",job="kubernetes-service-endpoints",kubernetes_role="endpoint",kubernetes_namespace="monitoring",kubernetes_name="blackbox-datapath"} 0 1472641131820
 # TYPE openstack_requests_total_counter untyped
-openstack_requests_total_counter{kubernetes_role="endpoint",instance="100.64.0.11:9102",kubernetes_name="glance",system="openstack",job="kubernetes-service-endpoints",
+openstack_requests_total_counter{job="endpoints",system="openstack",component="keystone",kubernetes_namespace="monsoon3",type="api",cluster="staging",region="staging",instance="100.66.0.29:9102",kubernetes_name="keystone"} 556641 1489596383563
 # TYPE openstack_latency_by_api_timer untyped
 openstack_latency_by_api_timer{kubernetes_namespace="monsoon3",system="openstack",instance="100.64.0.13:9102",kubernetes_role="endpoint",api="/v3/projects/id/users/id/roles/id",component="keystone",job="kubernetes-service-endpoints",method="GET",quantile="0.99",kubernetes_name="keystone"} NaN 1472641122860
 # TYPE container_start_time_seconds untyped
