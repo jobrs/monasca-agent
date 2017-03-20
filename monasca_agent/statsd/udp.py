@@ -103,7 +103,7 @@ class Server(object):
             # Parse dimensions, supporting both Monasca and DogStatsd extensions
             elif m[0] == '#' and len(m) > 2:
                 if m[1] == '{':
-                    dimensions = Server._parse_monasca_statsd_dims(m)
+                    dimensions = Server._parse_monasca_statsd_dims(m[1:])
                 else:
                     dimensions = Server._parse_dogstatsd_tags(m[1:])
 
