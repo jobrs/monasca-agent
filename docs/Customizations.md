@@ -227,7 +227,8 @@ Features
 * Adjust metric names to Monasca naming conventions
 * Map metric names and dimension keys
 * Provide metric type information
-* Map metadata to dimensions
+* Map metadata to dimensions incl. hostname
+* Choose target tenant based on metadata
 * Transform names and values using regular expressions
 * Filter values using regular expressions on attributes
 
@@ -283,7 +284,19 @@ service:
 
 ```
 
+This will map the incoming metadata attribute `kubernetes.namespace` to dimension `service` and remove the `prod-` prefix which is also acting as a filter.
+
 The regular expression is applied to the dimension value. If the regular expression does not match, then the measurement is ignored. If match-groups are part of the regular expression then the regular expression is used for value transformation: The resulting dimension value is created by concatenating all match-groups (in braces) using the specified separator. If no match-group is specified, then the value is acting as a filter and just normalized. If the regex is a string constant (no wildcards), then it will not be mapped to a dimension at all.
+
+###### Tenant Mapping
+
+The pseudo-dimension `__project_id__` can be used to post metrics to different tenants.
+
+Example:
+
+```
+__project_id__: project_id
+```
 
 ##### Metric Groups
 
