@@ -194,6 +194,9 @@ class DynamicCheckHelper(object):
 
     DEFAULT_GROUP = ""
 
+    # this dimension is used to map labels with OpenStack tenant IDs
+    PROJECT_ID_DIMENSION = "__project_id__"
+
     class MetricSpec(object):
         """Describes how to filter and map input metrics to Monasca metrics
         """
@@ -603,14 +606,18 @@ class DynamicCheckHelper(object):
         if fixed_dimensions:
             dims.update(fixed_dimensions)
 
+        # treat "__project_id__" dimension as tenant id, pass "hostname" into hostname parameter
+        tenant_id = dims.pop(DynamicCheckHelper.PROJECT_ID_DIMENSION, None)
+        hostname = dims.pop('hostname', None)
+
         log.debug('push %s %s = %s {%s}', metric_entry.metric_type, metric_entry.metric_name, value, dims)
 
         if metric_entry.metric_type == DynamicCheckHelper.RATE:
-            self._check.rate(metric_name, float(value), dimensions=dims)
+            self._check.rate(metric_name, float(value), dimensions=dims, delegated_tenant=tenant_id, hostname=hostname)
         elif metric_entry.metric_type == DynamicCheckHelper.GAUGE:
-            self._check.gauge(metric_name, float(value), timestamp=timestamp, dimensions=dims)
+            self._check.gauge(metric_name, float(value), timestamp=timestamp, dimensions=dims, delegated_tenant=tenant_id, hostname=hostname)
         elif metric_entry.metric_type == DynamicCheckHelper.COUNTER:
-            self._check.increment(metric_name, float(value), dimensions=dims)
+            self._check.increment(metric_name, float(value), dimensions=dims, delegated_tenant=tenant_id, hostname=hostname)
 
         return True
 
