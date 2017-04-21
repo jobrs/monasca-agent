@@ -52,11 +52,10 @@ NUM_SAMPLES = 15
 SAMPLE_RATE = 300
 ALLOWED_DATASTORE_TYPES = ['VMFS', 'NFS']
 
-
 class VCenterCheck(AgentCheck):
 
-    def __init__(self, name, init_config, agent_config):
-        AgentCheck.__init__(self, name, init_config, agent_config)
+    def __init__(self, name, init_config, agent_config, instances):
+        AgentCheck.__init__(self, name, init_config, agent_config, instances=instances)
         self._max_objects = 1000
         self.session = None
         self.is_new_session = True
@@ -323,7 +322,7 @@ class VCenterCheck(AgentCheck):
                     CLUSTER_PERF_COUNTERS,
                     SAMPLE_RATE,
                     NUM_SAMPLES)
-                self.is_new_session = False
+                self.is_new_session = True
             for managed_cluster in self.clusters:
                 try:
                     res_dict = self._get_resource_dict_by_name(managed_cluster)
